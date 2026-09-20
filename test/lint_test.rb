@@ -95,4 +95,11 @@ class LintTest < Minitest::Test
       "---\nruns: 3\n---\n\nread ~/.claude/skills/what-the-heck/SKILL.md\n"))
     assert_includes errors.join("\n"), "sandbox cwd"
   end
+
+  def test_missing_evals_directory_is_caught
+    root = build
+    FileUtils.rm_rf(File.join(root, "plugins/what-the-heck/evals"))
+    errors = lint(root)
+    assert_includes errors.join("\n"), "holds no eval cases"
+  end
 end

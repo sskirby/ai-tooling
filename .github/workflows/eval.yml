@@ -15,6 +15,9 @@ on:
         required: false
         default: "15"
 
+permissions:
+  contents: read
+
 jobs:
   eval:
     runs-on: ubuntu-latest
@@ -25,13 +28,13 @@ jobs:
       - name: Run the eval suite
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CASE_GLOB: ${{ inputs.case }}
+          MAX_COST_USD: ${{ inputs.max_cost_usd }}
         run: |
-          claude plugin eval ./plugins/what-the-heck \
-            --trust-plugin \
-            --no-publish \
-            --max-cost-usd '${{ inputs.max_cost_usd }}' \
-            ${{ inputs.case && format('--case ''{0}''', inputs.case) || '' }} \
-            --report eval-report.html
+          args=(./plugins/what-the-heck --trust-plugin --no-publish --report eval-report.html)
+          args+=(--max-cost-usd "$MAX_COST_USD")
+          if [ -n "$CASE_GLOB" ]; then args+=(--case "$CASE_GLOB"); fi
+          claude plugin eval "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
