@@ -1,0 +1,25 @@
+README.md
+  s_4e23e8cc437873::t_1f7b059e095e9f 1-32
+.gitignore
+  s_4e23e8cc437873::t_15608a97b44f7d 1-6
+plugins/what-the-heck/.claude-plugin/plugin.json
+  s_4e23e8cc437873::t_06ce3c037ae365 1-17
+.claude-plugin/marketplace.json
+  s_4e23e8cc437873::t_6d844b5fffa9a9 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a684577b6101abb68998bc04dfdde4afac012037",
+  "prompts": {},
+  "sessions": {
+    "s_4e23e8cc437873": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3cbd9e4-47d7-47c9-9d5e-f15a3ee58ad7",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
