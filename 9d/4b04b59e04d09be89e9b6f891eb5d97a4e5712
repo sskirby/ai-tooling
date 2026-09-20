@@ -1,0 +1,53 @@
+plugins/what-the-heck/evals/next-means-one-step/prompt.md
+  s_4e23e8cc437873::t_e38b8aae407b3b 1-11
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/does-not-simply-congratulate.md
+  s_4e23e8cc437873::t_7fa6ffce6d2b9e 1-8
+plugins/what-the-heck/evals/next-means-one-step/graders/advances-without-commentary.md
+  s_4e23e8cc437873::t_fc78dd355db12d 1-9
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/reteaches-from-a-new-angle.md
+  s_4e23e8cc437873::t_b6b2ad460d94b2 1-10
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/prompt.md
+  s_4e23e8cc437873::t_2a53b6059179ff 1-16
+plugins/what-the-heck/evals/next-means-one-step/graders/escape-hatch-present.md
+  s_4e23e8cc437873::t_6e56022274350e 1-7
+plugins/what-the-heck/evals/wrong-answer-reteaches/prompt.md
+  s_4e23e8cc437873::t_52e9f121fc68cb 1-15
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/skill-fired.md
+  s_4e23e8cc437873::t_0625beccb4152c 1-7
+plugins/what-the-heck/evals/next-means-one-step/graders/skill-fired.md
+  s_4e23e8cc437873::t_eda00c597b8779 1-7
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/does-not-advance.md
+  s_4e23e8cc437873::t_6c8121dbd4eff4 1-7
+plugins/what-the-heck/evals/next-means-one-step/graders/exactly-one-step.md
+  s_4e23e8cc437873::t_b0390d7aaf89f8 1-7
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/names-the-specific-gap.md
+  s_4e23e8cc437873::t_8751f48671471c 1-12
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/skill-fired.md
+  s_4e23e8cc437873::t_4af01b1605d92e 1-7
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/rechecks-before-moving-on.md
+  s_4e23e8cc437873::t_7637717135609f 1-9
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/does-not-advance.md
+  s_4e23e8cc437873::t_0e7641c754400e 1-7
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/issues-a-fresh-check.md
+  s_4e23e8cc437873::t_c3d8088c3fb853 1-8
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/does-not-affirm-the-wrong-answer.md
+  s_4e23e8cc437873::t_52c2ec7e1ce468 1-10
+plugins/what-the-heck/evals/next-means-one-step/graders/step-three-not-a-dump.md
+  s_4e23e8cc437873::t_7affb3c2c12649 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9d4b04b59e04d09be89e9b6f891eb5d97a4e5712",
+  "prompts": {},
+  "sessions": {
+    "s_4e23e8cc437873": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3cbd9e4-47d7-47c9-9d5e-f15a3ee58ad7",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
