@@ -1,0 +1,6 @@
+# Written by `claude plugin eval` on every invocation
+evals/results/
+plugins/*/evals/results/
+
+# Local worktrees
+.claude/worktrees/
