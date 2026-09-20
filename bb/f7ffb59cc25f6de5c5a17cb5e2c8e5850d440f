@@ -1,0 +1,25 @@
+scripts/lint.rb
+  s_4e23e8cc437873::t_ece3c104991510 1-314
+.github/workflows/eval.yml
+  s_4e23e8cc437873::t_dff54de464601f 1-39
+test/lint_test.rb
+  s_4e23e8cc437873::t_d641447d79c577 1-98
+.github/workflows/lint.yml
+  s_4e23e8cc437873::t_464475a6951157 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bbf7ffb59cc25f6de5c5a17cb5e2c8e5850d440f",
+  "prompts": {},
+  "sessions": {
+    "s_4e23e8cc437873": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3cbd9e4-47d7-47c9-9d5e-f15a3ee58ad7",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
