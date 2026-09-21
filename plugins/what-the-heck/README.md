@@ -351,12 +351,28 @@ calibrated: it passes a good direct answer and fails a lesson takeover.
 Δ −1.00 is the largest effect measured anywhere in this suite, and it is
 harm, not benefit.
 
-**What is not yet true:** the `description` has not been narrowed. This is
-the "red before the decision" half of the evidence only. The green-after
-half — a narrowed trigger re-run against `no-trigger-*` showing the same
-prompt no longer firing the skill — does not exist yet. Do not read this
-entry as claiming the fix already works; it claims the problem is real and
-now measured.
+**The green after.** The `description` was then narrowed additively in
+`cccb571` — two "Not for…" clauses, the skill body untouched — and the same
+case was re-run as part of the full 9-case suite (3 runs, both arms, Sonnet
+judge, $8.38 for the suite, 596 seconds):
+
+```
+no-trigger-explain-and-do   with 1.00   without 1.00   Δ 0.00   (6 runs)
+  with-arm, all 3 runs:    ✓ skill-did-not-fire        Skill called 0x (expected 0..0)
+                            ✓ explains-while-doing-the-task   judge votes: PASS PASS PASS
+  without-arm, all 3 runs: ✓ skill-did-not-fire        Skill called 0x (expected 0..0)
+                            ✓ explains-while-doing-the-task   judge votes: PASS PASS PASS
+```
+
+The prompt that fired the skill 3/3 before now fires it 0/3, and the task
+gets done and explained in place in every run of both arms. Δ −1.00 → 0.00.
+This entry has both halves of its evidence, each from a Sonnet judge, and
+neither was invented.
+
+**What it cost.** The same narrowing stopped the skill firing on the
+`closing` case — 1/1 before, 0/3 after. See the Open table; that is not yet
+settled, and this entry should be read alongside it rather than as an
+unqualified win.
 
 ## B7 — "Read the code first" ships unpinned
 
@@ -403,7 +419,7 @@ why `--judge-model sonnet` is reserved for the run that counts.
 | A ninth eval case for "read the code before step 1" (B7) | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred | A later pass, if a run suggests the rule drifts |
 | Part 1 of this log | The rationale is reconstructed, not authored | The author's review pass |
 | Closing-step brevity: the "what will bite you" note | In the pilot, `closing`'s recap was compliant but the gotcha note ran to about four paragraphs of fresh teaching, on a 1-run Haiku pilot | A refinement pass the author has already accepted ("we'll make the closing more brief") |
-| The full 3-run suite with `--judge-model sonnet` | Not yet run; the pilot was 1 run per case on a Haiku judge, thinner evidence than the suite is meant to ship on | The run that counts — settles per-case pass/fail with real confidence and re-scores the eight cases whose pilot verdict was a judge-quality miss |
-| Narrowing the `description` to fix the over-triggering B6 found | `evals/no-trigger-explain-and-do/` (3 runs, Sonnet judge) showed the trigger fires on a task request that borrows its own vocabulary, Δ −1.00; the description has not been edited in response yet | Narrowing the `description`, then re-running `--case 'no-trigger-*'` to get the green-after evidence B6 is still missing |
+| The `Pinned by` lines still cite the Haiku pilot | The full 9-case suite has now run on a Sonnet judge (54 sessions, 596s, $8.38, mean Δ +0.25) and it moved most numbers — `first-step` +0.50 → +0.89, `shaky-reasoning-rechecks` +0.25 → +0.50, `wrong-answer-reteaches` +0.25 → +0.33 — confirming those were judge-quality misses, not rule failures. The entries below still quote the pilot | Re-pinning all 18 entries to the Sonnet run, once the `closing` question is settled so it is done in one pass |
+| `closing` lost its trigger to the B6 narrowing | In the pilot the skill fired on `closing` (1/1); after `cccb571` it fires 0/3, so that case's with-arm is an unwitting second without-arm and its Δ 0.00 measures nothing. `skill-fired` is a deterministic `tool_used` grader, so the judge model plays no part in the comparison. It may be an artefact rather than a defect: the case asks the skill to fire *cold* from a prompt that states the lesson is over, which in a real conversation never happens, because the skill has been in context since turn 1 | The B2 hand-check, which distinguishes the two. If the skill closes correctly in a real conversation, the fix belongs in the case — `closing` is the one case where `context.history_file` beats inline restated context, since collapsing to the `with` arm costs a Δ that is already meaningless. If it does not, the description needs a third pass |
 | The B2 resumed-session hand-check | Planned as a one-off comparison against a genuinely resumed session; not yet performed | Running it and recording the verdict in B2 |
-| Two installed copies of the skill | `~/.claude/skills/what-the-heck/` and the installed plugin both define `what-the-heck` on the same machine | Deleting the personal copy once the plugin is installed and verified, so this repo is the single source. The author's call |
+| Verifying the install on the published path | The personal copy at `~/.claude/skills/what-the-heck/` has been deleted and the plugin installs cleanly from a local-path marketplace, but `origin/main` still holds only `LICENSE`, so the spec's `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install |
