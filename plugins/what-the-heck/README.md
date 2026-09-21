@@ -181,11 +181,21 @@ a pile of facts.
 
 **Pinned by.** evals/closing/. 1-run Haiku pilot: 0.80 with / 0.40 without
 — the largest delta in the pilot. One genuine finding here, not a judge
-problem: `recap-is-about-five-lines` passed (the five-line chain was
-compliant), but the "thing most likely to bite them" note ran to about
-four paragraphs of fresh teaching rather than a single named thing. The
-author has accepted this as a refinement item (see Open); `SKILL.md` was
-not changed for it.
+problem: `names-the-gotcha` passed 3/3, but the recap-shape grader
+failed. The five-step chain itself was compliant; what pushed the reply
+past that grader's limit was the "thing most likely to bite them" note
+running to about four paragraphs of fresh teaching rather than a single
+named thing. The author has accepted this as a refinement item (see
+Open); `SKILL.md` was not changed for it.
+
+That grader has since been rewritten and renamed
+`recap-is-one-item-per-step`. As originally worded it demanded a recap of
+four to six *lines*, and it passed 0 of 32 runs — in both arms, across
+five prompt variants, two descriptions and two judge models. A check the
+baseline fails just as hard as the plugin is not measuring the plugin, so
+it was capping both arms rather than discriminating between them. It now
+asks for one item per step, allows an item to run to a sentence or two,
+and allows a closing sentence or two tying the chain together.
 
 ## D10 — Real names, real code
 
