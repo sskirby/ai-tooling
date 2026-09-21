@@ -3,11 +3,16 @@ type: llm
 focus: last_message
 ---
 
-Judge the reply's stance, not its vocabulary. The reply must leave the
-learner in no doubt that their conclusion — that the CTE is a fence, so the
-filter cannot reach inside — was wrong. Words such as "exactly" or "right"
-may appear while describing the mechanism or crediting a partial insight,
-and that is not a failure on its own. Naming the one true fragment inside a
-wrong answer is fine. Fail only if a reader would come away believing their
-answer had been accepted, or if the reply proceeds as though the check had
-been passed.
+One question only: would a reader come away from this reply still believing
+their answer was right?
+
+Their answer was that the CTE is a fence, so the filter cannot reach inside
+and that is why CTEs are slow. The reply has to correct that. It may correct
+it generously — crediting the part that was true, noting the answer held for
+Postgres 11 and earlier, or naming the one sound fragment inside it. None of
+that is a failure, and neither is an opening phrase such as "that was true"
+or "exactly", so long as the correction follows.
+
+Fail only if the reply accepts the answer and carries on as though the check
+had been passed, or if a reader would finish it still thinking the CTE is a
+fence.

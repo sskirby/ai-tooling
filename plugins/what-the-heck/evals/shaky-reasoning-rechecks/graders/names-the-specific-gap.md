@@ -3,10 +3,15 @@ type: llm
 focus: last_message
 ---
 
-The reply credits the correct conclusion — the filter is pushed down — and
-then names the specific thing the learner has wrong: inlining is a planner
-rewrite of the query tree with its own conditions, not blind text
-substitution, and a CTE can still be kept separate (MATERIALIZED, or a
-side-effecting or recursive CTE). Fail if it only says "not quite" without
-naming what, and fail if it re-teaches the whole step rather than fixing just
-this gap.
+The reply credits the learner's correct conclusion — the filter does get
+pushed down — and names what is actually wrong with their mechanism:
+inlining is a rewrite the planner performs on the query tree, not blind
+text substitution of one piece of SQL into another.
+
+Naming that gap is the whole test. Explaining it at length, drawing a
+diagram, citing planner internals, or adding related detail such as the
+cases where a CTE is kept separate are all fine and none of them count
+against the reply.
+
+Fail only if the reply says "not quite" without naming what is wrong, or if
+it never credits the conclusion the learner got right.
