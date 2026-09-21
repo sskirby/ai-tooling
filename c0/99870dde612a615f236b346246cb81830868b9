@@ -1,0 +1,19 @@
+plugins/what-the-heck/README.md
+  s_f1886505d59abe::t_d40197b98f491a 354-375,422-423,425
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c099870dde612a615f236b346246cb81830868b9",
+  "prompts": {},
+  "sessions": {
+    "s_f1886505d59abe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58554e91-3dd0-4a81-ad83-e1c73dc10a0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
