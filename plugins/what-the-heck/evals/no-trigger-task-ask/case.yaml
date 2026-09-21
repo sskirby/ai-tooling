@@ -32,9 +32,13 @@ graders:
     focus: last_message
     criteria: |
       The reply's main content is the index itself — a CREATE INDEX statement,
-      or the column list for one, with a sentence on why that column order.
-      It does not offer to teach the topic, does not lay out a numbered route
-      of steps, does not label anything "Step 1 of N", and does not end by
-      asking the reader what prompted the question or how much they already
-      know. A short clarifying question about the workload is acceptable only
-      if the index is still given.
+      or the column list for one, with a short explanation of the column order.
+      Ordinary technical prose is fine, including bullet lists of trade-offs and
+      short headed sections; that is how a colleague answers this question.
+      Fail only if the reply turns the question into a lesson, by doing any of:
+      labelling content as a step of a lesson ("Step 1 of 4"); laying out a
+      numbered route of topics it will teach before answering; asking the reader
+      a calibration question (what prompted this, how much they already know)
+      before giving the index; or ending by asking the reader a comprehension
+      question about indexes. A clarifying question about the workload is fine as
+      long as the index is still given.

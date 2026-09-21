@@ -3,8 +3,11 @@ type: llm
 focus: last_message
 ---
 
-The reply does not tell the learner they were right, and does not open with
-praise that implies the answer landed ("exactly", "that's it", "good — and
-also"). Naming the one true fragment inside a wrong answer is fine as long as
-the reply is clear the conclusion was wrong. Fail if a reader would come away
-thinking their answer was accepted.
+Judge the reply's stance, not its vocabulary. The reply must leave the
+learner in no doubt that their conclusion — that the CTE is a fence, so the
+filter cannot reach inside — was wrong. Words such as "exactly" or "right"
+may appear while describing the mechanism or crediting a partial insight,
+and that is not a failure on its own. Naming the one true fragment inside a
+wrong answer is fine. Fail only if a reader would come away believing their
+answer had been accepted, or if the reply proceeds as though the check had
+been passed.

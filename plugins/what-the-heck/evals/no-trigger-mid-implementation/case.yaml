@@ -34,9 +34,12 @@ graders:
     type: llm
     focus: last_message
     criteria: |
-      The reply answers in place, in roughly a paragraph: backoff_ms is the
-      base delay that doubles each attempt, so the waits are 200ms, 400ms,
-      800ms and so on. It stays inside the task we were doing. Fail if it
-      opens a numbered route of steps, labels anything "Step 1 of N", asks the
-      reader a calibration question before answering, or ends by asking the
-      reader a comprehension check.
+      The reply answers in place, in roughly a paragraph: backoff_ms is the base
+      delay that doubles each attempt, so the waits are 200ms, 400ms, 800ms and
+      so on. Ordinary prose is fine, and so is a short list of related
+      observations about the code — that is a normal colleague answer to a
+      question asked mid-task. Fail only if the reply turns the question into a
+      lesson, by doing any of: labelling content as a step of a lesson ("Step N
+      of M"); laying out a numbered route of topics it will teach; asking the
+      reader a calibration question before answering; or ending by asking the
+      reader a comprehension question.
