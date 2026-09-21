@@ -8,6 +8,11 @@ description: >
   explanation with diagrams, examples, or pauses for questions. Applies
   to concepts, tools, error messages, query plans, and unfamiliar parts
   of a codebase.
+  Not for a request to perform a task, even when it carries an "I don't
+  get this, explain as you go" rider — for example "I don't really get
+  indexes, can you add one to this table and explain as you go?". Do the
+  task and explain in place instead. Not for a quick question about code
+  you are already working on together.
 ---
 
 # What The Heck
