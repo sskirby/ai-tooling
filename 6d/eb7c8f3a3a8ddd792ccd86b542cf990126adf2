@@ -1,0 +1,21 @@
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/names-the-specific-gap.md
+  s_f1886505d59abe::t_f79ce7c9684c29 6-17
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/does-not-affirm-the-wrong-answer.md
+  s_f1886505d59abe::t_cb8c27456ccb4d 6-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6deb7c8f3a3a8ddd792ccd86b542cf990126adf2",
+  "prompts": {},
+  "sessions": {
+    "s_f1886505d59abe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58554e91-3dd0-4a81-ad83-e1c73dc10a0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
