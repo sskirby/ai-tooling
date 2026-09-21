@@ -1,0 +1,20 @@
+plugins/what-the-heck/skills/what-the-heck/SKILL.md
+  s_4e23e8cc437873::t_d21af13ee4bbe3 11
+  s_4e23e8cc437873::t_00e9d977680682 12-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "cccb571235740ffe5316faad34a74c3e4be13849",
+  "prompts": {},
+  "sessions": {
+    "s_4e23e8cc437873": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3cbd9e4-47d7-47c9-9d5e-f15a3ee58ad7",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
