@@ -13,19 +13,45 @@ format. Part 2 covers how this repo is built and verified.
 
 ## Evidence note
 
-Most entries below that cite an eval case are backed, right now, by a
-single pilot run: 1 run per case, both arms, Haiku as the judge, $2.15
-total, across the eight cases that existed when it ran. That is much
-thinner than the 3-run `--judge-model sonnet` suite this plugin is meant to
-ship on — read every pilot score below as a first signal, not a verdict.
-Where a case's graders turned up in the pilot's judge-quality triage — a
-weak Haiku judge missing behaviour that was actually there — the entry
-says so, because that grader's verdict is not yet trustworthy.
+Every entry below that cites an eval case is now backed by a 3-run-per-arm
+suite, judged by Sonnet, for all nine cases — each cited run postdates both
+the shipped 87-word skill description (`c344426`) and that case's own last
+file change, so every number below grades the tree as it ships. The
+original 1-run Haiku pilot (`2026-09-20T23-59-05-792Z`, $2.15, eight cases —
+`no-trigger-explain-and-do` didn't exist yet) is superseded everywhere it
+was cited for a case score. It survives only in B8, where it is the
+baseline of a judge-model comparison, not current evidence.
 
-The ninth case, `no-trigger-explain-and-do`, was added after the pilot and
-ran separately: 3 runs, both arms, **Sonnet** as the judge, $0.78. Do not
-merge its numbers into the pilot's — different case count, different
-judge, different run count. See B6.
+Where each case stands, freshest run per case, `with` score / `without`
+score / delta:
+
+| case | with | without | Δ | run |
+|---|---|---|---|---|
+| first-step | 0.89 | 0.00 | +0.89 | `2026-09-21T05-20-55-941Z` |
+| opening | 1.00 | 0.25 | +0.75 | `2026-09-21T20-05-06-263Z` |
+| next-means-one-step | 1.00 | 0.33 | +0.67 | `2026-09-21T04-58-08-088Z` |
+| closing | 0.83 | 0.25 | +0.58 | `2026-09-21T16-46-23-241Z` |
+| wrong-answer-reteaches | 0.92 | 0.50 | +0.42 | `2026-09-21T16-47-57-966Z` |
+| shaky-reasoning-rechecks | 1.00 | 0.58 | +0.42 | `2026-09-21T16-49-53-988Z` |
+| no-trigger-explain-and-do | 1.00 | 1.00 | 0.00 | `2026-09-21T04-03-19-502Z` |
+| no-trigger-mid-implementation | 1.00 | 1.00 | 0.00 | `2026-09-21T04-03-19-502Z` |
+| no-trigger-task-ask | 1.00 | 1.00 | 0.00 | `2026-09-21T04-03-19-502Z` |
+
+The mean delta is **+0.62 across the six teaching cases** and **+0.41
+across all nine**. Always say which population a mean covers: the three
+`no-trigger-*` cases score a correct 0.00 by design — the skill must not
+fire on those prompts and it does not — so averaging them in drags the
+figure down for a reason that is a pass, not a failure.
+
+Keep a proportionate amount of caution anyway: the measured run-to-run
+noise floor on a 3-run case is about ±0.20 (see `977aa3b`, where a closing
+delta of +0.13 was judged inside that floor and left unpinned). A delta
+smaller than that on any case below is not signal, and entries call this
+out where it applies.
+
+None of this changes Part 1's other problem: the *rationale* — the why
+behind each decision — is reconstructed, not authored, regardless of how
+solid the eval evidence under it is. See the note at the top of this file.
 
 ---
 
@@ -43,8 +69,12 @@ first.
 right outcome, but read on turn count alone it looks like a lesson that
 failed before it started.
 
-**Pinned by.** evals/opening/ (answer-before-route). 1-run Haiku pilot:
-opening scored 1.00 with the skill, 0.50 without.
+**Pinned by.** evals/opening/ (answer-before-route), run
+`2026-09-21T20-05-06-263Z` (3 runs/arm, Sonnet judge): `PPP` with / `PPP`
+without. This grader passes in both arms — it shows the skill puts the
+answer first, not that the baseline fails to. The case-level delta
+(opening: 1.00 with / 0.25 without) is driven by D2 and D3's graders, not
+this one.
 
 ## D2 — Route titles are claims
 
@@ -58,8 +88,10 @@ nothing about what they're about to learn.
 **Cost.** Writing a route of claims costs real thought before any teaching
 happens; a lazy route reverts to topic labels.
 
-**Pinned by.** evals/opening/ (titles-are-claims, route-is-3-to-6-items).
-Same 1-run Haiku pilot as D1: opening 1.00 with / 0.50 without.
+**Pinned by.** evals/opening/ (titles-are-claims, route-is-3-to-6-items),
+run `2026-09-21T20-05-06-263Z` (3 runs/arm, Sonnet judge): both graders
+`PPP` with / `FFF` without — a clean discriminator on each; the baseline
+doesn't do this by default.
 
 ## D3 — Exactly one calibration question
 
@@ -71,8 +103,17 @@ the reader's level and skipping the question entirely.
 
 **Cost.** One extra round trip before any teaching starts.
 
-**Pinned by.** evals/opening/ (one-calibration-question, no-step-yet).
-1-run Haiku pilot: opening 1.00 with / 0.50 without.
+**Pinned by.** evals/opening/ (asks-about-the-reader, calibration-is-one-ask,
+no-step-yet), run `2026-09-21T20-05-06-263Z` (3 runs/arm, Sonnet judge).
+`asks-about-the-reader` discriminates cleanly: `PPP` with / `FFF` without —
+the calibration question is there and the baseline doesn't ask one.
+`calibration-is-one-ask` and `no-step-yet` are `arm: with-only` (unscored,
+contributing nothing to the delta) but are still evidence of behaviour:
+`no-step-yet` is `PPP` — step 1 never leaks into the opening — while
+`calibration-is-one-ask` is `PPF`, meaning one of the three with-arm runs
+asked more than one question, so "exactly one" isn't fully landing yet.
+(`one-calibration-question`, the grader this entry used to cite, was split
+into these two in `a08a92c` and no longer exists.)
 
 ## D4 — Every step ends with a question you ask them
 
@@ -86,12 +127,11 @@ one thing they cannot do.
 **Cost.** Roughly doubles the number of turns. Some users
 find it slow; `next` is the escape hatch (see D7).
 
-**Pinned by.** evals/opening/, evals/first-step/. 1-run Haiku pilot: opening
-1.00 with / 0.50 without; first-step 0.50 with / 0.00 without.
-first-step's `check-requires-using-the-idea` grader was one of the pilot's
-eight judge-quality misses — the judge failed it 3/3 on behaviour triage
-called correct — so treat that grader's verdict as unsettled until the
-Sonnet re-run.
+**Pinned by.** evals/first-step/ (check-requires-using-the-idea), run
+`2026-09-21T05-20-55-941Z` (3 runs/arm, Sonnet judge): `PPP` with / `FFF`
+without — a clean discriminator. This grader was one of the Haiku pilot's
+judge-quality misses (Haiku scored it `F`); the Sonnet re-run resolves it
+as landing behaviour, not a judge artefact.
 
 ## D5 — 150 words of prose, hard budget
 
@@ -102,12 +142,18 @@ that's exactly how two ideas end up stacked into one step.
 
 **Cost.** Some ideas that felt like one step have to split into two.
 
-**Pinned by.** evals/first-step/ (prose-under-150-words). 1-run Haiku
-pilot: first-step 0.50 with / 0.00 without. This grader was one of the
-pilot's eight judge-quality misses: triage hand-counted the actual reply at
-~97 words against the 150 limit and found it compliant, but the judge
-failed it 3/3. Left alone deliberately — the rubric is right, the judge is
-weak; the fix is a stronger judge, not a rewritten rubric.
+**Pinned by.** evals/first-step/ (prose-under-150-words), run
+`2026-09-21T05-20-55-941Z` (3 runs/arm, Sonnet judge): `FPF` with / `FFF`
+without. Two things are true at once here, and neither should be flattened
+into the other. The rule is not reliably landing: it fails 2 of 3 with-arm
+runs under a stronger judge, and it's the sole reason first-step scores
+0.89 rather than 1.00. But it does discriminate — the without-arm fails
+3/3 too, so the check is measuring something the baseline doesn't do.
+Complicating both readings: the run that PASSED had a *longer* total reply
+than the two that failed, which is evidence the grader is doing arithmetic
+on a filtered slice of the text rather than a stable count — a shaky
+instrument, not just an unsettled rule. Pin this as unsettled on both
+counts; it is neither vindicated nor broken yet.
 
 ## D6 — One picture or one example, never both
 
@@ -119,9 +165,10 @@ reader has to hold in their head at once.
 
 **Cost.** Sometimes the weaker of two good illustrations has to be cut.
 
-**Pinned by.** evals/first-step/ (one-picture-or-one-example). Same 1-run
-Haiku pilot as D5, and this grader was also one of the pilot's eight
-judge-quality misses — left alone for the same reason.
+**Pinned by.** evals/first-step/ (one-picture-or-one-example), run
+`2026-09-21T05-20-55-941Z` (3 runs/arm, Sonnet judge): `PPP` with / `FFF`
+without — a clean discriminator. Also one of the pilot's judge-quality
+misses (Haiku scored it `F`); Sonnet resolves it as landing behaviour.
 
 ## D7 — `next` means one step, no commentary
 
@@ -134,13 +181,20 @@ use.
 **Cost.** A reader can skip past a misunderstanding; that's their call to
 make, not the skill's to prevent.
 
-**Pinned by.** evals/first-step/ (escape-hatch-present),
-evals/next-means-one-step/. 1-run Haiku pilot: first-step 0.50 with / 0.00
-without; next-means-one-step 0.50 with / 0.25 without. Two of
-next-means-one-step's graders were also among the pilot's eight
-judge-quality misses (the triage note groups them as "next-means-one-step
-x2" without naming which two); their verdicts are unsettled pending the
-Sonnet re-run.
+**Pinned by.** evals/first-step/ (escape-hatch-present), run
+`2026-09-21T05-20-55-941Z`: `PPP` with / `FFF` without — a clean
+discriminator. evals/next-means-one-step/ (escape-hatch-present,
+exactly-one-step, advances-without-commentary, step-three-not-a-dump), run
+`2026-09-21T04-58-08-088Z` (3 runs/arm, Sonnet judge):
+`escape-hatch-present` `PPP` with / `FFF` without; `exactly-one-step` `PPP`
+with / `PPF` without; `advances-without-commentary` `PPP` with / `FPF`
+without; `step-three-not-a-dump` `PPP` with / `PFF` without. All four
+discriminate, though `exactly-one-step` only weakly — the baseline lands it
+2 of 3 runs anyway. `step-three-not-a-dump` was one of the pilot's
+judge-quality misses, now resolved under Sonnet. `advances-without-commentary`'s
+rubric was rewritten between the pilot and this run (`0aad611`), so only
+this current Sonnet number should be cited — its pilot score isn't
+comparable.
 
 ## D8 — Never advance past a wrong answer
 
@@ -154,18 +208,33 @@ wrong reason.
 **Cost.** A confused reader spends longer on step 2 — which is the point:
 the misunderstanding surfaces at step 2, not step 6.
 
-**Pinned by.** evals/wrong-answer-reteaches/,
-evals/shaky-reasoning-rechecks/. 1-run Haiku pilot: wrong-answer-reteaches
-0.50 with / 0.25 without; shaky-reasoning-rechecks 0.50 with / 0.25
-without. Two grader-level notes from triage:
-`wrong-answer-reteaches/does-not-affirm-the-wrong-answer` failed
-identically in both arms — it was keyword-brittle on the literal word
-"exactly," testing the model's vocabulary rather than the skill's
-behaviour — and was rewritten in commit `7aa7414`.
-`wrong-answer-reteaches/issues-a-fresh-check` and
-`shaky-reasoning-rechecks/rechecks-before-moving-on` were among the
-pilot's eight judge-quality misses and were left alone; their verdicts are
-unsettled pending the Sonnet re-run.
+**Pinned by.** evals/wrong-answer-reteaches/ (does-not-advance,
+does-not-affirm-the-wrong-answer, issues-a-fresh-check,
+reteaches-from-a-new-angle), run `2026-09-21T16-47-57-966Z` (3 runs/arm,
+Sonnet judge): `does-not-advance` `PPP` with / `FFF` without —
+discriminates. `does-not-affirm-the-wrong-answer` `PPP` with / `PPP`
+without and `issues-a-fresh-check` `PPP` with / `PPP` without both pass in
+both arms: they show the skill does this, not that the skill does it and
+the baseline doesn't. `reteaches-from-a-new-angle` `FPP` with / `FFF`
+without — discriminates, though one with-arm run itself failed to reteach
+from a new angle.
+
+evals/shaky-reasoning-rechecks/ (does-not-advance,
+does-not-simply-congratulate, names-the-specific-gap,
+rechecks-before-moving-on), run `2026-09-21T16-49-53-988Z` (3 runs/arm,
+Sonnet judge): `does-not-advance` `PPP` with / `FFF` without —
+discriminates. `does-not-simply-congratulate` `PPP` with / `PPP` without
+and `names-the-specific-gap` `PPP` with / `PPP` without both pass in both
+arms — same caveat as above, and both rubrics were rewritten after the
+pilot (`7aa7414`, `6deb7c8`), so their pilot scores aren't comparable to
+these. `rechecks-before-moving-on` `PPP` with / `PFF` without —
+discriminates; one of the pilot's judge-quality misses, now resolved under
+Sonnet.
+
+`does-not-affirm-the-wrong-answer`'s earlier rubric was keyword-brittle on
+the literal word "exactly," testing vocabulary rather than behaviour; it
+was rewritten in `7aa7414`. The score above is under the rewritten
+version.
 
 ## D9 — The close is the chain, then the one thing that bites
 
@@ -179,23 +248,30 @@ fact, not a chain.
 **Cost.** Writing it well means having actually taught a chain rather than
 a pile of facts.
 
-**Pinned by.** evals/closing/. 1-run Haiku pilot: 0.80 with / 0.40 without
-— the largest delta in the pilot. One genuine finding here, not a judge
-problem: `names-the-gotcha` passed 3/3, but the recap-shape grader
-failed. The five-step chain itself was compliant; what pushed the reply
-past that grader's limit was the "thing most likely to bite them" note
-running to about four paragraphs of fresh teaching rather than a single
-named thing. The author has accepted this as a refinement item (see
-Open); `SKILL.md` was not changed for it.
+**Pinned by.** evals/closing/ (names-the-gotcha, recap-is-one-item-per-step,
+causal-chain, no-further-check), run `2026-09-21T16-46-23-241Z` (3
+runs/arm, Sonnet judge) — the first trustworthy run of this case, reached
+only after five prompt rewrites just to get the skill to fire at all (see
+B6 and Open). closing: 0.83 with / 0.25 without.
 
-That grader has since been rewritten and renamed
-`recap-is-one-item-per-step`. As originally worded it demanded a recap of
-four to six *lines*, and it passed 0 of 32 runs — in both arms, across
-five prompt variants, two descriptions and two judge models. A check the
-baseline fails just as hard as the plugin is not measuring the plugin, so
-it was capping both arms rather than discriminating between them. It now
-asks for one item per step, allows an item to run to a sentence or two,
-and allows a closing sentence or two tying the chain together.
+`names-the-gotcha`: `PPP` with / `FFF` without — discriminates cleanly.
+`recap-is-one-item-per-step`: `PPP` with / `FFP` without — discriminates.
+`causal-chain`: `FFP` with / `FFF` without — weak; it fails two of three
+with-arm runs too, so treat it as marginal evidence at best.
+`no-further-check`: `PPP` with / `PPF` without — discriminates, weakly (the
+baseline avoids a redundant check in 2 of 3 runs anyway).
+
+The grader that graded this decision at pilot time,
+`recap-is-about-five-lines`, demanded four to six *lines* and passed 0 of
+32 runs — in both arms, across five prompt variants, two descriptions and
+two judge models. A check the baseline fails just as hard as the plugin
+isn't measuring the plugin; it was capping both arms rather than
+discriminating between them. It was rewritten and renamed
+`recap-is-one-item-per-step` in `64433ae`, then rescoped to judge only the
+recap (not the surrounding correction or gotcha note) in `07fe734`. It now
+asks for one item per step, allows an item to run to a sentence or two, and
+allows a closing sentence tying the chain together. The score above is
+under that rewritten grader.
 
 ## D10 — Real names, real code
 
@@ -257,8 +333,8 @@ currently rests on the design argument above, not on a checked comparison.
 **Pinned by.** evals/first-step/, evals/closing/,
 evals/wrong-answer-reteaches/, evals/next-means-one-step/,
 evals/shaky-reasoning-rechecks/ — every multi-turn case in the suite. Each
-one's 1-run Haiku pilot score, and the judge-quality caveats that go with
-it, are given under its own Part 1 entry (D4–D9); read those before
+one's freshest 3-run Sonnet score, and the discrimination caveats that go
+with it, are given under its own Part 1 entry (D4–D9); read those before
 trusting any individual number.
 
 ## B3 — Hybrid case packaging
@@ -308,11 +384,13 @@ because a passing negative-trigger case is a short run.
 **Pinned by.** evals/opening/ and the three trigger cases
 (evals/no-trigger-task-ask/, evals/no-trigger-mid-implementation/,
 evals/no-trigger-explain-and-do/), which grade rules the author wrote, not
-rules edited to pass. Evidence for opening and the first two trigger cases
-is the 1-run Haiku pilot; evals/no-trigger-explain-and-do/ ran separately,
-3 runs on a Sonnet judge, after the pilot — see B6. That run found the one
-red this lexical-only port has produced: the description over-triggers on
-a task request that borrows its own vocabulary.
+rules edited to pass. All four now have 3-run Sonnet evidence: opening
+scores 1.00 with / 0.25 without (run `2026-09-21T20-05-06-263Z`); the three
+trigger cases each score 1.00 with / 1.00 without, `skill-did-not-fire`
+passing in every arm of every run (run `2026-09-21T04-03-19-502Z`). The one
+red this lexical-only port has produced — the description over-triggering
+on a task request that borrows its own vocabulary — was found on
+`no-trigger-explain-and-do` and then fixed; see B6.
 
 ## B6 — The trigger excludes task requests
 
@@ -327,9 +405,10 @@ explain as you go" rider.
 go unanswered by the skill.
 
 **Pinned by.** evals/no-trigger-task-ask/,
-evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/.
-This is a ruling with red evidence and no green evidence yet — half the
-proof, not the whole of it.
+evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/ —
+the last one is the case that actually stresses the boundary (see below).
+This entry now has both halves of its evidence, red and green, both from a
+Sonnet judge and both reproducible from the case directory.
 
 The 1-run Haiku pilot found no over-triggering on the two prompts that
 existed at the time — `skill-did-not-fire` passed in every arm of both
@@ -342,8 +421,9 @@ indexes — can you add one to this table and explain as you go?" —
 deliberately uses that vocabulary while still being a task request.
 
 It has now run: 3 runs, both arms, **Sonnet** as the judge, $0.78, 84
-seconds. The result is the red the spec predicted and the pilot couldn't
-produce — the trigger, as currently worded, is too broad:
+seconds (run `2026-09-21T01-18-12-741Z`). The result is the red the spec
+predicted and the pilot couldn't produce — the trigger, as currently
+worded, is too broad:
 
 ```
 no-trigger-explain-and-do   with 0.00   without 1.00   Δ -1.00   (6 runs)
@@ -362,9 +442,16 @@ calibrated: it passes a good direct answer and fails a lesson takeover.
 harm, not benefit.
 
 **The green after.** The `description` was then narrowed additively in
-`cccb571` — two "Not for…" clauses, the skill body untouched — and the same
-case was re-run as part of the full 9-case suite (3 runs, both arms, Sonnet
-judge, $8.38 for the suite, 596 seconds):
+`cccb571` — two "Not for…" clauses, the skill body untouched — and the case
+went green when the full 9-case suite ran (run `2026-09-21T02-09-29-432Z`,
+3 runs per arm, Sonnet judge, $8.38, 596 seconds). The numbers quoted below
+are from a later, stronger run of the same three trigger cases (run
+`2026-09-21T04-03-19-502Z`, 3 runs per arm, Sonnet judge, $1.91, 217
+seconds), and they are the ones to cite, for a reason that matters: by then
+the description had been cut from 140 words to 87 in `c344426`, which
+removed a worked example that had been close to word-for-word the prompt of
+this very case. The first green could have been the model pattern-matching
+the example; this one cannot be, so it shows the rule generalising.
 
 ```
 no-trigger-explain-and-do   with 1.00   without 1.00   Δ 0.00   (6 runs)
@@ -379,10 +466,15 @@ gets done and explained in place in every run of both arms. Δ −1.00 → 0.00.
 This entry has both halves of its evidence, each from a Sonnet judge, and
 neither was invented.
 
-**What it cost.** The same narrowing stopped the skill firing on the
-`closing` case — 1/1 before, 0/3 after. See the Open table; that is not yet
-settled, and this entry should be read alongside it rather than as an
-unqualified win.
+**What it cost.** Nothing measured, as it turns out. An earlier version of
+this entry blamed the `closing` case's 0/3 firing rate on this narrowing —
+that conclusion rested on a single pilot run and was wrong. The settled
+diagnosis (see D9 and Open): `closing`'s prompt stated the lesson was over
+and requested nothing, and every trigger this description names is
+request-shaped, so nothing in the prompt matched, with or without the
+narrowing. Rewriting the prompt to actually ask for the recap (`977aa3b`)
+fires the skill 3/3 with no skill named and no baseline contamination. This
+narrowing did not cost `closing` its trigger.
 
 ## B7 — "Read the code first" ships unpinned
 
@@ -411,14 +503,31 @@ on a stronger, pricier model.
 deliberately deferred to the run that counts rather than spent on the
 pilot.
 
-**Pinned by.** Every `llm` grader in the suite. The pilot itself is the
-evidence for this decision: of its reds, eight were judge-quality misses —
-a small judge missing behaviour that triage confirmed was actually correct
-— against two rubrics that were genuinely testing the model rather than
-the plugin, and one rubric that was genuinely too literal. A judge that
-misses correct behaviour nearly as often as it catches real problems is
-not a judge to trust for the run whose verdict decides anything; that is
-why `--judge-model sonnet` is reserved for the run that counts.
+**Pinned by.** The pilot-vs-Sonnet comparison below, grader by grader,
+checked against each grader's current text on disk
+(`evals/*/graders/*.md`, or inline in `case.yaml`):
+
+| case/grader | Haiku pilot | Sonnet (current) | verdict |
+|---|---|---|---|
+| first-step/check-requires-using-the-idea | F | PPP | clean judge miss, resolved |
+| first-step/one-picture-or-one-example | F | PPP | clean judge miss, resolved |
+| first-step/prose-under-150-words | F | FPF | not a judge miss — still fails 2 of 3 |
+| next-means-one-step/step-three-not-a-dump | F | PPP | clean judge miss, resolved |
+| next-means-one-step/advances-without-commentary | F | PPP | confounded — rubric rewritten in `0aad611` |
+| shaky-reasoning-rechecks/rechecks-before-moving-on | F | PPP | clean judge miss, resolved |
+| shaky-reasoning-rechecks/does-not-simply-congratulate | F | PPP | confounded — rubric rewritten in `7aa7414` |
+| wrong-answer-reteaches/issues-a-fresh-check | F | PPP | clean judge miss, resolved |
+
+Five of these are clean judge misses that resolve under Sonnet; one
+(`prose-under-150-words`, see D5) does not resolve — it still fails 2 of 3
+with-arm runs under the stronger judge; two are confounded, because their
+rubrics were rewritten between the pilot and the Sonnet run, so their
+movement can't be attributed to the judge alone. That's five of eight
+clean resolutions, not eight — an earlier tally of "eight judge-quality
+misses" lived only in a gitignored controller ledger and can't be checked
+from this repo. The decision itself still holds: a better judge changed
+most of these verdicts, which is why `--judge-model sonnet` is reserved
+for the run that counts.
 
 ---
 
@@ -428,8 +537,9 @@ why `--judge-model sonnet` is reserved for the run that counts.
 |---|---|---|
 | A ninth eval case for "read the code before step 1" (B7) | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred | A later pass, if a run suggests the rule drifts |
 | Part 1 of this log | The rationale is reconstructed, not authored | The author's review pass |
-| Closing-step brevity: the "what will bite you" note | In the pilot, `closing`'s recap was compliant but the gotcha note ran to about four paragraphs of fresh teaching, on a 1-run Haiku pilot | A refinement pass the author has already accepted ("we'll make the closing more brief") |
-| The `Pinned by` lines still cite the Haiku pilot | The full 9-case suite has now run on a Sonnet judge (54 sessions, 596s, $8.38, mean Δ +0.25) and it moved most numbers — `first-step` +0.50 → +0.89, `shaky-reasoning-rechecks` +0.25 → +0.50, `wrong-answer-reteaches` +0.25 → +0.33 — confirming those were judge-quality misses, not rule failures. The entries below still quote the pilot | Re-pinning all 18 entries to the Sonnet run, once the `closing` question is settled so it is done in one pass |
-| `closing` lost its trigger to the B6 narrowing | In the pilot the skill fired on `closing` (1/1); after `cccb571` it fires 0/3, so that case's with-arm is an unwitting second without-arm and its Δ 0.00 measures nothing. `skill-fired` is a deterministic `tool_used` grader, so the judge model plays no part in the comparison. It may be an artefact rather than a defect: the case asks the skill to fire *cold* from a prompt that states the lesson is over, which in a real conversation never happens, because the skill has been in context since turn 1 | The B2 hand-check, which distinguishes the two. If the skill closes correctly in a real conversation, the fix belongs in the case — `closing` is the one case where `context.history_file` beats inline restated context, since collapsing to the `with` arm costs a Δ that is already meaningless. If it does not, the description needs a third pass |
+| Closing-step brevity: the "what will bite you" note | Under the current Sonnet run (`2026-09-21T16-46-23-241Z`), no grader in the suite checks this anymore — `recap-is-one-item-per-step` was rescoped in `07fe734` to judge only the recap, not the gotcha note, so the pilot's finding (the note running to about four paragraphs of fresh teaching) hasn't been re-tested since | A refinement pass the author has already accepted ("we'll make the closing more brief"), and a grader that checks the gotcha note's length now that none does |
+| `closing`'s `causal-chain` grader discriminates only weakly | `FFP` with / `FFF` without on the current Sonnet run — it fails two of three with-arm runs too, so it's marginal evidence rather than a settled discriminator | More runs, or a rubric pass on `causal-chain` if it doesn't strengthen |
+| "Ask one, not a quiz" — whether the calibration rule is right | `opening/calibration-is-one-ask` is `PPF` on the current run and was failing 3/3 under the grader it replaced: the skill regularly asks its two named example questions ("what prompted this?" *and* "how much of X do you already work with?") rather than one. Combining the two most recent runs, 4 of 6 with-arm replies raise a second topic. The rule is stated in the skill and lands about a third of the time. This is the one place an eval has found a skill-compliance gap rather than a grader bug | The author deciding which way it goes: make the rule bite harder, or accept that motivation-plus-level in one compact breath is good calibration rather than a quiz |
+| `first-step/prose-under-150-words` is unsettled on two axes at once | It fails 2 of 3 with-arm runs under Sonnet and is the sole reason `first-step` scores 0.89 rather than 1.00 — but the run that PASSED had a longer total reply than the two that failed, which says the grader's word count is not stable. So the rule may not be landing *and* the instrument may not be able to tell. See D5 | Either a grader that counts deterministically rather than asking a judge to do arithmetic on a filtered slice of the message, or an author ruling that 150 words is the wrong budget |
 | The B2 resumed-session hand-check | Planned as a one-off comparison against a genuinely resumed session; not yet performed | Running it and recording the verdict in B2 |
 | Verifying the install on the published path | The personal copy at `~/.claude/skills/what-the-heck/` has been deleted and the plugin installs cleanly from a local-path marketplace, but `origin/main` still holds only `LICENSE`, so the spec's `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install |
