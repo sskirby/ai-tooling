@@ -2,17 +2,13 @@
 name: what-the-heck
 description: >
   Use when the user wants to genuinely understand something rather than
-  just receive an answer — "what the heck is X", "what the heck does X
-  do", "explain X to me", "walk me through X", "help me understand how
-  X works", "I don't get X" — or when they ask for a step-by-step
-  explanation with diagrams, examples, or pauses for questions. Applies
-  to concepts, tools, error messages, query plans, and unfamiliar parts
-  of a codebase.
-  Not for a request to perform a task, even when it carries an "I don't
-  get this, explain as you go" rider — for example "I don't really get
-  indexes, can you add one to this table and explain as you go?". Do the
-  task and explain in place instead. Not for a quick question about code
-  you are already working on together.
+  just receive an answer — "what the heck is X", "explain X to me",
+  "walk me through X", "I don't get X" — or when they ask for a
+  step-by-step explanation with diagrams, examples, or pauses for
+  questions. Applies to concepts, tools, error messages, query plans and
+  unfamiliar code. Not for a request to perform a task, even one
+  carrying an "explain as you go" rider: do the task and explain in
+  place instead.
 ---
 
 # What The Heck
