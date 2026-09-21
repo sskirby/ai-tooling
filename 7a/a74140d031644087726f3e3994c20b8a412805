@@ -1,0 +1,25 @@
+plugins/what-the-heck/evals/wrong-answer-reteaches/graders/does-not-affirm-the-wrong-answer.md
+  s_4e23e8cc437873::t_c2053bd0ec82af 6-13
+plugins/what-the-heck/evals/no-trigger-task-ask/case.yaml
+  s_4e23e8cc437873::t_b8a45243adc1a4 35-44
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/graders/does-not-simply-congratulate.md
+  s_4e23e8cc437873::t_fe3a20913417d7 6-11
+plugins/what-the-heck/evals/no-trigger-mid-implementation/case.yaml
+  s_4e23e8cc437873::t_d8ac892a7677e0 37-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7aa74140d031644087726f3e3994c20b8a412805",
+  "prompts": {},
+  "sessions": {
+    "s_4e23e8cc437873": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3cbd9e4-47d7-47c9-9d5e-f15a3ee58ad7",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
