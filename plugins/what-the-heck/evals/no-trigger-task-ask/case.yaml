@@ -5,6 +5,7 @@ description: >
   fire on it, and no lesson is offered.
 tags: [trigger]
 execution:
+  model: claude-opus-5-5
   prompt: |
     how do I add an index to this table?
 

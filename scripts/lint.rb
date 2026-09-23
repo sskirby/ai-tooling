@@ -152,6 +152,7 @@ module Lint
       prompt_path = File.join(dir, "prompt.md")
       spec = nil
       prompt_body = nil
+      model = nil
       graders = []
 
       if File.file?(yaml_path)
@@ -164,7 +165,10 @@ module Lint
         err(yaml_path, "missing a non-empty \"name\"") unless spec["name"].is_a?(String) && !spec["name"].empty?
         exec = spec["execution"]
         err(yaml_path, "missing \"execution\"") unless exec.is_a?(Hash)
-        prompt_body = exec["prompt"] if exec.is_a?(Hash)
+        if exec.is_a?(Hash)
+          prompt_body = exec["prompt"]
+          model = exec["model"]
+        end
         if spec["graders"].is_a?(Array)
           spec["graders"].each_with_index do |g, i|
             unless g.is_a?(Hash)
@@ -186,6 +190,13 @@ module Lint
           err(prompt_path, "unknown frontmatter key #{key.inspect}") unless PROMPT_KEYS.include?(key.to_s)
         end
         prompt_body = body
+        model ||= fm["model"]
+      end
+
+      # Unpinned, the session model is whatever the user's default alias
+      # resolves to in the installed CLI, which can change between two runs.
+      unless model.is_a?(String) && !model.strip.empty?
+        err(dir, "pins no model — set model: in prompt.md or execution.model in case.yaml")
       end
 
       if prompt_body.nil? || prompt_body.to_s.strip.empty?

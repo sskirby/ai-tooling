@@ -6,6 +6,7 @@ description: >
   and explained in place.
 tags: [trigger]
 execution:
+  model: claude-opus-5-5
   prompt: |
     I don't really get indexes — can you add one to this table and explain
     as you go?
