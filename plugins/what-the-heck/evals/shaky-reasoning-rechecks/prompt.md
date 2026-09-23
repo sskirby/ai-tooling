@@ -15,3 +15,5 @@ My answer: it gets pushed down into the CTE, so it runs earlier. That's
 because Postgres rewrites the whole query into one flat statement before
 planning it, so by the time the planner sees it there's no CTE left at all —
 it's just text substitution.
+
+Is that right?
