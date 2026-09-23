@@ -41,10 +41,16 @@ only; the suite itself is a command a human runs before merging, because a full
 run costs real money on a live credential:
 
 ```
-claude plugin eval ./plugins/what-the-heck --max-cost-usd 15
+claude plugin eval ./plugins/what-the-heck --ablation with-without \
+  --judge-model claude-opus-5-5 --max-cost-usd 25
 ```
 
 The headline number is Δ — the with-plugin score minus the without-plugin score.
+
+Pass the judge as a full model ID, not an alias. Leave the flag off and the
+LLM graders run on Haiku; pass `opus` or `sonnet` and the model behind the
+alias changes whenever the CLI does. The model under test is pinned in each
+case for the same reason, and the linter refuses a case that does not pin one.
 
 ## License
 
