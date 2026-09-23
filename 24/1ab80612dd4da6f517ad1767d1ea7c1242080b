@@ -1,0 +1,21 @@
+.github/workflows/eval.yml
+  s_9d96aa5a066457::t_3086fae0466c10 3,10,16,34,36
+README.md
+  s_9d96aa5a066457::t_8480294ace7bf1 44-45,50-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "241ab80612dd4da6f517ad1767d1ea7c1242080b",
+  "prompts": {},
+  "sessions": {
+    "s_9d96aa5a066457": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd59c4d3-b82c-43ad-aa14-48f642c063b4",
+        "model": "unknown"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
