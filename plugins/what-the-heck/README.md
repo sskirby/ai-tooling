@@ -27,21 +27,29 @@ score / delta:
 
 | case | with | without | Δ | run |
 |---|---|---|---|---|
-| first-step | 0.89 | 0.00 | +0.89 | `2026-09-21T05-20-55-941Z` |
 | opening | 1.00 | 0.25 | +0.75 | `2026-09-21T20-05-06-263Z` |
+| first-step | 0.89 | 0.17 | +0.72 | `2026-09-21T23-22-40-831Z` |
 | next-means-one-step | 1.00 | 0.33 | +0.67 | `2026-09-21T04-58-08-088Z` |
-| closing | 0.83 | 0.25 | +0.58 | `2026-09-21T16-46-23-241Z` |
-| wrong-answer-reteaches | 0.92 | 0.50 | +0.42 | `2026-09-21T16-47-57-966Z` |
 | shaky-reasoning-rechecks | 1.00 | 0.58 | +0.42 | `2026-09-21T16-49-53-988Z` |
+| closing | 1.00 | 0.60 | +0.40 | `2026-09-21T22-59-26-829Z` |
+| wrong-answer-reteaches | 1.00 | 0.67 | +0.33 | `2026-09-21T23-25-50-940Z` |
 | no-trigger-explain-and-do | 1.00 | 1.00 | 0.00 | `2026-09-21T04-03-19-502Z` |
 | no-trigger-mid-implementation | 1.00 | 1.00 | 0.00 | `2026-09-21T04-03-19-502Z` |
 | no-trigger-task-ask | 1.00 | 1.00 | 0.00 | `2026-09-21T04-03-19-502Z` |
 
-The mean delta is **+0.62 across the six teaching cases** and **+0.41
+The mean delta is **+0.55 across the six teaching cases** and **+0.37
 across all nine**. Always say which population a mean covers: the three
 `no-trigger-*` cases score a correct 0.00 by design — the skill must not
 fire on those prompts and it does not — so averaging them in drags the
 figure down for a reason that is a pass, not a failure.
+
+Those means used to be higher, and the reason they fell is worth stating
+whenever they are quoted. Five of the six teaching cases now score a
+with-arm of exactly 1.00, and the sixth loses a single grader. Nothing got
+worse; the baselines got better, because several rubrics that had been
+failing perfectly good baseline replies were relaxed once the author ruled
+on them (D6 especially). A smaller honest delta is worth more than a
+larger one resting on checks that punish good teaching in both arms.
 
 Keep a proportionate amount of caution anyway: the measured run-to-run
 noise floor on a 3-run case is about ±0.20 (see `977aa3b`, where a closing
@@ -128,10 +136,8 @@ one thing they cannot do.
 find it slow; `next` is the escape hatch (see D7).
 
 **Pinned by.** evals/first-step/ (check-requires-using-the-idea), run
-`2026-09-21T05-20-55-941Z` (3 runs/arm, Sonnet judge): `PPP` with / `FFF`
-without — a clean discriminator. This grader was one of the Haiku pilot's
-judge-quality misses (Haiku scored it `F`); the Sonnet re-run resolves it
-as landing behaviour, not a judge artefact.
+`2026-09-21T23-22-40-831Z` (3 runs/arm, Sonnet judge): `PPP` with / `FFF`
+without — a clean discriminator, and one of the strongest in the suite.
 
 ## D5 — 150 words of prose, hard budget
 
@@ -142,33 +148,66 @@ that's exactly how two ideas end up stacked into one step.
 
 **Cost.** Some ideas that felt like one step have to split into two.
 
-**Pinned by.** evals/first-step/ (prose-under-150-words), run
-`2026-09-21T05-20-55-941Z` (3 runs/arm, Sonnet judge): `FPF` with / `FFF`
-without. Two things are true at once here, and neither should be flattened
-into the other. The rule is not reliably landing: it fails 2 of 3 with-arm
-runs under a stronger judge, and it's the sole reason first-step scores
-0.89 rather than 1.00. But it does discriminate — the without-arm fails
-3/3 too, so the check is measuring something the baseline doesn't do.
-Complicating both readings: the run that PASSED had a *longer* total reply
-than the two that failed, which is evidence the grader is doing arithmetic
-on a filtered slice of the text rather than a stable count — a shaky
-instrument, not just an unsettled rule. Pin this as unsettled on both
-counts; it is neither vindicated nor broken yet.
+**Pinned by.** evals/first-step/ (step-prose-stays-tight), run
+`2026-09-21T23-22-40-831Z` (3 runs/arm, Sonnet judge): `FPF` with / `FFF`
+without. It discriminates — the baseline fails 3/3 — and it is the only
+grader anywhere in the suite that still fails in a with-arm, so it is the
+sole reason first-step scores 0.89 rather than 1.00.
 
-## D6 — One picture or one example, never both
+**This rule does not land, and the evidence is not marginal.** Counting
+the step's prose in that run with fenced blocks and headings excluded, the
+three with-arm replies ran 208, 203 and 236 words against a stated budget
+of 150 — over every time, by 35% to 57%. The step is not occasionally
+long; it has never once been inside the budget.
 
-**Decision.** Each step carries exactly one picture or one worked example
-— not both, not three.
+The grader cannot cleanly report that, which is a separate problem. Its
+predecessor, `prose-under-150-words`, asked a judge to count words over a
+filtered slice of a message and could not do it reliably — the reply it
+passed was longer than the two it failed. This one judges tightness with
+the budget named as a target, which removes the arithmetic but replaces it
+with an undefined allowance: at 203 words it passes and at 208 it fails,
+and both replies read equally cleanly. Within that band the verdict is
+close to arbitrary.
 
-**Rejected.** Using both, which reads as thorough but doubles what the
-reader has to hold in their head at once.
+So: the rule as written in the skill is not being followed, and the check
+as written cannot say by how much. Both need the author. See Open.
 
-**Cost.** Sometimes the weaker of two good illustrations has to be cut.
+## D6 — Illustrate the step, without crowding it
 
-**Pinned by.** evals/first-step/ (one-picture-or-one-example), run
-`2026-09-21T05-20-55-941Z` (3 runs/arm, Sonnet judge): `PPP` with / `FFF`
-without — a clean discriminator. Also one of the pilot's judge-quality
-misses (Haiku scored it `F`); Sonnet resolves it as landing behaviour.
+**Decision.** Each step shows its idea rather than only asserting it — a
+diagram, a worked example with concrete values, or an analogy. More than
+one is fine where they help; what is not fine is illustration that crowds
+the step.
+
+**Superseded.** This entry originally read "exactly one picture or one
+worked example — not both, not three," and was pinned to a grader that
+enforced it. The author has since relaxed the rule: more examples and
+diagrams are welcome as long as readability does not suffer.
+
+**Rejected.** The strict one-or-the-other form above, and at the other
+extreme a step with nothing to look at.
+
+**Cost.** "Crowding" is a judgement rather than a count, so this check can
+no longer be decided mechanically.
+
+**⚠ Skill and check disagree, deliberately.** `SKILL.md:60` still reads
+"**Exactly one picture or one worked example.** Not both, not three." The
+skill body is the author's to change and has not been changed; the grader
+has. Until the refinement pass reconciles them, this entry describes the
+author's ruling and the skill states the older rule.
+
+**Pinned by.** evals/first-step/ (illustration-without-clutter), run
+`2026-09-21T23-22-40-831Z` (3 runs/arm, Sonnet judge): `PPP` with / `PPP`
+without. It passes in both arms — it shows the skill illustrates its
+steps, not that the baseline fails to.
+
+What the relaxation cost is worth recording, because it is easy to
+misread. The strict grader was a clean `PPP`/`FFF` discriminator, but it
+discriminated by catching the *baseline* breaking a stylistic rule: bare
+Claude supplies a diagram **and** a worked example. So first-step's
+previously perfect 0.00 baseline was partly rule-compliance rather than
+teaching quality, and relaxing the rule moved that arm from 0.00 to 0.17.
+The delta got smaller and more honest at the same time.
 
 ## D7 — `next` means one step, no commentary
 
@@ -182,7 +221,7 @@ use.
 make, not the skill's to prevent.
 
 **Pinned by.** evals/first-step/ (escape-hatch-present), run
-`2026-09-21T05-20-55-941Z`: `PPP` with / `FFF` without — a clean
+`2026-09-21T23-22-40-831Z`: `PPP` with / `FFF` without — a clean
 discriminator. evals/next-means-one-step/ (escape-hatch-present,
 exactly-one-step, advances-without-commentary, step-three-not-a-dump), run
 `2026-09-21T04-58-08-088Z` (3 runs/arm, Sonnet judge):
@@ -210,14 +249,23 @@ the misunderstanding surfaces at step 2, not step 6.
 
 **Pinned by.** evals/wrong-answer-reteaches/ (does-not-advance,
 does-not-affirm-the-wrong-answer, issues-a-fresh-check,
-reteaches-from-a-new-angle), run `2026-09-21T16-47-57-966Z` (3 runs/arm,
-Sonnet judge): `does-not-advance` `PPP` with / `FFF` without —
-discriminates. `does-not-affirm-the-wrong-answer` `PPP` with / `PPP`
-without and `issues-a-fresh-check` `PPP` with / `PPP` without both pass in
-both arms: they show the skill does this, not that the skill does it and
-the baseline doesn't. `reteaches-from-a-new-angle` `FPP` with / `FFF`
-without — discriminates, though one with-arm run itself failed to reteach
-from a new angle.
+reteaches-from-a-new-angle), run `2026-09-21T23-25-50-940Z` (3 runs/arm,
+Sonnet judge), with-arm a clean 1.00: `does-not-advance` `PPP` with /
+`FFF` without — discriminates. `does-not-affirm-the-wrong-answer` `PPP`
+with / `PPP` without and `issues-a-fresh-check` `PPP` with / `PPP` without
+both pass in both arms: they show the skill does this, not that the skill
+does it and the baseline doesn't. `reteaches-from-a-new-angle` `PPP` with
+/ `PPF` without — discriminates, weakly.
+
+`reteaches-from-a-new-angle` failed exactly one with-arm run in three
+across every earlier run of this case, under two different rubrics, and
+the cause turned out to be the case rather than the rule. The grader asked
+whether the reply approached the idea differently from *the earlier
+explanation* — and the prompt never contained the earlier explanation,
+only a one-sentence summary of what it claimed. The judge had nothing to
+compare against. The prompt now quotes the teacher's step 2 in full,
+diagram included, and the grader names that quoted text as its reference;
+the with-arm went to `PPP` in one pass.
 
 evals/shaky-reasoning-rechecks/ (does-not-advance,
 does-not-simply-congratulate, names-the-specific-gap,
@@ -249,16 +297,23 @@ fact, not a chain.
 a pile of facts.
 
 **Pinned by.** evals/closing/ (names-the-gotcha, recap-is-one-item-per-step,
-causal-chain, no-further-check), run `2026-09-21T16-46-23-241Z` (3
-runs/arm, Sonnet judge) — the first trustworthy run of this case, reached
-only after five prompt rewrites just to get the skill to fire at all (see
-B6 and Open). closing: 0.83 with / 0.25 without.
+recap-is-easy-to-scan, causal-chain, no-further-check), run
+`2026-09-21T22-59-26-829Z` (3 runs/arm, Sonnet judge) — this case reached
+a trustworthy state only after five prompt rewrites just to get the skill
+to fire at all (see B6 and Open). closing: 1.00 with / 0.60 without, every
+scored grader passing in the with-arm.
 
-`names-the-gotcha`: `PPP` with / `FFF` without — discriminates cleanly.
+`names-the-gotcha`: `PPP` with / `PPF` without — discriminates, though the
+baseline landed it 2 of 3 this run after failing 3/3 in the previous one;
+it is a variable grader and should not be quoted from a single run.
 `recap-is-one-item-per-step`: `PPP` with / `FFP` without — discriminates.
-`causal-chain`: `FFP` with / `FFF` without — weak; it fails two of three
-with-arm runs too, so treat it as marginal evidence at best.
-`no-further-check`: `PPP` with / `PPF` without — discriminates, weakly (the
+`recap-is-easy-to-scan`: `PPP` with / `FFP` without — discriminates. This
+grader is new: it carries the recap's length and readability requirement,
+which used to be buried in `causal-chain` where it did real damage (see
+below). `causal-chain`: `PPP` with / `PPP` without — passes in both arms.
+It is kept deliberately as a regression guard on the causal thread rather
+than as a discriminator, by the author's decision.
+`no-further-check`: `PPP` with / `FPP` without — discriminates, weakly (the
 baseline avoids a redundant check in 2 of 3 runs anyway).
 
 The grader that graded this decision at pilot time,
@@ -272,6 +327,19 @@ recap (not the surrounding correction or gotcha note) in `07fe734`. It now
 asks for one item per step, allows an item to run to a sentence or two, and
 allows a closing sentence tying the chain together. The score above is
 under that rewritten grader.
+
+`causal-chain` carried the same disease, undetected, for longer. Its
+criteria opened by asking for "a chain of about five lines, one per step,"
+and that line count — not the causal thread the grader is named for — was
+what the judge acted on. Two with-arm replies that were each five numbered
+items, in taught order, each following from the one before, came back FAIL
+and PASS. It now judges the thread alone, scoped to the recap, and the
+length requirement lives in `recap-is-easy-to-scan` where it can be stated
+generously. The cost of that split is visible above: with the line framing
+gone, `causal-chain` passes in both arms, because the baseline's recap is
+an ordered chain too. The line count was the only thing that ever made it
+look like a discriminator, and it bought that appearance by failing good
+replies two times in three.
 
 ## D10 — Real names, real code
 
@@ -334,8 +402,17 @@ currently rests on the design argument above, not on a checked comparison.
 evals/wrong-answer-reteaches/, evals/next-means-one-step/,
 evals/shaky-reasoning-rechecks/ — every multi-turn case in the suite. Each
 one's freshest 3-run Sonnet score, and the discrimination caveats that go
-with it, are given under its own Part 1 entry (D4–D9); read those before
-trusting any individual number.
+with it, are given under its own Part 1 entry (D4–D9), and the per-case
+table in the Evidence note names the run each one is pinned to. Read those
+before trusting any individual number.
+
+One result belongs here rather than only under D8. The restated-context
+design failed in a way worth recording: `wrong-answer-reteaches` restated
+step 2's *claim* in a sentence, and a grader asking whether the reply
+re-taught it differently had no earlier explanation to compare against.
+Quoting the step in full fixed it. Inline restated context works, but it
+has to restate what a grader actually needs to see, not just what the
+learner needs to know.
 
 ## B3 — Hybrid case packaging
 
@@ -510,8 +587,8 @@ checked against each grader's current text on disk
 | case/grader | Haiku pilot | Sonnet (current) | verdict |
 |---|---|---|---|
 | first-step/check-requires-using-the-idea | F | PPP | clean judge miss, resolved |
-| first-step/one-picture-or-one-example | F | PPP | clean judge miss, resolved |
-| first-step/prose-under-150-words | F | FPF | not a judge miss — still fails 2 of 3 |
+| first-step/one-picture-or-one-example | F | PPP | clean judge miss, resolved. Rule since relaxed; grader replaced by `illustration-without-clutter`, see D6 |
+| first-step/prose-under-150-words | F | FPF | not a judge miss — still fails 2 of 3. Since rewritten and renamed `step-prose-stays-tight`; see D5 |
 | next-means-one-step/step-three-not-a-dump | F | PPP | clean judge miss, resolved |
 | next-means-one-step/advances-without-commentary | F | PPP | confounded — rubric rewritten in `0aad611` |
 | shaky-reasoning-rechecks/rechecks-before-moving-on | F | PPP | clean judge miss, resolved |
@@ -519,8 +596,9 @@ checked against each grader's current text on disk
 | wrong-answer-reteaches/issues-a-fresh-check | F | PPP | clean judge miss, resolved |
 
 Five of these are clean judge misses that resolve under Sonnet; one
-(`prose-under-150-words`, see D5) does not resolve — it still fails 2 of 3
-with-arm runs under the stronger judge; two are confounded, because their
+(`prose-under-150-words`, since renamed `step-prose-stays-tight` — see D5)
+does not resolve; it still fails 2 of 3 with-arm runs under the stronger
+judge; two are confounded, because their
 rubrics were rewritten between the pilot and the Sonnet run, so their
 movement can't be attributed to the judge alone. That's five of eight
 clean resolutions, not eight — an earlier tally of "eight judge-quality
@@ -537,9 +615,10 @@ for the run that counts.
 |---|---|---|
 | A ninth eval case for "read the code before step 1" (B7) | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred | A later pass, if a run suggests the rule drifts |
 | Part 1 of this log | The rationale is reconstructed, not authored | The author's review pass |
-| Closing-step brevity: the "what will bite you" note | Under the current Sonnet run (`2026-09-21T16-46-23-241Z`), no grader in the suite checks this anymore — `recap-is-one-item-per-step` was rescoped in `07fe734` to judge only the recap, not the gotcha note, so the pilot's finding (the note running to about four paragraphs of fresh teaching) hasn't been re-tested since | A refinement pass the author has already accepted ("we'll make the closing more brief"), and a grader that checks the gotcha note's length now that none does |
-| `closing`'s `causal-chain` grader discriminates only weakly | `FFP` with / `FFF` without on the current Sonnet run — it fails two of three with-arm runs too, so it's marginal evidence rather than a settled discriminator | More runs, or a rubric pass on `causal-chain` if it doesn't strengthen |
+| Closing-step brevity: the "what will bite you" note | As of the current Sonnet run (`2026-09-21T22-59-26-829Z`), no grader in the suite checks this anymore — `recap-is-one-item-per-step` was rescoped in `07fe734` to judge only the recap, not the gotcha note, so the pilot's finding (the note running to about four paragraphs of fresh teaching) hasn't been re-tested since | A refinement pass the author has already accepted ("we'll make the closing more brief"), and a grader that checks the gotcha note's length now that none does |
+| Seven graders pass in both arms | `opening/answer-before-route`, `first-step/illustration-without-clutter`, `wrong-answer-reteaches/does-not-affirm-the-wrong-answer` and `issues-a-fresh-check`, `shaky-reasoning-rechecks/does-not-simply-congratulate` and `names-the-specific-gap`, `closing/causal-chain`. Each was checked by reading the baseline replies: bare Claude genuinely performs all of these. That is a finding about where the skill's value is not, rather than a defect — but it means those seven contribute nothing to any delta. Note the mechanism: the restated-context prompts (B2) hand the baseline an explicit teaching frame, so the without-arm is not a naive baseline | A decision per grader, not a sweep. Marking them `arm: with-only` would lift the deltas substantially and would be dishonest, since it works by hiding that the baseline is good. Keeping them scored is the current call |
 | "Ask one, not a quiz" — whether the calibration rule is right | `opening/calibration-is-one-ask` is `PPF` on the current run and was failing 3/3 under the grader it replaced: the skill regularly asks its two named example questions ("what prompted this?" *and* "how much of X do you already work with?") rather than one. Combining the two most recent runs, 4 of 6 with-arm replies raise a second topic. The rule is stated in the skill and lands about a third of the time. This is the one place an eval has found a skill-compliance gap rather than a grader bug | The author deciding which way it goes: make the rule bite harder, or accept that motivation-plus-level in one compact breath is good calibration rather than a quiz |
-| `first-step/prose-under-150-words` is unsettled on two axes at once | It fails 2 of 3 with-arm runs under Sonnet and is the sole reason `first-step` scores 0.89 rather than 1.00 — but the run that PASSED had a longer total reply than the two that failed, which says the grader's word count is not stable. So the rule may not be landing *and* the instrument may not be able to tell. See D5 | Either a grader that counts deterministically rather than asking a judge to do arithmetic on a filtered slice of the message, or an author ruling that 150 words is the wrong budget |
+| The 150-word budget is not being kept, and the check cannot say by how much | `SKILL.md:59` states "≤150 words of prose. Hard budget." In run `2026-09-21T23-22-40-831Z` the three with-arm steps ran 208, 203 and 236 words of prose with fenced blocks and headings excluded — over every time, by 35% to 57%, never once inside. `step-prose-stays-tight` is the only grader left anywhere in the suite that fails in a with-arm, and it cannot report the size of the gap: it passed the 203-word reply and failed the 208-word one, and both read equally cleanly. See D5 | An author ruling on the budget — raise it to what good steps actually need, or keep 150 and treat the overrun as a skill defect — and then a check written to match whichever it is |
+| The skill says one illustration, the grader allows several | The author relaxed the rule (D6) but `SKILL.md:60` still reads "**Exactly one picture or one worked example.** Not both, not three." The skill body is the author's to change and has not been | The refinement pass, reconciling `SKILL.md:60` with D6 |
 | The B2 resumed-session hand-check | Planned as a one-off comparison against a genuinely resumed session; not yet performed | Running it and recording the verdict in B2 |
 | Verifying the install on the published path | The personal copy at `~/.claude/skills/what-the-heck/` has been deleted and the plugin installs cleanly from a local-path marketplace, but `origin/main` still holds only `LICENSE`, so the spec's `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install |
