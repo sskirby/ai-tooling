@@ -1,0 +1,23 @@
+plugins/what-the-heck/evals/closing/prompt.md
+  s_9d96aa5a066457::t_1c7bf2c480cad9 26
+plugins/what-the-heck/evals/shaky-reasoning-rechecks/prompt.md
+  s_9d96aa5a066457::t_d449a8d26da7b6 19
+plugins/what-the-heck/evals/wrong-answer-reteaches/prompt.md
+  s_9d96aa5a066457::t_c2c3021ec29c58 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "32959ce39aab96147f459a46c0566e65d1bb6d61",
+  "prompts": {},
+  "sessions": {
+    "s_9d96aa5a066457": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd59c4d3-b82c-43ad-aa14-48f642c063b4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
