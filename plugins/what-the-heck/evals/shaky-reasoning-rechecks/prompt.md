@@ -16,4 +16,4 @@ because Postgres rewrites the whole query into one flat statement before
 planning it, so by the time the planner sees it there's no CTE left at all —
 it's just text substitution.
 
-Is that right?
+Is that right? If I'm off anywhere, walk me through it.

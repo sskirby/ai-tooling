@@ -31,4 +31,4 @@ My answer: nothing, it can't reach inside. The CTE is a fence, so the filter
 has to wait until the CTE has produced all its rows, and then it runs over the
 result. That's why CTEs are slow.
 
-Is that right?
+Is that right? If not, walk me through where it goes wrong.

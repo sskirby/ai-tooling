@@ -23,4 +23,4 @@ aggregate that two later branches both read. I said the aggregate could run
 twice, so I'd materialise it or push it into a temp table if the plan shows
 the double scan.
 
-That was the last step. Can you give me the closing recap?
+That was the last step. Walk me through how the five steps fit together.
