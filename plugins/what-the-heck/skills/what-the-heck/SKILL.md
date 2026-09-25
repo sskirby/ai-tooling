@@ -45,8 +45,10 @@ Three parts, in this order, then stop:
    true. Never make them earn the answer by reading five steps.
 2. **The route** — a numbered list of 3–6 step titles. Each title is a claim, not a topic:
    "The policy is AND-ed onto every scan", not "Policy injection".
-3. **One calibration question** — the single thing whose answer most changes how you pitch this.
-   Usually "what prompted this?" or "how much of X do you already work with?". Ask one, not a quiz.
+3. **One calibration question: what prompted this?** Its answer tells you what is worth teaching,
+   and usually how much they already know. An either/or can make it easier to answer ("did you run
+   into this in someone else's code, or are you writing it yourself?"). Ask nothing else. If the
+   question already says why they're asking, ask how much of X they already work with instead.
    Then wait for the reply before starting step 1.
 
 ## Each step
