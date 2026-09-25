@@ -1,0 +1,19 @@
+plugins/what-the-heck/evals/closing/prompt.md
+  s_9d96aa5a066457::t_f5cb07c8a55216 19-21,24-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "00eb7b15f41d70da47e5b2151a93765437ebc2f9",
+  "prompts": {},
+  "sessions": {
+    "s_9d96aa5a066457": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd59c4d3-b82c-43ad-aa14-48f642c063b4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
