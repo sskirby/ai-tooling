@@ -3,12 +3,10 @@ name: what-the-heck
 description: >
   Use when the user wants to genuinely understand something rather than
   just receive an answer — "what the heck is X", "explain X to me",
-  "walk me through X", "I don't get X" — or when they ask for a
-  step-by-step explanation with diagrams, examples, or pauses for
-  questions. Applies to concepts, tools, error messages, query plans and
-  unfamiliar code. Not for a request to perform a task, even one
-  carrying an "explain as you go" rider: do the task and explain in
-  place instead.
+  "walk me through X", "I don't get X". Applies to concepts, tools, error
+  messages, query plans and unfamiliar code. Not for a request to perform
+  a task, even one carrying an "explain as you go" rider: do the task and
+  explain in place instead.
 ---
 
 # What The Heck
