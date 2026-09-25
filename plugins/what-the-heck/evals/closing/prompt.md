@@ -6,7 +6,7 @@ timeout_seconds: 300
 allowed_tools: [Skill]
 ---
 
-Earlier in this conversation I asked you "what the heck is a CTE?". You've
+/what-the-heck:what-the-heck Earlier in this conversation I asked you "what the heck is a CTE?". You've
 been teaching me how the planner handles them, in five steps:
 
 1. A CTE is a named subquery the rest of the statement can refer to by name.
