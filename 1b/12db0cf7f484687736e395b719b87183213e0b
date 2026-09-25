@@ -1,0 +1,19 @@
+plugins/what-the-heck/evals/first-step/prompt.md
+  s_9d96aa5a066457::t_280f9cba88177b 9-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1b12db0cf7f484687736e395b719b87183213e0b",
+  "prompts": {},
+  "sessions": {
+    "s_9d96aa5a066457": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd59c4d3-b82c-43ad-aa14-48f642c063b4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
