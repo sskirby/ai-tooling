@@ -16,11 +16,14 @@ been teaching me how the planner handles them, in five steps:
    down into it and run earlier.
 4. MATERIALIZED, recursive and side-effecting CTEs are kept separate, and a
    filter cannot be pushed into those.
-5. A CTE referenced twice can be evaluated twice.
+5. A CTE referenced more than once is materialised by default: its body
+   runs once and the result is shared, but no outer filter can be pushed
+   into it.
 
 For step 5 you asked me what that means for a CTE wrapping an expensive
-aggregate that two later branches both read. I said the aggregate could run
-twice, so I'd materialise it or push it into a temp table if the plan shows
-the double scan.
+aggregate that two later branches both read. I said the aggregate runs once
+and both branches share it, but neither branch's filter can reach inside, so
+if each branch only needs a small slice I'd try NOT MATERIALIZED and compare
+the plans.
 
 That was the last step. Walk me through how the five steps fit together.
