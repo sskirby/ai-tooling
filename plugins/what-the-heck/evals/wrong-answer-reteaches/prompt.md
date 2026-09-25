@@ -6,7 +6,8 @@ timeout_seconds: 300
 allowed_tools: [Skill]
 ---
 
-You're teaching me how the planner handles CTEs, in five steps. Here is step
+Earlier in this conversation I asked you "what the heck is a CTE?". You're
+teaching me how the planner handles CTEs, in five steps. Here is step
 2 of 5, exactly as you gave it to me:
 
 > ## Step 2 of 5 — Postgres 12 stopped running the CTE first
