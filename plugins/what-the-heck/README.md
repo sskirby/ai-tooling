@@ -252,9 +252,10 @@ sampled transcript. The restated context quotes what a grader needs to
 compare against — the earlier route, the earlier explanation — not just a
 summary of it.
 
-**Rejected.** Resumed-session fixtures. The harness forces any case with
-`context.history_file` into the `with` arm alone, which deletes the
-ablation delta on exactly the cases that need it most. A sampled
+**Rejected.** Resumed-session fixtures. A replayed transcript that
+includes the turn-1 skill load hands the skill text to the baseline arm
+too, so it cannot give an ablation delta on exactly the cases that need
+it most; the CLI runs such cases single-arm by default. A sampled
 transcript also runs to roughly 900 KB and carries account IDs, `cwd` and
 `gitBranch`, all needing scrubbing on every regeneration.
 
@@ -372,6 +373,11 @@ that test triggering (`opening`, `first-step`, `first-step-route-fits`,
 the three `no-trigger-*` cases) and cases that test behaviour once loaded.
 The without arm receives the command as plain text and says it isn't
 installed; `advances-without-commentary` is told to ignore that line.
+Slash loading is not the same as the skill loading itself: the whole
+prompt becomes the skill's `ARGUMENTS`, and on `first-step-route-fits`
+that dropped `keeps-the-route` from 19/20 to 11/20. These four cases
+measure a close relative of real use, not real use itself; issue #2
+tracks a faithful replacement.
 
 **Pinned by.** A canary check, reproducible and not committed: a throwaway
 copy of the plugin whose `SKILL.md` body tells the model to end every
