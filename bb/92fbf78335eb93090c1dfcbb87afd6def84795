@@ -1,0 +1,23 @@
+plugins/what-the-heck/evals/first-step-route-fits/graders/route-not-repeated.md
+  s_5da01cc4c76ea7::t_b578a423bd81d6 1-11
+plugins/what-the-heck/evals/first-step-route-fits/graders/keeps-the-route.md
+  s_5da01cc4c76ea7::t_b578a423bd81d6 6,8-16,18-20,22-26
+plugins/what-the-heck/evals/first-step-route-fits/prompt.md
+  s_5da01cc4c76ea7::t_b578a423bd81d6 33-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bb92fbf78335eb93090c1dfcbb87afd6def84795",
+  "prompts": {},
+  "sessions": {
+    "s_5da01cc4c76ea7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8e664982-3816-45fd-a541-7f9755f7324a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
