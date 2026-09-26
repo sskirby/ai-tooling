@@ -1,0 +1,44 @@
+name: eval
+
+# By hand only. A full run is 54 child sessions on a live credential, forks
+# get no secrets, and LLM graders are probabilistic — none of that belongs in
+# a required check. See plugins/what-the-heck/README.md, decision B4.
+on:
+  workflow_dispatch:
+    inputs:
+      case:
+        description: "Case name glob (blank runs all nine)"
+        required: false
+        default: ""
+      max_cost_usd:
+        description: "Hard cost ceiling in USD"
+        required: false
+        default: "25"
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Run the eval suite
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CASE_GLOB: ${{ inputs.case }}
+          MAX_COST_USD: ${{ inputs.max_cost_usd }}
+        run: |
+          # Full model ID, not an alias: an alias moves when the CLI updates.
+          args=(./plugins/what-the-heck --trust-plugin --no-publish --report eval-report.html)
+          args+=(--ablation with-without --judge-model claude-opus-5-5)
+          args+=(--max-cost-usd "$MAX_COST_USD")
+          if [ -n "$CASE_GLOB" ]; then args+=(--case "$CASE_GLOB"); fi
+          claude plugin eval "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-report
+          path: eval-report.html
