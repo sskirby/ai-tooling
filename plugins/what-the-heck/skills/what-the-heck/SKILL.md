@@ -58,7 +58,8 @@ A step is four things and nothing else:
 
 - **A heading**: `Step N of M — <the claim>`.
 - **≤150 words of prose.** Hard budget. If the idea won't fit, it's two steps.
-- **Exactly one picture or one worked example.** Not both, not three.
+- **At least one picture or worked example.** More is fine while each one makes the idea
+  easier to see; stop before they crowd it.
 - **A check question.** One question, then stop and wait.
 
 ### Pictures
