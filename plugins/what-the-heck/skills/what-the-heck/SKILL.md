@@ -49,7 +49,8 @@ Three parts, in this order, then stop:
    and usually how much they already know. An either/or can make it easier to answer ("did you run
    into this in someone else's code, or are you writing it yourself?"). Ask nothing else. If the
    question already says why they're asking, ask how much of X they already work with instead.
-   Then wait for the reply before starting step 1.
+   Then wait for the reply before starting step 1. If their answer shows they already know a step,
+   or changes what's worth teaching, revise the route before step 1 and show it.
 
 ## Each step
 
