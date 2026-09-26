@@ -1,0 +1,43 @@
+plugins/what-the-heck/README.md
+  s_5da01cc4c76ea7::t_ca63fed8d31055 723
+  s_5da01cc4c76ea7::t_7015682bb96bb9 506-509
+  s_5da01cc4c76ea7::t_34479480acd4a6 116
+  s_5da01cc4c76ea7::t_6f93552f17f302 45-49,54-76,78-82,84-87
+  s_5da01cc4c76ea7::t_6d69e5037fc713 207-213,863
+  s_5da01cc4c76ea7::t_6a29156af7956d 643
+  s_5da01cc4c76ea7::t_b607271c224761 859,861,864
+  s_5da01cc4c76ea7::t_78abf95929fba5 202-206
+  s_5da01cc4c76ea7::t_0ed3c090cfeae0 383-384,392-395,397,399
+  s_5da01cc4c76ea7::t_6346d403d9abe0 454-462,467-505,510
+  s_5da01cc4c76ea7::t_c75004b02f34f0 625-629
+  s_5da01cc4c76ea7::t_1248ed53b1f623 330,333-341
+  s_5da01cc4c76ea7::t_6454d5596c851c 135
+  s_5da01cc4c76ea7::t_b9d96d5a6e9867 16-25
+  s_5da01cc4c76ea7::t_a30774108286e5 181-184
+  s_5da01cc4c76ea7::t_ccec56cadc6a3b 556,558-565
+  s_5da01cc4c76ea7::t_069e92beae27fb 804-805
+  s_5da01cc4c76ea7::t_3f103b00d0d21b 28-30,35-37
+  s_5da01cc4c76ea7::t_7e447128ebfb88 150,156-165
+  s_5da01cc4c76ea7::t_a3442628ed0a96 464-466
+  s_5da01cc4c76ea7::t_944461c5c73369 355-362
+  s_5da01cc4c76ea7::t_945957227a2d2f 297,300-306
+  s_5da01cc4c76ea7::t_8264666d4822f1 44,77,83,193,216,244,463,860
+  s_5da01cc4c76ea7::t_ef96757f1338db 846
+  s_5da01cc4c76ea7::t_32a50c9911b62b 251-262
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3c3103a5edd80ca6ed50e19cada0d6e1e959e9ac",
+  "prompts": {},
+  "sessions": {
+    "s_5da01cc4c76ea7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8e664982-3816-45fd-a541-7f9755f7324a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
