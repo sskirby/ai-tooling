@@ -13,65 +13,29 @@ format. Part 2 covers how this repo is built and verified.
 
 ## Evidence note
 
-Every entry below that cites an eval case now pins to one of two runs, both
-CLI 2.1.283 with the model under test and the judge both claude-opus-5-5
-(`--judge-model`, 3 votes): the full suite,
-`2026-09-26T01-56-04-492Z` — 3 runs/arm, 60 sessions, $13.20, 583s, skill at
-commit `95a3c01` — and a one-case control run,
-`2026-09-26T02-09-37-170Z` — $1.11, 76s — that reran `first-step-route-fits`
-on the fixed control design at commit `bb92fbf`. The full suite's own
-`first-step-route-fits` row graded a superseded control design and is never
-cited. Raw data: `evals/results/<run>/aggregate-result.json` (gitignored —
-re-run the named case directory to reproduce a number instead of trusting
-the file to still be there).
-
-Every number from before the model and judge were pinned (`218d252`,
-`241ab80`) graded a different model and a different judge, and is
-history, not evidence. Cases were unpinned until
-`218d252`, so they ran on the CLI's built-in default model — the eval
-sandbox never reads the user's `settings.json` — and the CLI's `opus`
-alias moved claude-opus-5 -> claude-opus-5-5 between 2.1.278 and 2.1.280,
-somewhere in that window. So every earlier number is almost certainly
-Opus 5, a strong inference rather than a verified one. The judge in that
-era was Haiku for the pilot and Sonnet after it (B8), never the model now
-pinned. See B9.
+Measured on Opus 5.5.
 
 Where each case stands, this run's `with` score / `without` score / delta:
 
-| case | with | without | Δ |
-|---|---|---|---|
-| opening | 1.00 | 0.25 | +0.75 |
-| first-step | 0.88 | 0.25 | +0.63 |
-| next-means-one-step | 1.00 | 0.67 | +0.33 |
-| closing | 1.00 | 0.87 | +0.13 |
-| wrong-answer-reteaches | 1.00 | 0.75 | +0.25 |
-| shaky-reasoning-rechecks | 1.00 | 0.83 | +0.17 |
-| first-step-route-fits (control, `02-09-37`) | 1.00 | 0.83 | +0.17 |
-| no-trigger-explain-and-do | 1.00 | 1.00 | 0.00 |
-| no-trigger-mid-implementation | 1.00 | 1.00 | 0.00 |
-| no-trigger-task-ask | 1.00 | 1.00 | 0.00 |
 
-The mean delta is **+0.35 across the seven teaching cases (control
-included)** and **+0.24 across all ten**. Always say which population a
-mean covers: the three `no-trigger-*` cases score a correct 0.00 by
+| case                          | with | without | Δ     |
+| ----------------------------- | ---- | ------- | ----- |
+| opening                       | 1.00 | 0.25    | +0.75 |
+| first-step                    | 0.88 | 0.25    | +0.63 |
+| next-means-one-step           | 1.00 | 0.67    | +0.33 |
+| closing                       | 1.00 | 0.87    | +0.13 |
+| wrong-answer-reteaches        | 1.00 | 0.75    | +0.25 |
+| shaky-reasoning-rechecks      | 1.00 | 0.83    | +0.17 |
+| first-step-route-fits         | 1.00 | 0.83    | +0.17 |
+| no-trigger-explain-and-do     | 1.00 | 1.00    | 0.00  |
+| no-trigger-mid-implementation | 1.00 | 1.00    | 0.00  |
+| no-trigger-task-ask           | 1.00 | 1.00    | 0.00  |
+
+
+The mean delta is **+0.35 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
 design — the skill must not fire on those prompts and it does not — so
 averaging them in drags the figure down for a reason that is a pass, not a
 failure.
-
-An audit (workflow `wf_e9c2174e-05c`, 8 Sonnet auditors plus adversarial
-verifiers, run over `01-56-04` and `02-09-37`) found every verdict correct
-except three findings that survived verification. `illustration-without-clutter`
-gives opposite unanimous verdicts on without-arm first-step replies with
-the same illustration density: the rubric is written for one step and the
-baseline teaches five sections at once — with-arm unaffected; see D6 and
-Open. The control deliberately does not penalise the baseline for teaching
-all five items in one reply — pacing is graded elsewhere, by
-`exactly-one-step` and `step-three-not-a-dump`. And the control's with-arm
-step headings use a colon ("Step 1 of 5: ...") rather than SKILL.md's em
-dash, which no grader checks. A claimed judge error on first-step's
-`check-requires-using-the-idea` was refuted — see D4. The finding an
-earlier audit carried as open, `calibration-is-one-ask`, is now `PPP`:
-resolved, see D3.
 
 Of the scored graders across the seven teaching cases, 8 discriminate
 cleanly, 6 discriminate only weakly (the baseline lands them 1 or 2 of 3:
@@ -86,15 +50,8 @@ in the opening and first step — not because the later behaviours don't
 matter, but because the baseline already does most of them. See Open
 ("Graders that pass in both arms").
 
-Keep a proportionate amount of caution anyway: the measured run-to-run
-noise floor on a 3-run case is about ±0.20 (see `977aa3b`, where a closing
-delta of +0.13 was judged inside that floor and left unpinned). A delta
-smaller than that on any case below is not signal, and entries call this
-out where it applies.
-
-None of this changes Part 1's other problem: the *rationale* — the why
-behind each decision — is reconstructed, not authored, regardless of how
-solid the eval evidence under it is. See the note at the top of this file.
+Run-to-run noise on a 3-run case is about ±0.20, so a delta smaller than
+that on any single case is not signal.
 
 ---
 
@@ -112,12 +69,7 @@ first.
 right outcome, but read on turn count alone it looks like a lesson that
 failed before it started.
 
-**Pinned by.** evals/opening/ (answer-before-route), run
-`2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5): `PPP` with
-/ `PPP` without. This grader passes in both arms — it shows the skill puts
-the answer first, not that the baseline fails to. The case-level delta
-(opening: 1.00 with / 0.25 without) is driven by D2 and D3's graders, not
-this one.
+**Pinned by.** evals/opening/ (answer-before-route).
 
 ## D2 — Route titles are claims
 
@@ -131,10 +83,7 @@ nothing about what they're about to learn.
 **Cost.** Writing a route of claims costs real thought before any teaching
 happens; a lazy route reverts to topic labels.
 
-**Pinned by.** evals/opening/ (titles-are-claims, route-is-3-to-6-items),
-run `2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5): both
-graders `PPP` with / `FFF` without — a clean discriminator on each; the
-baseline doesn't do this by default.
+**Pinned by.** evals/opening/ (titles-are-claims, route-is-3-to-6-items).
 
 ## D3 — Exactly one calibration question
 
@@ -147,23 +96,7 @@ the reader's level and skipping the question entirely.
 **Cost.** One extra round trip before any teaching starts.
 
 **Pinned by.** evals/opening/ (asks-about-the-reader, calibration-is-one-ask,
-no-step-yet), run `2026-09-26T01-56-04-492Z` (3 runs/arm, judge
-claude-opus-5-5). `asks-about-the-reader` discriminates cleanly: `PPP`
-with / `FFF` without — the calibration question is there and the baseline
-doesn't ask one. `calibration-is-one-ask` and `no-step-yet` are
-`arm: with-only` (unscored, contributing nothing to the delta) but are
-still evidence of behaviour: `no-step-yet` is `PPP` — step 1 never leaks
-into the opening — and `calibration-is-one-ask`, once `FFF` unanimous
-across all 9 judge votes (run `2026-09-25T05-03-33-276Z`), is now `PPP`.
-The rule was rewritten in `9236fe5` to name the motivation question
-("what prompted this?") outright and say to ask nothing else, keeping the
-level question only as a fallback for when the motivation answer already
-implies it. The fix held on the next run
-(`2026-09-26T00-53-44-038Z`: `PPP`) and again on the full suite (`01-56-04`:
-`PPP`). "Exactly one" was breaking on a fixed, predictable pattern, not
-occasionally slipping, and it is now resolved — the Open row is closed.
-(`one-calibration-question`, the grader this entry used to cite, was
-split into these two in `a08a92c` and no longer exists.)
+no-step-yet).
 
 ## D4 — Every step ends with a question you ask them
 
@@ -177,11 +110,7 @@ one thing they cannot do.
 **Cost.** Roughly doubles the number of turns. Some users
 find it slow; `next` is the escape hatch (see D7).
 
-**Pinned by.** evals/first-step/ (check-requires-using-the-idea), run
-`2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5): `PFP` with
-/ `FFF` without — still discriminates, though the with arm now has one
-failing run rather than a clean 3/3. An audit of this run considered the
-failure a possible judge error and refuted that: the verdict stands.
+**Pinned by.** evals/first-step/ (check-requires-using-the-idea).
 
 ## D5 — Prose stays earned, not padded
 
@@ -190,38 +119,18 @@ phrasing, no beating around the bush, no throat-clearing before the
 point. A concept is never explained incompletely just to hit a count —
 the author's ruling is that a step's length should be earned, not capped.
 
-**Rejected.** A hard numeric word cap. `SKILL.md:60` still reads "≤150
-words of prose. Hard budget," but per the author the cap's intent was
-always tightness, not an arithmetic ceiling, and a long-but-earned step
-should not have to break itself in two just to stay under a number.
+**Rejected.** A hard numeric word cap. Per the author, the cap's intent
+was always tightness, not an arithmetic ceiling, and a long-but-earned
+step should not have to break itself in two just to stay under a number.
 
 **Cost.** Cutting narration without cutting content takes a real editing
 pass — spotting a deletable sentence is harder than counting words.
 
-**Pinned by.** evals/first-step/ (no-extraneous-prose), run
-`2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5): `PFP` with
-/ `PFF` without. This is one of three scored graders in the suite that
-still fail in a with-arm (`check-requires-using-the-idea` in D4 and
-`step-one-is-new-to-them` in D11 are the other two), and it caps both arms
-rather than cleanly discriminating — it is part of why first-step scores
-0.88 rather than 1.00. The judge records no reasons. The failing with-arm
-reply's deletable candidates are an opener ("That helps.") and a
-restatement ("So the plan isn't a picture of your `WITH` chain. It's the
-plan for the equivalent single query." after the step has already said
-the planner "plans one query over the base tables") — the kind of
-sentence the grader is written to catch, while it explicitly passes a
-long-but-earned step.
+**⚠ Skill and check disagree, deliberately.** `SKILL.md:60` still states
+a 150-word hard budget; the check judges tightness instead. Until a
+refinement pass reconciles them, this entry describes the author's ruling.
 
-**⚠ Skill and check disagree, deliberately** — the same situation as D6
-and `SKILL.md:61`. `SKILL.md:60` still states a 150-word hard budget; the
-check now in force (`no-extraneous-prose`, replacing
-`step-prose-stays-tight` in `6c739f3`) judges tightness and freedom from
-mannered phrasing instead, not a count. Until a refinement pass
-reconciles them, this entry describes the author's ruling and the skill
-still states the old numeric rule. `prose-under-150-words` and
-`step-prose-stays-tight`, the predecessor graders that tried to enforce
-the numeric budget and could not do it reliably, no longer exist and are
-named here only as history.
+**Pinned by.** evals/first-step/ (no-extraneous-prose).
 
 ## D6 — Illustrate the step, without crowding it
 
@@ -230,57 +139,18 @@ diagram, a worked example with concrete values, or an analogy. More than
 one is fine where they help; what is not fine is illustration that crowds
 the step.
 
-**Superseded.** This entry originally read "exactly one picture or one
-worked example — not both, not three," and was pinned to a grader that
-enforced it. The author has since relaxed the rule: more examples and
-diagrams are welcome as long as readability does not suffer.
-
-**Rejected.** The strict one-or-the-other form above, and at the other
+**Rejected.** A strict one-picture-or-one-example rule, and at the other
 extreme a step with nothing to look at.
 
-**Cost.** "Crowding" is a judgement rather than a count, so this check can
-no longer be decided mechanically.
+**Cost.** "Crowding" is a judgement rather than a count, so this check
+cannot be decided mechanically.
 
 **⚠ Skill and check disagree, deliberately.** `SKILL.md:61` still reads
-"**Exactly one picture or one worked example.** Not both, not three." The
-skill body is the author's to change and has not been changed; the grader
-has. Until the refinement pass reconciles them, this entry describes the
-author's ruling and the skill states the older rule.
+"**Exactly one picture or one worked example.** Not both, not three."
+Until a refinement pass reconciles them, this entry describes the
+author's ruling.
 
-**Pinned by.** evals/first-step/ (illustration-without-clutter), run
-`2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5): `PPP` with
-/ `FPP` without — discriminates, but weakly now: an audit of this run
-found the grader gives opposite unanimous verdicts on without-arm replies
-that carry the same illustration density, because the rubric is written
-for a single step while the baseline teaches all five sections in one
-reply. The with arm is unaffected. See Open. On the previous run
-(`2026-09-25T05-03-33-276Z`) it was a clean `PPP`/`FFF`; on the earlier
-Opus 5 run before that it passed in both arms. The change from Opus 5 was
-in the baseline model: bare Opus 5.5 answers this prompt with a markdown
-table comparing database engines, with no diagram and no worked example
-carried through with values. The description plays no part in that — the
-without arm runs with no plugin loaded and never sees it.
-
-A separate effect, in the *with* arm, belongs here because it concerns
-diagrams. Before the description was cut from 87 to 69 words (`9d8bef5`,
-removing "— or when they ask for a step-by-step explanation with diagrams,
-examples, or pauses for questions"), the with-arm replies in
-`wrong-answer-reteaches` drew a diagram in 6 of 6 runs across two runs in
-which the skill never fired, against 0 of 6 without. After the cut, 0 of
-3. The always-on description text alone had been steering output. See Open
-for the same cut's cost to `next-means-one-step`'s natural trigger rate.
-
-What the relaxation cost is worth recording too, because it is easy to
-misread, and it is a separate point from the paragraph above. The strict
-grader that preceded `illustration-without-clutter` was a clean
-`PPP`/`FFF` discriminator on an earlier run, but it discriminated by
-catching the *baseline* breaking a stylistic rule: bare Claude supplies a
-diagram **and** a worked example. So first-step's previously perfect 0.00
-baseline was partly rule-compliance rather than teaching quality, and
-relaxing the rule moved that arm from 0.00 to 0.17 on that run. The delta
-got smaller and more honest at the same time. This run's baseline moved
-again, for the reason above, and the grader discriminates cleanly again —
-for a different reason than the strict grader once did.
+**Pinned by.** evals/first-step/ (illustration-without-clutter).
 
 ## D7 — `next` means one step, no commentary
 
@@ -293,25 +163,9 @@ use.
 **Cost.** A reader can skip past a misunderstanding; that's their call to
 make, not the skill's to prevent.
 
-**Pinned by.** evals/first-step/ (escape-hatch-present), run
-`2026-09-26T01-56-04-492Z`: `PPP` with / `FFF` without — a clean
-discriminator. evals/next-means-one-step/ (escape-hatch-present,
-exactly-one-step, advances-without-commentary, step-three-not-a-dump), run
-`2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5):
-`escape-hatch-present` `PPP` with / `FFF` without — a clean discriminator.
-`advances-without-commentary` is now `PPP` with / `FPP` without — it
-discriminates too, though weakly, where the previous run had it inert.
-`exactly-one-step` and `step-three-not-a-dump` are both `PPP` with / `PPP`
-without — Opus 5.5's baseline already does both, so they show the skill
-does this, not that the baseline fails to.
-
-This case now loads the skill by slash command
-(`/what-the-heck:what-the-heck`) rather than a natural-language trigger —
-see B10 for why, and for the canary evidence that the load is real.
-`skill-fired` cannot see a slash-loaded skill and was removed from this
-case's graders; the without arm receives the command as inert text and
-opens by saying it isn't installed, which the audit of this run confirmed
-changes no grade.
+**Pinned by.** evals/first-step/ (escape-hatch-present);
+evals/next-means-one-step/ (escape-hatch-present, exactly-one-step,
+advances-without-commentary, step-three-not-a-dump).
 
 ## D8 — Never advance past a wrong answer
 
@@ -327,44 +181,9 @@ the misunderstanding surfaces at step 2, not step 6.
 
 **Pinned by.** evals/wrong-answer-reteaches/ (does-not-advance,
 does-not-affirm-the-wrong-answer, issues-a-fresh-check,
-reteaches-from-a-new-angle), run `2026-09-26T01-56-04-492Z` (3 runs/arm,
-judge claude-opus-5-5), with-arm a clean 1.00: `does-not-advance` `PPP`
-with / `PPP` without and `does-not-affirm-the-wrong-answer` `PPP` with /
-`PPP` without both pass in both arms — Opus 5.5's baseline already does
-these two. `issues-a-fresh-check` is now `PPP` with / `FFF` without — a
-clean discriminator, up from a weak one on the previous run.
-`reteaches-from-a-new-angle` is `PPP` with / `PPP` without: this grader
-was rewritten in `c68dacd` to judge content rather than layout, after its
-previous version failed a with-arm reply for reusing a quoted sketch's
-shape in a before/after diagram of real plan nodes; under the rewritten
-version it no longer discriminates, but it also no longer penalises a good
-reply for a formatting accident.
-
-(An earlier version of this grader, under an even older rubric, failed
-exactly one with-arm run in three because the prompt only summarised the
-earlier explanation in one sentence, giving the judge nothing to compare
-against; the prompt now quotes the teacher's step 2 in full, diagram
-included, which the current content-not-layout rubric also relies on as
-its reference text.)
-
-This case now loads the skill by slash command, like the other
-mid-lesson cases — see B10.
-
-evals/shaky-reasoning-rechecks/ (does-not-advance,
-does-not-simply-congratulate, names-the-specific-gap,
-rechecks-before-moving-on), run `2026-09-26T01-56-04-492Z` (3 runs/arm,
-judge claude-opus-5-5): `does-not-advance`, `does-not-simply-congratulate`
-and `names-the-specific-gap` are `PPP` with / `PPP` without — bare Opus
-5.5 already does these three. `rechecks-before-moving-on` is now `PPP`
-with / `FPF` without — it discriminates, weakly, where the previous run
-had it inert too. The case's 1.00/0.83 score is mostly a finding about
-where the skill's value is not, not a defect in the case. It loads by
-slash command; see B10.
-
-`does-not-affirm-the-wrong-answer`'s earlier rubric was keyword-brittle on
-the literal word "exactly," testing vocabulary rather than behaviour; it
-was rewritten in `7aa7414`. The scores above are under the rewritten
-version.
+reteaches-from-a-new-angle); evals/shaky-reasoning-rechecks/
+(does-not-advance, does-not-simply-congratulate, names-the-specific-gap,
+rechecks-before-moving-on).
 
 ## D9 — The close is the chain, then the one thing that bites
 
@@ -379,62 +198,7 @@ fact, not a chain.
 a pile of facts.
 
 **Pinned by.** evals/closing/ (names-the-gotcha, recap-is-one-item-per-step,
-recap-is-easy-to-scan, causal-chain, no-further-check, no-new-step), run
-`2026-09-26T01-56-04-492Z` (3 runs/arm, judge claude-opus-5-5). closing:
-1.00 with / 0.87 without, every scored grader passing in the with-arm.
-This case now loads the skill by slash command; see B10 for why and for
-the earlier prompt-rewrite history that used to be needed just to get it
-to fire at all.
-
-`causal-chain`: `PPP` with / `PPP` without — passes in both arms. Kept
-deliberately as a regression guard on the causal thread rather than as a
-discriminator, by the author's decision. `recap-is-easy-to-scan`: `PPP`
-with / `PPP` without — passes in both arms; Opus 5.5's baseline recap is
-readable too. `no-further-check`: `PPP` with / `PPP` without — now also
-passes in both arms. `names-the-gotcha`: `PPP` with / `PFP` without —
-discriminates, weakly; the baseline lands it 2 of 3.
-`recap-is-one-item-per-step`: `PPP` with / `PPF` without — discriminates,
-weakly, same pattern.
-
-`no-new-step` is `arm: with-only` (unscored) and `PPP`:
-since the case now loads mid-lesson by slash command, the skill has to be
-told not to smuggle a new step in under cover of the recap, and this run
-it doesn't, in all three with-arm replies.
-
-The grader that graded this decision at pilot time,
-`recap-is-about-five-lines`, demanded four to six *lines* and passed 0 of
-32 runs — in both arms, across five prompt variants, two descriptions and
-two judge models. A check the baseline fails just as hard as the plugin
-isn't measuring the plugin; it was capping both arms rather than
-discriminating between them. It was rewritten and renamed
-`recap-is-one-item-per-step` in `64433ae`, then rescoped to judge only the
-recap (not the surrounding correction or gotcha note) in `07fe734`. It now
-asks for one item per step, allows an item to run to a sentence or two, and
-allows a closing sentence tying the chain together. The score above is
-under that rewritten grader.
-
-`causal-chain` carried the same disease, undetected, for longer. Its
-criteria opened by asking for "a chain of about five lines, one per step,"
-and that line count — not the causal thread the grader is named for — was
-what the judge acted on. Two with-arm replies that were each five numbered
-items, in taught order, each following from the one before, came back FAIL
-and PASS. It now judges the thread alone, scoped to the recap, and the
-length requirement lives in `recap-is-easy-to-scan` where it can be stated
-generously. The cost of that split is visible above: with the line framing
-gone, `causal-chain` passes in both arms, because the baseline's recap is
-an ordered chain too. The line count was the only thing that ever made it
-look like a discriminator, and it bought that appearance by failing good
-replies two times in three.
-
-Run `2026-09-25T05-03-33-276Z` is also the first on a correct prompt. Until `00eb7b1`,
-`closing`'s restated step 5 claimed "A CTE referenced twice can be
-evaluated twice", which is false for Postgres 12+ (a multiply-referenced
-CTE is materialised by default and runs once). In one earlier Opus 5.5 run
-the skill fired, caught the error, and re-taught step 5 with a check
-instead of recapping a chain it knew to be wrong — exactly what D8 asks
-for — and every recap grader failed it, because there was no recap. The
-"correction paragraph before the recap" that earlier replies kept carrying
-had the same cause.
+recap-is-easy-to-scan, causal-chain, no-further-check, no-new-step).
 
 ## D10 — Real names, real code
 
@@ -455,58 +219,20 @@ check real names and line numbers against — see Open.
 
 **Decision.** After the calibration answer, if it shows the learner
 already knows a step, or changes what's worth teaching, the route is
-revised before step 1 and the revised route is shown — not followed
-literally as if the answer changed nothing.
+revised before step 1 and the revised route is shown. A route that
+already fits stands as shown.
 
-**Rejected.** Treating the calibration answer as informational color only.
-After the `1b12db0` prompt change quoted the opening message in full,
-SKILL.md said the calibration answer "tells you what is worth teaching"
-but never said to revise the route already shown. Given that route, the
-model taught its step 1 ("A CTE is a named subquery") to a learner who
-said they write SQL daily.
+**Rejected.** Following the route already shown as if the answer changed
+nothing — teaching a learner who writes SQL daily that a CTE is a named
+subquery.
 
 **Cost.** An extra beat before step 1 whenever the answer calls for a
 revision — a second route shown after the first, on top of D3's
 calibration round trip.
 
-**Pinned by.** evals/first-step/ (`step-one-is-new-to-them`,
-`revised-route-is-shown`) and evals/first-step-route-fits/
-(`keeps-the-route`, `route-not-repeated`).
-
-`step-one-is-new-to-them` judges whether the first idea taught is new to
-this learner — the baseline's all-five-item reply is judged on its first
-section, held to the same standard. `revised-route-is-shown` passes if
-the route is unchanged, or changed and laid out as steps before teaching,
-whichever the answer calls for.
-
-Red -> green, with-arm: `FFF` on `95a3c01`'s parent (run
-`2026-09-26T00-53-43-596Z`) -> `FPF` with a first wording that said only
-"changes what's worth teaching" (run `2026-09-26T01-46-08-448Z`; the two
-failing replies judged the route against the learner's stated problem —
-"Three chained CTEs fit this route well" — not against what they already
-know) -> `PPP` after the reword (run `2026-09-26T01-53-14-709Z`) -> `PPF`
-in the full suite (`01-56-04`). Five of six passes since the reword; the
-one failure repeats the same "fits this route well" misreading.
-Without-arm: `FFF` throughout.
-
-The control case, first-step-route-fits, checks the opposite: a learner
-every route item genuinely fits — "about to start using CTEs in our
-reports, a colleague warned me they can make queries slow, I haven't
-written one yet" — graded by `keeps-the-route` (strict: step 1 is item 1,
-nothing dropped, added, merged or reordered) and `route-not-repeated`
-(fails only a reprint of the route list; the author prefers a grader that
-checks little). On the fixed design (`02-09-37`): `keeps-the-route` `PPP`
-with / `PPF` without, `route-not-repeated` `PPP` with / `PPP` without —
-the with-arm states the route still fits because the colleague's warning
-is what steps 2-5 answer; the without-arm's one failure is on a reply
-whose headings match a passing one, and the judge gives no reasons.
-
-An earlier control design — a learner who only needs to read a
-colleague's query — was dropped: that answer legitimately changes what's
-worth teaching, so it could not test keeping a route that fits. On it the
-bare model trimmed the performance items 3/3 without showing a new route;
-after this change the skill trimmed them 3/3 too, and showed the new
-route (run `2026-09-26T01-53-15-044Z`).
+**Pinned by.** evals/first-step/ (step-one-is-new-to-them,
+revised-route-is-shown); evals/first-step-route-fits/ (keeps-the-route,
+route-not-repeated).
 
 ---
 
@@ -532,61 +258,25 @@ job check the shape on every push.
 
 **Decision.** Post-turn-1 behaviour in a case comes from inline restated
 context in the prompt, not from a `context.history_file` pointing at a
-sampled transcript.
+sampled transcript. The restated context quotes what a grader needs to
+compare against — the earlier route, the earlier explanation — not just a
+summary of it.
 
-**Rejected.** Resumed-session fixtures. They give exact fidelity to a real
-conversation, but the harness forces any case with `context.history_file`
-into the `with` arm alone (`if (r && e.context.history_file) return
-["with"]`), which deletes the ablation delta on exactly the cases that
-need it most — "it re-taught instead of advancing" is only evidence of the
-skill working if bare Claude would have advanced instead. A sampled
-transcript also runs to roughly 900 KB over about 60 top-level keys and
-carries `ownerAccountUuid`, `ownerOrganizationUuid`, `cwd` and
+**Rejected.** Resumed-session fixtures. The harness forces any case with
+`context.history_file` into the `with` arm alone, which deletes the
+ablation delta on exactly the cases that need it most. A sampled
+transcript also runs to roughly 900 KB and carries account IDs, `cwd` and
 `gitBranch`, all needing scrubbing on every regeneration.
 
 **Cost.** The prompt describes the prior exchange instead of being it, so
-a case can drift from what a real resumed session would actually contain.
-A one-off hand-check against a genuinely resumed session was planned to
-verify the gap is small; it has not been run yet, so this decision
-currently rests on the design argument above, not on a checked comparison.
+a case can drift from what a real resumed session would contain, and it
+can restate something false that no one but the model under test notices.
+A one-off hand-check against a genuinely resumed session is planned and
+has not been run, so this rests on the design argument above.
 
-**Pinned by.** evals/first-step/, evals/closing/,
-evals/wrong-answer-reteaches/, evals/next-means-one-step/,
-evals/shaky-reasoning-rechecks/ — every multi-turn case in the suite. Each
-one's score from run `2026-09-26T01-56-04-492Z` (judge claude-opus-5-5),
-and the discrimination caveats that go with it, are given under its own
-Part 1 entry (D4–D9, D11), and the per-case table in the Evidence note
-names the run. Read those before trusting any individual number.
-
-`1b12db0` strengthened first-step's own restated context: the prompt now
-quotes the opening message's answer, route and calibration question in
-full, rather than summarising them, so a grader has the actual prior
-route to compare a revised one against — the same lesson B2 already
-learned once from wrong-answer-reteaches, applied here. See D11.
-
-Four of these five (all but first-step) now load the skill by slash
-command rather than a natural-language trigger — see B10. That is a
-separate decision from this one: B10 fixes how the skill gets loaded, so a
-single-turn case can reproduce "loaded at turn 1, still loaded now"; B2 is
-about how the *prior turns'* content reaches the prompt at all, restated
-inline rather than replayed from a resumed-session fixture. Both apply
-together in those four cases, and neither substitutes for the other.
-
-One result belongs here rather than only under D8. The restated-context
-design failed in a way worth recording: `wrong-answer-reteaches` restated
-step 2's *claim* in a sentence, and a grader asking whether the reply
-re-taught it differently had no earlier explanation to compare against.
-Quoting the step in full fixed it. Inline restated context works, but it
-has to restate what a grader actually needs to see, not just what the
-learner needs to know.
-
-It can also restate something false. `closing` taught, as its step 5, "A
-CTE referenced twice can be evaluated twice", and the learner's answer
-built on it. In Postgres 12+ a CTE referenced more than once is
-materialised by default and runs once; double evaluation needs
-`NOT MATERIALIZED`. Because the prompt is the whole of the prior lesson,
-the error went unnoticed by everyone except the model under test (see D9).
-Fixed in `00eb7b1`.
+**Pinned by.** evals/first-step/, evals/first-step-route-fits/,
+evals/closing/, evals/wrong-answer-reteaches/, evals/next-means-one-step/,
+evals/shaky-reasoning-rechecks/.
 
 ## B3 — Hybrid case packaging
 
@@ -609,8 +299,8 @@ workflow runs the suite by hand; a free lint check gates every PR instead.
 
 **Rejected.** A required eval check on every PR. It costs real money per
 run; GitHub withholds secrets from fork PRs so it would fail on every
-outside contributor by construction; and 21 LLM graders at roughly 95%
-reliability each go red on good PRs often enough to teach everyone to
+outside contributor by construction; and dozens of LLM graders at roughly
+95% reliability each go red on good PRs often enough to teach everyone to
 ignore the check.
 
 **Cost.** Regressions in behaviour are caught by a human running the suite
@@ -622,11 +312,8 @@ README.
 ## B5 — The port is lexical only
 
 **Decision.** Porting the skill into this plugin changed four identifiers
-and nothing else — the `description` included. The body has since had two
-author edits of its own, each pinned by its own entry: `9236fe5` (D3, the
-calibration question) and `95a3c01` (D11, revising the route). "Body
-byte-identical" describes the port; it no longer describes the current
-file.
+and nothing else — the `description` included. Later changes to the skill
+are the author's, each pinned by its own entry.
 
 **Rejected.** Fixing the too-broad description during the port. The suite
 is written by the same person editing the skill; a suite written to match
@@ -636,16 +323,8 @@ that the skill behaves.
 **Cost.** One extra iteration once the suite finds a real problem — cheap,
 because a passing negative-trigger case is a short run.
 
-**Pinned by.** evals/opening/ and the three trigger cases
-(evals/no-trigger-task-ask/, evals/no-trigger-mid-implementation/,
-evals/no-trigger-explain-and-do/), which grade rules the author wrote, not
-rules edited to pass. All four now have evidence from run
-`2026-09-26T01-56-04-492Z` (judge claude-opus-5-5): opening scores 1.00
-with / 0.25 without; the three trigger cases each score 1.00 with / 1.00
-without, `skill-did-not-fire` passing in every arm. The one red this
-lexical-only port has produced — the description over-triggering on a
-task request that borrows its own vocabulary — was found on
-`no-trigger-explain-and-do` and then fixed; see B6.
+**Pinned by.** evals/opening/, evals/no-trigger-task-ask/,
+evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/.
 
 ## B6 — The trigger excludes task requests
 
@@ -654,161 +333,54 @@ does not fire the skill, even when it carries an "I don't get this,
 explain as you go" rider.
 
 **Rejected.** Leaving the description broad and letting the skill fire on
-"how do I add an index to this table?"
+"how do I add an index to this table?" — when it fired on a task request,
+the lesson took over instead of the task getting done.
 
 **Cost.** A genuine "explain this to me" phrased as a task request may now
 go unanswered by the skill.
 
 **Pinned by.** evals/no-trigger-task-ask/,
-evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/ —
-the last one is the case that actually stresses the boundary (see below).
-This entry now has both halves of its evidence, red and green, both from a
-Sonnet judge and both reproducible from the case directory.
-
-The 1-run Haiku pilot found no over-triggering on the two prompts that
-existed at the time — `skill-did-not-fire` passed in every arm of both
-`no-trigger-task-ask` and `no-trigger-mid-implementation` — but neither
-prompt used any of the description's own trigger vocabulary ("explain X to
-me," "walk me through X," "I don't get X"), so a clean pass proved little
-either way. `evals/no-trigger-explain-and-do/` was written afterward
-specifically to test the boundary: its prompt — "I don't really get
-indexes — can you add one to this table and explain as you go?" —
-deliberately uses that vocabulary while still being a task request.
-
-It has now run: 3 runs, both arms, **Sonnet** as the judge, $0.78, 84
-seconds (run `2026-09-21T01-18-12-741Z`). The result is the red the spec
-predicted and the pilot couldn't produce — the trigger, as currently
-worded, is too broad:
-
-```
-no-trigger-explain-and-do   with 0.00   without 1.00   Δ -1.00   (6 runs)
-  with-arm, all 3 runs:    ✗ skill-did-not-fire        Skill called 1x (expected 0..0)
-                            ✗ explains-while-doing-the-task   judge votes: FAIL FAIL FAIL
-  without-arm, all 3 runs: ✓ skill-did-not-fire        Skill called 0x (expected 0..0)
-                            ✓ explains-while-doing-the-task   judge votes: PASS PASS PASS
-```
-
-The skill fired on all three with-arm runs. When it fired,
-`explains-while-doing-the-task` failed 3/3 under the Sonnet judge — the
-lesson took over instead of the task getting done and explained in place.
-The same rubric passed 3/3 in the without-arm, so the rubric is well
-calibrated: it passes a good direct answer and fails a lesson takeover.
-Δ −1.00 is the largest effect measured anywhere in this suite, and it is
-harm, not benefit.
-
-**The green after.** The `description` was then narrowed additively in
-`cccb571` — two "Not for…" clauses, the skill body untouched — and the case
-went green when the full 9-case suite ran (run `2026-09-21T02-09-29-432Z`,
-3 runs per arm, Sonnet judge, $8.38, 596 seconds). The numbers quoted below
-are from a later, stronger run of the same three trigger cases (run
-`2026-09-21T04-03-19-502Z`, 3 runs per arm, Sonnet judge, $1.91, 217
-seconds), and they are the ones to cite, for a reason that matters: by then
-the description had been cut from 140 words to 87 in `c344426`, which
-removed a worked example that had been close to word-for-word the prompt of
-this very case. The first green could have been the model pattern-matching
-the example; this one cannot be, so it shows the rule generalising.
-
-```
-no-trigger-explain-and-do   with 1.00   without 1.00   Δ 0.00   (6 runs)
-  with-arm, all 3 runs:    ✓ skill-did-not-fire        Skill called 0x (expected 0..0)
-                            ✓ explains-while-doing-the-task   judge votes: PASS PASS PASS
-  without-arm, all 3 runs: ✓ skill-did-not-fire        Skill called 0x (expected 0..0)
-                            ✓ explains-while-doing-the-task   judge votes: PASS PASS PASS
-```
-
-The prompt that fired the skill 3/3 before now fires it 0/3, and the task
-gets done and explained in place in every run of both arms. Δ −1.00 → 0.00.
-This entry has both halves of its evidence, each from a judge model of its
-own era, and neither was invented. The fix still holds under the current
-pinned run (`2026-09-26T01-56-04-492Z`, judge claude-opus-5-5): 1.00 with
-/ 1.00 without, `skill-did-not-fire` `PPP`/`PPP` — see the Evidence note.
-
-**What it cost.** Nothing measured, as it turns out. An earlier version of
-this entry blamed the `closing` case's 0/3 firing rate on this narrowing —
-that conclusion rested on a single pilot run and was wrong. The settled
-diagnosis (see D9 and Open): `closing`'s prompt stated the lesson was over
-and requested nothing, and every trigger this description names is
-request-shaped, so nothing in the prompt matched, with or without the
-narrowing. Rewriting the prompt to actually ask for the recap (`977aa3b`)
-fires the skill 3/3 with no skill named and no baseline contamination. This
-narrowing did not cost `closing` its trigger.
+evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/
+(the one that uses the description's own trigger vocabulary in a task
+request).
 
 ## B7 — "Read the code first" ships unpinned
 
 **Decision.** "When the subject is in this repo, read the code before
 step 1" is deliberately unpinned in v1.
 
-**Rejected.** Writing the ninth case now. It needs a committed fixture
-repo plus `context.add_dirs`, then a `tool_used` grader (`Read`, `min: 1`)
-and an LLM grader for citing a real path and line number — a new class of
-asset for one rule.
+**Rejected.** Writing the case now. It needs a committed fixture repo plus
+`context.add_dirs`, then a `tool_used` grader (`Read`, `min: 1`) and an
+LLM grader for citing a real path and line number — a new class of asset
+for one rule.
 
 **Cost.** The rule can drift without the suite noticing.
 
 **Pinned by.** Unpinned, by decision. See Open.
 
-## B8 — Judge model history: Haiku, then Sonnet
-
-**Decision (historical).** Judge model: Haiku for the original pilot run,
-`--judge-model sonnet` for the 3-run suite that came next and was, at the
-time, the run whose verdict was trusted. The judge has since moved again,
-to claude-opus-5-5 — see B9, which is the current, pinned decision.
-
-**Rejected.** Sonnet throughout from the start — no cheap run to catch
-wording bugs in the rubrics before paying for judged runs three times over
-on a stronger, pricier model.
-
-**Cost.** Sonnet cost more per judged run than Haiku; that expense was
-deliberately deferred to the run that counted rather than spent on the
-pilot.
-
-**Pinned by.** Historical only. The pilot-vs-Sonnet comparison this entry
-used to carry, grader by grader, is not being maintained — the author's
-call: it did its job catching early judge-quality misses, and the judge
-has moved on again since. Its finding still stands as the reason a
-stronger judge mattered at all: of eight compared graders, five were clean
-judge misses under Haiku that resolved under Sonnet, one (the word-count
-grader that later became `no-extraneous-prose` — see D5) did not resolve
-and was a real rule-compliance gap rather than a judge error, and two were
-confounded by rubric rewrites between the two runs, so their movement
-couldn't be attributed to the judge alone. See B9 for the judge decision
-now in force.
-
-## B9 — Pin the model under test and the judge
+## B8 — Pin the model under test and the judge
 
 **Decision.** The model under test is pinned to claude-opus-5-5 in every
-case (`218d252`); lint now refuses a case with no pinned model. The judge
-is claude-opus-5-5 too, passed as a full model ID (`241ab80`), in the root
-README's documented eval command and in `eval.yml` — both previously
-passed no judge flag at all, which meant Haiku by the tool's default.
+case, and lint refuses a case with no pinned model. The judge is
+claude-opus-5-5 too, passed as a full model ID in the root README's eval
+command and in `eval.yml`.
 
-**Rejected.** Leaving cases unpinned, letting them run on the CLI's
-built-in default model. Before this decision, "unpinned" meant "whatever
-model the CLI defaults to" — the eval sandbox never reads the user's
-`settings.json` — and the CLI moved 2.1.278 -> 2.1.280 between the runs
-this log used to cite, moving its `opus` alias from claude-opus-5 to
-claude-opus-5-5 along with it. Every number pinned before this decision is
-from that earlier, unverified era and is superseded; see the Evidence
-note.
+**Rejected.** Leaving cases unpinned. An unpinned case runs on the CLI's
+built-in default model — the eval sandbox never reads the user's
+`settings.json` — which can change with a CLI update between two runs of
+the same case, and no run records which model it hit. Omitting
+`--judge-model` means Haiku.
 
-**Cost.** The judge costs more per run than the Sonnet judge it replaces;
-the author accepted that on the ruling that the grader should be the more
-capable model. The model under test costs no more than the Opus default it
-replaced — its sessions ran cheaper. Judge and model-under-test
-being the same model is a self-preference risk worth naming on its own —
-the judge could favor output shaped like its own — but both arms share
-that model, so the risk mostly cancels out of the delta even though it
-does not cancel out of either arm's absolute score.
+**Cost.** The Opus judge costs more per run than a smaller one; the author
+ruled the grader should be the more capable model. Judge and model under
+test being the same model is a self-preference risk; both arms share it,
+so it mostly cancels out of the delta but not out of either arm's absolute
+score.
 
-**Pinned by.** The lint rule that now refuses an unpinned case;
-`aggregate-result.json` for run `2026-09-26T01-56-04-492Z` (and
-`2026-09-26T02-09-37-170Z` for the control case), which record
-`model: claude-opus-5-5` on every case (unpinned runs recorded none); and
-the drift this decision responds to: the CLI's `opus` alias changing
-underneath every previously-unpinned case between 2.1.278 and 2.1.280,
-with no run ever recording which physical model it actually hit.
+**Pinned by.** The lint rule that refuses an unpinned case;
+`aggregate-result.json` records `model` on every pinned case.
 
-## B10 — Load the skill by slash command in mid-lesson cases
+## B9 — Load the skill by slash command in mid-lesson cases
 
 **Decision.** The four mid-lesson cases — `next-means-one-step`,
 `shaky-reasoning-rechecks`, `wrong-answer-reteaches`, `closing` — open
@@ -816,37 +388,22 @@ their prompt with `/what-the-heck:what-the-heck` instead of relying on a
 natural-language trigger.
 
 **Rejected.** Triggering these cases the same way as `opening` and
-`first-step`. On claude-opus-5-5, no prompt wording fired the skill
-reliably mid-lesson: four wordings were tried — a plain statement, a plain
-request, the description's own "walk me through" phrase, and restating
-"what the heck is a CTE?" — and the best of them reached about 1 in 3. In real
-use the skill loads once, at turn 1, and stays loaded for the rest of the
-session; a single-turn eval case can only reproduce "already loaded" by
-loading it deterministically, not by re-rolling the trigger dice on every
-case.
+`first-step`. On claude-opus-5-5 no prompt wording fired the skill
+reliably mid-lesson; the best reached about 1 in 3. In real use the skill
+loads once, at turn 1, and stays loaded; a single-turn case can only
+reproduce "already loaded" by loading it deterministically.
 
 **Cost.** `skill-fired` (`tool_used: Skill`) cannot see a slash-loaded
-skill, so it was removed from these four cases' graders — the suite now
-splits into cases that test triggering (`opening`, `first-step`, the
-three `no-trigger-*` cases) and cases that test behaviour once loaded (the
-four above). The without arm receives the same slash command as inert
-text and opens by saying it isn't installed; an audit of this run found
-that this changes no grade, and `advances-without-commentary` is told
-explicitly to ignore it.
+skill, so those four cases don't carry it. The suite splits into cases
+that test triggering (`opening`, `first-step`, `first-step-route-fits`,
+the three `no-trigger-*` cases) and cases that test behaviour once loaded.
+The without arm receives the command as plain text and says it isn't
+installed; `advances-without-commentary` is told to ignore that line.
 
-**Pinned by.** A canary test: a throwaway copy of the plugin whose
-`SKILL.md` body told the model to end every reply with a nonsense token,
-graded by regex, no judgement involved. With the slash command in the prompt,
-the token appeared in 3 of 3 with-arm replies and 0 of 3 without-arm
-replies. The same prompt without the command: 1 of 3 with-arm replies, 0 of
-3 without —
-matching the roughly-one-in-three natural firing rate found elsewhere.
-This canary run was a scratchpad experiment and is not committed; it is
-described here so it can be reproduced, not cited as a committed asset. The
-behaviour this decision buys is pinned by run `2026-09-26T01-56-04-492Z`,
-in which all four slash-loaded cases score 1.00 in the with arm.
-See D7, D8 and D9 for the cases this changed, and Open for the natural
-trigger regression it surfaces on `next-means-one-step`.
+**Pinned by.** A canary check, reproducible and not committed: a throwaway
+copy of the plugin whose `SKILL.md` body tells the model to end every
+reply with a nonsense token, graded by regex. With the slash command the
+token appears in every with-arm reply and no without-arm reply.
 
 ---
 
@@ -854,13 +411,13 @@ trigger regression it surfaces on `next-means-one-step`.
 
 | Item | Open because | Resolved by |
 |---|---|---|
-| A ninth eval case for "read the code before step 1" (B7) | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred | A later pass, if a run suggests the rule drifts |
+| A case for "read the code before step 1" (B7) | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred | A later pass, if a run suggests the rule drifts |
 | Part 1 of this log | The rationale is reconstructed, not authored | The author's review pass |
-| Closing-step brevity: the "what will bite you" note | As of the current run (`2026-09-26T01-56-04-492Z`), still no grader in the suite checks this — `recap-is-one-item-per-step` was rescoped in `07fe734` to judge only the recap, not the gotcha note, and the `no-new-step` grader (see D9) checks a different thing (no smuggled step, not brevity), so the pilot's finding (the note running to about four paragraphs of fresh teaching) hasn't been re-tested since | A refinement pass the author has already accepted ("we'll make the closing more brief"), and a grader that checks the gotcha note's length now that none does |
-| Graders that pass in both arms | 14 of the 31 scored graders across the seven teaching cases: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `recap-is-easy-to-scan`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step/revised-route-is-shown`; `first-step-route-fits/route-not-repeated`. Each is a finding about where the skill's value is not, rather than a defect in the grader — bare Opus 5.5 already does all of these — but it means those 14 contribute nothing to any delta. Of the remaining 17, 8 discriminate cleanly, 6 only weakly (`names-the-gotcha`, `recap-is-one-item-per-step`, `illustration-without-clutter`, `advances-without-commentary`, `rechecks-before-moving-on`, `keeps-the-route` — the baseline lands each 1 or 2 of 3), and 3 fail in the with arm (`check-requires-using-the-idea`, `no-extraneous-prose`, `step-one-is-new-to-them` — see D4, D5, D11). Note the mechanism: the restated-context prompts (B2) hand the baseline an explicit teaching frame, so the without-arm is not a naive baseline, and in the four slash-command cases (B10) the baseline sees the command only as plain text, with no skill behind it | A decision per grader, not a sweep. Marking the 14 `arm: with-only` would lift the deltas substantially and would be dishonest, since it works by hiding that the baseline is good. Keeping them scored is the current call |
-| `illustration-without-clutter`'s baseline verdict is unstable | An audit of run `01-56-04` found the grader gives opposite unanimous verdicts on without-arm first-step replies with the same illustration density: the rubric is written to judge a single step, but the baseline teaches all five sections in one reply, and the grader has no stated rule for that shape. The with arm is unaffected — this is a baseline-scoring problem, not evidence about the skill. See D6 | An author decision on whether the grader needs a stated rule for a multi-section baseline reply, or whether first-step's baseline needs its own variant of the check |
-| `next-means-one-step`'s natural trigger rate fell after the description cut | The 87 -> 69 word cut (`9d8bef5`) removed the clause ending "...or when they ask for a step-by-step explanation with diagrams, examples, or pauses for questions." `next-means-one-step`'s prompt ends with "next," and its natural firing rate on claude-opus-5-5 fell from 3/3 to 1/3 with the same prompt once that clause was gone — a real regression in triggering, separate from the case's current slash-command loading (B10), which was adopted for a different reason (mid-lesson firing was unreliable everywhere, not just after this cut) | The author deciding whether to restore a short step-by-step clause to the description, weighed against the over-triggering risk narrowed by B6 |
-| The skill states a numeric word budget; the check now grades tightness instead | `SKILL.md:60` still reads "≤150 words of prose. Hard budget," but the current grader (`no-extraneous-prose`, replacing `step-prose-stays-tight` in `6c739f3`) doesn't count words at all — it judges deletable narration, and explicitly passes a long step that earns its length. It is one of three graders in the suite that still fail in a with-arm (`PFP` this run), on a reply whose deletable sentences are an opener and a restatement. Whether the 150-word number itself is still the rule, or was superseded by the tightness standard, hasn't been said outright. See D5 | An author ruling: keep 150 as a real ceiling and treat any overrun as a skill defect, or drop the number from `SKILL.md:60` in favor of the tightness standard the grader already enforces |
-| The skill says one illustration, the grader allows several | The author relaxed the rule (D6) but `SKILL.md:61` still reads "**Exactly one picture or one worked example.** Not both, not three." The skill body is the author's to change and has not been | The refinement pass, reconciling `SKILL.md:61` with D6 |
+| Closing-step brevity | No grader checks the length of the "what will bite you" note | A refinement pass the author has accepted, and a grader for the note's length |
+| Graders that pass in both arms | 14 of the 31 scored graders pass in both arms because bare Opus 5.5 already does the behaviour, so they add nothing to any delta: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `recap-is-easy-to-scan`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step/revised-route-is-shown`; `first-step-route-fits/route-not-repeated` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected | A stated rule for a multi-section baseline reply, or a baseline variant of the check |
+| `next-means-one-step`'s natural trigger rate | Without the description's old step-by-step clause, the case's prompt fires the skill naturally about 1 in 3 runs, down from 3 in 3 | The author deciding whether to restore a short clause, weighed against the over-triggering B6 narrowed |
+| The skill states a numeric word budget | `SKILL.md:60` says "≤150 words of prose. Hard budget"; the check grades tightness (D5) | An author ruling: keep 150 as a real ceiling, or drop the number |
+| The skill says one illustration | `SKILL.md:61` says "Exactly one picture or one worked example"; the check allows several (D6) | The refinement pass |
 | The B2 resumed-session hand-check | Planned as a one-off comparison against a genuinely resumed session; not yet performed | Running it and recording the verdict in B2 |
-| Verifying the install on the published path | The personal copy at `~/.claude/skills/what-the-heck/` has been deleted and the plugin installs cleanly from a local-path marketplace, but `origin/main` still holds only `LICENSE`, so the spec's `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install |
+| Verifying the install on the published path | `origin/main` holds only `LICENSE`, so `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install |
