@@ -31,7 +31,7 @@ what you said:
 This is my reply to that:
 
 I'm chasing a slow report query at work. It has three chained CTEs and the plan
-looks nothing like I expected. I write SQL most days, but I've never thought
-about what the planner does with a CTE.
+looks nothing like I expected. I write SQL with CTEs most days, but I've never
+thought about what the planner does with a CTE.
 
 Go ahead.

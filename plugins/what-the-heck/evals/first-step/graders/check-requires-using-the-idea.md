@@ -3,8 +3,7 @@ type: llm
 focus: last_message
 ---
 
-The closing question requires applying the idea to a situation not described
-in the step — a prediction, an odd case, or a comparison. A reader who
-memorised the step's wording without understanding it could not answer it.
-Fail if the question can be answered by quoting the step back, and fail if it
-is a "does that make sense" style check.
+The closing question makes the reader use the idea: a prediction, an odd
+case, or a comparison. Applying it to the scenario the step itself uses is
+fine. Fail if the question can be answered by quoting a sentence of the
+step back, or fully answered with "yes" or "no".

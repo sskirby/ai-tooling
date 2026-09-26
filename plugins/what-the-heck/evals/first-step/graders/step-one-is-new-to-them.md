@@ -3,10 +3,10 @@ type: llm
 focus: last_message
 ---
 
-The learner said they write SQL most days but have never thought about what
-the planner does with a CTE. Judge the first step the reply teaches, or its
-first section if it teaches several at once: is that idea something this
-learner does not already know?
+The learner said they write SQL with CTEs most days but have never thought
+about what the planner does with a CTE. Judge the first step the reply
+teaches, or its first section if it teaches several at once: is that idea
+something this learner does not already know?
 
 Pass if the first idea taught is about how the planner treats a CTE —
 inlining, materialisation, optimisation fences, filter pushdown, or why the
