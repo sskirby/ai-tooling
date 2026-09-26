@@ -1,0 +1,17 @@
+{
+  "name": "what-the-heck",
+  "version": "0.1.0",
+  "description": "Teach one idea at a time, prove it landed, then move on. A step-by-step explainer that never advances past a check the learner got wrong.",
+  "author": {
+    "name": "Sean Kirby"
+  },
+  "license": "MIT",
+  "keywords": [
+    "teaching",
+    "explanation",
+    "onboarding",
+    "learning",
+    "socratic"
+  ],
+  "repository": "https://github.com/sskirby/ai-tooling"
+}

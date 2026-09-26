@@ -1,0 +1,16 @@
+{
+  "name": "ai-tooling",
+  "version": "0.1.0",
+  "description": "Sean Kirby's Claude Code plugins.",
+  "repository": "https://github.com/sskirby/ai-tooling",
+  "owner": {
+    "name": "Sean Kirby"
+  },
+  "plugins": [
+    {
+      "name": "what-the-heck",
+      "source": "./plugins/what-the-heck",
+      "description": "Teach one idea at a time, prove it landed, then move on."
+    }
+  ]
+}
