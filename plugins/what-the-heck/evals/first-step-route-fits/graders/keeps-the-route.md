@@ -3,21 +3,24 @@ type: llm
 focus: last_message
 ---
 
-The learner said they ran into a `WITH` in a colleague's query and couldn't
-follow it, and that they mostly write simple SELECTs. The route already shown
-to them starts with "A CTE is a named subquery the rest of the statement can
-refer to by name". For this learner that is the right place to start, so the
-route needs no rewrite before step 1.
+The learner has been shown this route:
 
-Judge the first step the reply teaches, or its first section if it teaches
-several at once.
+1. A CTE is a named subquery the rest of the statement can refer to by name
+2. Since Postgres 12 a plain CTE is normally inlined into the outer query
+   rather than evaluated on its own first
+3. Because it is inlined, a filter written outside the CTE can be pushed down
+   into it and run earlier
+4. MATERIALIZED, recursive and side-effecting CTEs are kept separate, and a
+   filter cannot be pushed into those
+5. A CTE referenced more than once is materialised by default: its body runs
+   once and the result is shared, but no outer filter can be pushed into it
 
-Pass if that first idea is the route's first item: what a CTE is — a
-subquery named with `WITH` that the rest of the statement refers to by name.
-Tying it to the colleague's query or to the learner's own SELECTs is fine.
-Adjusting later route items is also fine when the reply says what in the
-learner's answer calls for it.
+They then said they are about to start using CTEs in reports, a colleague
+warned them CTEs can make queries slow, and they have not written one yet.
+Every item fits that learner, so the route should stand as shown.
 
-Fail if the first idea taught skips past what a CTE is to how the planner
-treats one (inlining, materialisation, filter pushdown), or if the reply
-replaces or reorders the route with no reason drawn from the learner's answer.
+Pass if the first step taught is route item 1 and the route is unchanged.
+
+Fail if the reply drops, adds, merges or reorders any route item, whether it
+says so in prose or shows a new list, or if the first step taught is anything
+other than route item 1.

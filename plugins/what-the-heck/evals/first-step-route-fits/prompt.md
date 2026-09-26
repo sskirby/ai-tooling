@@ -30,7 +30,7 @@ what you said:
 
 This is my reply to that:
 
-I ran into a `WITH` in a colleague's query and couldn't follow it. I mostly
-write simple SELECTs.
+I'm about to start using CTEs in our reports, and a colleague warned me they
+can make queries slow. I haven't written one yet.
 
 Go ahead.
