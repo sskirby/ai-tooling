@@ -238,9 +238,6 @@ route-not-repeated).
 
 ## Part 2 — build and verification
 
-Written with authority: these were decided in the design conversation, not
-reconstructed after the fact.
-
 ## B1 — One repo, one marketplace, one plugin
 
 **Decision.** The repo is the marketplace and holds one plugin under
@@ -309,24 +306,7 @@ before merge, not automatically by CI.
 **Pinned by.** The lint job; the pre-merge command documented in the root
 README.
 
-## B5 — The port is lexical only
-
-**Decision.** Porting the skill into this plugin changed four identifiers
-and nothing else — the `description` included. Later changes to the skill
-are the author's, each pinned by its own entry.
-
-**Rejected.** Fixing the too-broad description during the port. The suite
-is written by the same person editing the skill; a suite written to match
-edits just made would only confirm the author is self-consistent, not
-that the skill behaves.
-
-**Cost.** One extra iteration once the suite finds a real problem — cheap,
-because a passing negative-trigger case is a short run.
-
-**Pinned by.** evals/opening/, evals/no-trigger-task-ask/,
-evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/.
-
-## B6 — The trigger excludes task requests
+## B5 — The trigger excludes task requests
 
 **Decision.** The skill's trigger is narrow: a request to perform a task
 does not fire the skill, even when it carries an "I don't get this,
@@ -344,7 +324,7 @@ evals/no-trigger-mid-implementation/, evals/no-trigger-explain-and-do/
 (the one that uses the description's own trigger vocabulary in a task
 request).
 
-## B7 — "Read the code first" ships unpinned
+## B6 — "Read the code first" ships unpinned
 
 **Decision.** "When the subject is in this repo, read the code before
 step 1" is deliberately unpinned in v1.
@@ -358,7 +338,7 @@ for one rule.
 
 **Pinned by.** Unpinned, by decision. See Open.
 
-## B8 — Pin the model under test and the judge
+## B7 — Pin the model under test and the judge
 
 **Decision.** The model under test is pinned to claude-opus-5-5 in every
 case, and lint refuses a case with no pinned model. The judge is
@@ -380,7 +360,7 @@ score.
 **Pinned by.** The lint rule that refuses an unpinned case;
 `aggregate-result.json` records `model` on every pinned case.
 
-## B9 — Load the skill by slash command in mid-lesson cases
+## B8 — Load the skill by slash command in mid-lesson cases
 
 **Decision.** The four mid-lesson cases — `next-means-one-step`,
 `shaky-reasoning-rechecks`, `wrong-answer-reteaches`, `closing` — open
@@ -409,15 +389,17 @@ token appears in every with-arm reply and no without-arm reply.
 
 ## Open
 
-| Item | Open because | Resolved by |
-|---|---|---|
-| A case for "read the code before step 1" (B7) | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred | A later pass, if a run suggests the rule drifts |
-| Part 1 of this log | The rationale is reconstructed, not authored | The author's review pass |
-| Closing-step brevity | No grader checks the length of the "what will bite you" note | A refinement pass the author has accepted, and a grader for the note's length |
-| Graders that pass in both arms | 14 of the 31 scored graders pass in both arms because bare Opus 5.5 already does the behaviour, so they add nothing to any delta: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `recap-is-easy-to-scan`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step/revised-route-is-shown`; `first-step-route-fits/route-not-repeated` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
-| `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected | A stated rule for a multi-section baseline reply, or a baseline variant of the check |
-| `next-means-one-step`'s natural trigger rate | Without the description's old step-by-step clause, the case's prompt fires the skill naturally about 1 in 3 runs, down from 3 in 3 | The author deciding whether to restore a short clause, weighed against the over-triggering B6 narrowed |
-| The skill states a numeric word budget | `SKILL.md:60` says "≤150 words of prose. Hard budget"; the check grades tightness (D5) | An author ruling: keep 150 as a real ceiling, or drop the number |
-| The skill says one illustration | `SKILL.md:61` says "Exactly one picture or one worked example"; the check allows several (D6) | The refinement pass |
-| The B2 resumed-session hand-check | Planned as a one-off comparison against a genuinely resumed session; not yet performed | Running it and recording the verdict in B2 |
-| Verifying the install on the published path | `origin/main` holds only `LICENSE`, so `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install |
+
+| Item                                                          | Open because                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Resolved by                                                                                                                      |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
+| Closing-step brevity                                          | No grader checks the length of the "what will bite you" note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A refinement pass the author has accepted, and a grader for the note's length                                                    |
+| Graders that pass in both arms                                | 14 of the 31 scored graders pass in both arms because bare Opus 5.5 already does the behaviour, so they add nothing to any delta: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `recap-is-easy-to-scan`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step/revised-route-is-shown`; `first-step-route-fits/route-not-repeated` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
+| `next-means-one-step`'s natural trigger rate                  | Without the description's old step-by-step clause, the case's prompt fires the skill naturally about 1 in 3 runs, down from 3 in 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | The author deciding whether to restore a short clause, weighed against the over-triggering B5 narrowed                           |
+| The skill states a numeric word budget                        | `SKILL.md:60` says "≤150 words of prose. Hard budget"; the check grades tightness (D5)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | An author ruling: keep 150 as a real ceiling, or drop the number                                                                 |
+| The skill says one illustration                               | `SKILL.md:61` says "Exactly one picture or one worked example"; the check allows several (D6)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | The refinement pass                                                                                                              |
+| The B2 resumed-session hand-check                             | Planned as a one-off comparison against a genuinely resumed session; not yet performed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Running it and recording the verdict in B2                                                                                       |
+| Verifying the install on the published path                   | `origin/main` holds only `LICENSE`, so `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install               |
+
+
