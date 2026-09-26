@@ -21,34 +21,31 @@ Where each case stands, this run's `with` score / `without` score / delta:
 | case                          | with | without | Δ     |
 | ----------------------------- | ---- | ------- | ----- |
 | opening                       | 1.00 | 0.25    | +0.75 |
-| first-step                    | 0.88 | 0.25    | +0.63 |
-| next-means-one-step           | 1.00 | 0.67    | +0.33 |
-| closing                       | 1.00 | 0.87    | +0.13 |
-| wrong-answer-reteaches        | 1.00 | 0.75    | +0.25 |
-| shaky-reasoning-rechecks      | 1.00 | 0.83    | +0.17 |
-| first-step-route-fits         | 1.00 | 0.83    | +0.17 |
+| next-means-one-step           | 1.00 | 0.50    | +0.50 |
+| first-step                    | 0.71 | 0.29    | +0.42 |
+| closing                       | 1.00 | 0.80    | +0.20 |
+| wrong-answer-reteaches        | 1.00 | 0.83    | +0.17 |
+| shaky-reasoning-rechecks      | 1.00 | 0.92    | +0.08 |
+| first-step-route-fits         | 1.00 | 1.00    | 0.00  |
 | no-trigger-explain-and-do     | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask           | 1.00 | 1.00    | 0.00  |
 
 
-The mean delta is **+0.35 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
+The mean delta is **+0.30 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
 design — the skill must not fire on those prompts and it does not — so
 averaging them in drags the figure down for a reason that is a pass, not a
 failure.
 
-Of the scored graders across the seven teaching cases, 8 discriminate
-cleanly, 6 discriminate only weakly (the baseline lands them 1 or 2 of 3:
-`names-the-gotcha`, `recap-is-one-item-per-step`, `illustration-without-clutter`,
-`advances-without-commentary`, `rechecks-before-moving-on`, `keeps-the-route`),
-14 are inert (pass in both arms because bare Opus 5.5 already does the
-behaviour), and 3 fail in the with arm (`check-requires-using-the-idea`,
-`no-extraneous-prose` — see D4, D5 — and `step-one-is-new-to-them` — see
-D11). Inert graders cluster mid-lesson: shaky 3/4, wrong-answer 3/4,
-next-means 2/4. On Opus 5.5, the skill's measurable value is concentrated
-in the opening and first step — not because the later behaviours don't
-matter, but because the baseline already does most of them. See Open
-("Graders that pass in both arms").
+Of the scored graders across the seven teaching cases, 5 discriminate
+cleanly, 7 discriminate only weakly (the baseline lands them 1 or 2 of 3),
+13 are inert (pass in both arms because bare Opus 5.5 already does the
+behaviour), and 6 fail in the with arm, all in first-step: in one of its
+three runs the skill did not fire, which fails five of them at once, and
+`check-requires-using-the-idea` failed one more run on a check the step
+had already answered. Inert graders cluster mid-lesson: shaky 3/4,
+wrong-answer 3/4, next-means 2/4. See Open ("Graders that pass in both
+arms").
 
 Run-to-run noise on a 3-run case is about ±0.20, so a delta smaller than
 that on any single case is not signal.
@@ -390,7 +387,7 @@ token appears in every with-arm reply and no without-arm reply.
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
 | Closing-step brevity                                          | No grader checks the length of the "what will bite you" note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A refinement pass the author has accepted, and a grader for the note's length                                                    |
-| Graders that pass in both arms                                | 14 of the 31 scored graders pass in both arms because bare Opus 5.5 already does the behaviour, so they add nothing to any delta: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `recap-is-easy-to-scan`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step/revised-route-is-shown`; `first-step-route-fits/route-not-repeated` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| Graders that pass in both arms | 13 of the 31 scored graders pass in both arms because bare Opus 5.5 already does the behaviour, so they add nothing to any delta: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step-route-fits/keeps-the-route`, `route-not-repeated` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
 | `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
 | The B2 resumed-session hand-check                             | Planned as a one-off comparison against a genuinely resumed session; not yet performed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Running it and recording the verdict in B2                                                                                       |
 | Verifying the install on the published path                   | `origin/main` holds only `LICENSE`, so `/plugin marketplace add sskirby/ai-tooling` cannot resolve yet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Merging the pull request, then adding the marketplace by its GitHub name and running one case against that install               |
