@@ -16,6 +16,19 @@ from pathlib import Path
 
 import yaml
 
+
+class _NoAliasSafeLoader(yaml.SafeLoader):
+    """Matches Ruby's YAML.safe_load(text, aliases: false): rejects any alias."""
+
+    def compose_node(self, parent, index):
+        if self.check_event(yaml.events.AliasEvent):
+            raise yaml.YAMLError(
+                "Alias parsing was not enabled. To enable it, pass `aliases: true` "
+                "to `Psych::load` or `Psych::safe_load`."
+            )
+        return super().compose_node(parent, index)
+
+
 GRADER_TYPES = ["regex", "tool_order", "tool_used", "file_exists", "llm", "baseline"]
 FOCI = ["trace", "last_message", "files", "mock_calls"]
 MATCHES = ["contains", "not_contains"]
@@ -104,7 +117,7 @@ class Checker:
 
     def _load_yaml(self, text, path, what):
         try:
-            return yaml.safe_load(text)
+            return yaml.load(text, Loader=_NoAliasSafeLoader)
         except yaml.YAMLError as e:
             self._err(path, f"invalid {what}: {str(e).splitlines()[0].strip()}")
             return None
