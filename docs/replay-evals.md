@@ -24,6 +24,49 @@ A replayed transcript — a real `--resume` history with the skill already
 loaded, generated fresh from the current `SKILL.md` — scores like a
 natural trigger. That's what replay cases run.
 
+## What replay cases measure that the old cases did not
+
+A side-by-side run of the six old later-turn cases and their replay
+pairs, 3 runs per arm, `claude-opus-5-5` as model and judge, CLI 2.1.283:
+
+| Case | Old: with / without / Δ | Replay: with / baseline / Δ |
+| --- | --- | --- |
+| first-step | 0.96 / 0.21 / +0.75 | 0.92 / 0.21 / +0.71 |
+| first-step-route-fits | 0.67 / 1.00 / −0.33 | 1.00 / 0.67 / +0.33 |
+| next-means-one-step | 1.00 / 0.58 / +0.42 | 1.00 / 0.92 / +0.08 |
+| shaky-reasoning-rechecks | 1.00 / 1.00 / 0.00 | 1.00 / 0.75 / +0.25 |
+| wrong-answer-reteaches | 1.00 / 0.83 / +0.17 | 1.00 / 0.92 / +0.08 |
+| closing | 1.00 / 0.93 / +0.07 | 1.00 / 0.87 / +0.13 |
+
+- **The with-skill side stops failing for loading reasons.** The old
+  `first-step-route-fits` loads the skill by slash command, and in one
+  run in three it added a sixth route step and printed the route again.
+  The replay case kept the route in every run. Replay with-skill scores
+  are 1.00 everywhere except one `first-step` run, whose check question
+  could be answered by repeating the step.
+- **The baseline is a real conversation, so Δ means something.** The old
+  no-skill arms got the restated prompt, and some had no conversation at
+  all. In `next-means-one-step` that arm replied that it could not see
+  the earlier conversation and that the slash command was not installed,
+  which inflated Δ to +0.42. In `first-step-route-fits` it read the route
+  restated in its own prompt and followed it, which made Δ negative. The
+  replay baseline resumes the same turns as the replay case, minus the
+  skill load.
+- **Replay cases show skill effects the old cases could not.** In
+  `shaky-reasoning-rechecks`, every baseline run named the gap in the
+  learner's reasoning and then went straight on to step 3. With the
+  skill, the reply re-checks and stays on step 2. The old case scored
+  0.00 Δ because its no-skill arm had no lesson to move on through.
+- **Where the old case was sound, the replay agrees.** `first-step`,
+  `wrong-answer-reteaches` and `closing` land within a run or two of the
+  old numbers.
+
+Two limits apply when reading these numbers. The baseline copies the
+skill's format from the earlier turns in its history (see Known
+differences), which is why `next-means-one-step` shows only +0.08. And
+with 3 runs per arm, one grader changing its verdict in one run moves a
+case's score by 0.04 to 0.17, depending on how many graders it has.
+
 ## How it works
 
 Sources are generated into paired cases, one with the skill load in
