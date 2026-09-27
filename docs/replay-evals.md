@@ -273,6 +273,89 @@ Captured text is then edited to the canonical route: the earlier turn a
 real run produces isn't always the turn the case should pin, so the
 capture is corrected before it becomes source.
 
+### How to capture a lesson
+
+The what-the-heck lesson lives in `plugins/what-the-heck/replays/_lesson.yaml`.
+It is not a source (the generator reads only `replays/*/case.yaml`); it is
+the working file the six sources were cut from.
+
+**1. Start the file with the first user turn.** You write every user turn;
+`capture.py` only ever adds assistant turns.
+
+```yaml
+skill: what-the-heck:what-the-heck
+model: claude-opus-5-5
+messages:
+  - role: user
+    content: what the heck is a CTE?
+```
+
+**2. Run the capture.**
+
+```
+uv run scripts/evals/capture.py plugins/what-the-heck plugins/what-the-heck/replays/_lesson.yaml
+```
+
+It builds a one-case eval in `plugins/what-the-heck/replay-capture/`
+(gitignored, wiped on the next run): the last user turn becomes the
+case's prompt, and the earlier turns, if any, become its `history.jsonl`.
+It runs that case once with `claude plugin eval`, reads the reply from the
+run's trace, appends it to `_lesson.yaml` as an assistant turn, and prints
+it. The eval sandbox keeps your own `CLAUDE.md` and settings out of the
+reply.
+
+On the first run there is no history, so the skill has to load on its own.
+The appended turn records the `args` the model passed to the Skill tool:
+
+```yaml
+  - role: assistant
+    skill:
+      name: what-the-heck:what-the-heck
+      args: CTE
+    content: |-
+      **Short answer:** A CTE (Common Table Expression) is ...
+```
+
+If the skill does not load, it retries, up to three attempts. Each run is
+capped at $1, so the first turn can cost up to $3 and each later turn up
+to $1.
+
+**3. Read the reply and fix it before going on.** The next run resumes a
+transcript built from the whole file, so whatever the file says, the model
+believes it said. A reply that drifts from the route (skips a step, renames
+the route, renumbers "Step 3 of 4") would carry that drift into every later
+turn. Edit the reply in place until it teaches the route item it should.
+
+**4. Add the next user turn by hand, then run step 2 again.** For example,
+the calibration reply:
+
+```yaml
+  - role: user
+    content: I'm about to start using CTEs in our reports, and a colleague warned me ...
+```
+
+`capture.py` refuses to run while the file ends on an assistant turn. Repeat
+steps 2 to 4 until the lesson reaches the last turn a case needs.
+
+**5. Cut the sources from the finished lesson.** Each source's
+`context.messages` is a copy of the first turns of `_lesson.yaml`, keeping
+the `skill` entry on the opening. Its `execution.prompt` is that case's own
+next learner turn. For the six what-the-heck sources:
+
+| Source | Turns copied from `_lesson.yaml` | Live prompt |
+| --- | --- | --- |
+| `first-step`, `first-step-route-fits` | the first 2 (question, opening) | each case's calibration reply |
+| `next-means-one-step`, `shaky-reasoning-rechecks`, `wrong-answer-reteaches` | the first 6 (through step 2) | `next`, or the learner's answer to step 2's check |
+| `closing` | all 12 (through step 5) | the learner's answer to step 5's check |
+
+Put the graders in `replays/<case>/graders/`, then run
+`uv run scripts/evals/generate.py --check`.
+
+The copies are not linked. An edit in `_lesson.yaml` changes no replay case,
+and an edit in a source does not flow back. To change a turn, edit it in
+every source whose slice includes it, and in `_lesson.yaml` too so the next
+re-capture starts from the same text.
+
 ## Decisions
 
 **Transcripts generated at run time, not committed and linted.**
