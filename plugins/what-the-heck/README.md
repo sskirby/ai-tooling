@@ -15,37 +15,38 @@ format. Part 2 covers how this repo is built and verified.
 
 Measured on Opus 5.5.
 
-Where each case stands, this run's `with` score / `without` score / delta:
+Where each case stands, this run's `with` score / `without` score / delta.
+For a replay case, `without` is its baseline twin (B9):
 
 
-| case                          | with | without | Δ     |
-| ----------------------------- | ---- | ------- | ----- |
-| opening                       | 1.00 | 0.25    | +0.75 |
-| next-means-one-step           | 1.00 | 0.50    | +0.50 |
-| first-step                    | 0.71 | 0.29    | +0.42 |
-| closing                       | 1.00 | 0.80    | +0.20 |
-| wrong-answer-reteaches        | 1.00 | 0.83    | +0.17 |
-| shaky-reasoning-rechecks      | 1.00 | 0.92    | +0.08 |
-| first-step-route-fits         | 1.00 | 1.00    | 0.00  |
-| no-trigger-explain-and-do     | 1.00 | 1.00    | 0.00  |
-| no-trigger-mid-implementation | 1.00 | 1.00    | 0.00  |
-| no-trigger-task-ask           | 1.00 | 1.00    | 0.00  |
+| case                            | with | without | Δ     |
+| ------------------------------- | ---- | ------- | ----- |
+| opening                         | 1.00 | 0.25    | +0.75 |
+| first-step-replay               | 0.92 | 0.21    | +0.71 |
+| first-step-route-fits-replay    | 1.00 | 0.67    | +0.33 |
+| shaky-reasoning-rechecks-replay | 1.00 | 0.75    | +0.25 |
+| closing-replay                  | 1.00 | 0.87    | +0.13 |
+| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
+| wrong-answer-reteaches-replay   | 1.00 | 0.92    | +0.08 |
+| no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
+| no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
+| no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
 
 
-The mean delta is **+0.30 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
+The mean delta is **+0.33 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
 design — the skill must not fire on those prompts and it does not — so
 averaging them in drags the figure down for a reason that is a pass, not a
 failure.
 
-Of the scored graders across the seven teaching cases, 5 discriminate
-cleanly, 7 discriminate only weakly (the baseline lands them 1 or 2 of 3),
-13 are inert (pass in both arms because bare Opus 5.5 already does the
-behaviour), and 6 fail in the with arm, all in first-step: in one of its
-three runs the skill did not fire, which fails five of them at once, and
-`check-requires-using-the-idea` failed one more run on a check the step
-had already answered. Inert graders cluster mid-lesson: shaky 3/4,
-wrong-answer 3/4, next-means 2/4. See Open ("Graders that pass in both
-arms").
+Of the 31 scored graders across the seven teaching cases, 8 discriminate
+cleanly, 5 discriminate only weakly (the baseline lands them 1 or 2 of 3),
+16 are inert (pass in both arms because bare Opus 5.5 already does the
+behaviour), and 2 miss in the with arm, both in first-step: one run's check
+question could be answered by repeating the step, and another run failed
+`no-extraneous-prose`. Inert graders cluster mid-lesson: shaky 3/4,
+wrong-answer 3/4, next-means 3/4, closing 4/5. The replay baseline copies
+the skill's format from the earlier turns in its history, which is part of
+why. See Open ("Graders that pass in both arms").
 
 Run-to-run noise on a 3-run case is about ±0.20, so a delta smaller than
 that on any single case is not signal.
@@ -107,7 +108,7 @@ one thing they cannot do.
 **Cost.** Roughly doubles the number of turns. Some users
 find it slow; `next` is the escape hatch (see D7).
 
-**Pinned by.** evals/first-step/ (check-requires-using-the-idea).
+**Pinned by.** replays/first-step/ (check-requires-using-the-idea).
 
 ## D5 — Prose stays earned, not padded
 
@@ -128,7 +129,7 @@ words of prose. Hard budget." Replies run past it, but replacing it with a
 tightness rule made first-step's prose and route decisions worse, so the
 number stays as a steer. The check grades tightness, not the count.
 
-**Pinned by.** evals/first-step/ (no-extraneous-prose).
+**Pinned by.** replays/first-step/ (no-extraneous-prose).
 
 ## D6 — Illustrate the step, without crowding it
 
@@ -143,7 +144,7 @@ extreme a step with nothing to look at.
 **Cost.** "Crowding" is a judgement rather than a count, so this check
 cannot be decided mechanically.
 
-**Pinned by.** evals/first-step/ (illustration-without-clutter).
+**Pinned by.** replays/first-step/ (illustration-without-clutter).
 
 ## D7 — `next` means one step, no commentary
 
@@ -156,8 +157,8 @@ use.
 **Cost.** A reader can skip past a misunderstanding; that's their call to
 make, not the skill's to prevent.
 
-**Pinned by.** evals/first-step/ (escape-hatch-present);
-evals/next-means-one-step/ (escape-hatch-present, exactly-one-step,
+**Pinned by.** replays/first-step/ (escape-hatch-present);
+replays/next-means-one-step/ (escape-hatch-present, exactly-one-step,
 advances-without-commentary, step-three-not-a-dump).
 
 ## D8 — Never advance past a wrong answer
@@ -172,9 +173,9 @@ wrong reason.
 **Cost.** A confused reader spends longer on step 2 — which is the point:
 the misunderstanding surfaces at step 2, not step 6.
 
-**Pinned by.** evals/wrong-answer-reteaches/ (does-not-advance,
+**Pinned by.** replays/wrong-answer-reteaches/ (does-not-advance,
 does-not-affirm-the-wrong-answer, issues-a-fresh-check,
-reteaches-from-a-new-angle); evals/shaky-reasoning-rechecks/
+reteaches-from-a-new-angle); replays/shaky-reasoning-rechecks/
 (does-not-advance, does-not-simply-congratulate, names-the-specific-gap,
 rechecks-before-moving-on).
 
@@ -190,7 +191,7 @@ fact, not a chain.
 **Cost.** Writing it well means having actually taught a chain rather than
 a pile of facts.
 
-**Pinned by.** evals/closing/ (names-the-gotcha, recap-is-one-item-per-step,
+**Pinned by.** replays/closing/ (names-the-gotcha, recap-is-one-item-per-step,
 recap-is-easy-to-scan, causal-chain, no-further-check, no-new-step).
 
 ## D10 — Real names, real code
@@ -223,8 +224,8 @@ subquery.
 revision — a second route shown after the first, on top of D3's
 calibration round trip.
 
-**Pinned by.** evals/first-step/ (step-one-is-new-to-them,
-revised-route-is-shown); evals/first-step-route-fits/ (keeps-the-route,
+**Pinned by.** replays/first-step/ (step-one-is-new-to-them,
+revised-route-is-shown); replays/first-step-route-fits/ (keeps-the-route,
 route-not-repeated).
 
 ---
@@ -244,33 +245,30 @@ second plugin without a restructure.
 **Pinned by.** Unpinned by design; `claude plugin validate` and the lint
 job check the shape on every push.
 
-## B2 — Restated context, not resumed-session fixtures
+## B2 — Later turns come from a replayed transcript, not restated context
 
-**Decision.** Post-turn-1 behaviour in a case comes from inline restated
-context in the prompt, not from a `context.history_file` pointing at a
-sampled transcript. The restated context quotes what a grader needs to
-compare against — the earlier route, the earlier explanation — not just a
-summary of it.
+**Decision.** A case that tests a later turn resumes a transcript of the
+earlier turns through `context.history_file`, generated from the current
+`SKILL.md` on every run (B9). The earlier assistant turns are captured once
+from a real run and edited to the canonical route.
 
-**Rejected.** Resumed-session fixtures. A replayed transcript that
-includes the turn-1 skill load hands the skill text to the baseline arm
-too, so it cannot give an ablation delta on exactly the cases that need
-it most; the CLI runs such cases single-arm by default. A sampled
-transcript also runs to roughly 900 KB and carries account IDs, `cwd` and
-`gitBranch`, all needing scrubbing on every regeneration.
+**Rejected.** Restating the earlier turns inside one prompt. The model
+reads a description of the exchange instead of having it, and the no-skill
+arm has no conversation to act in: it replies that it cannot see the
+earlier turns, or follows a route restated in its own prompt. Measured side
+by side, that inflated `next-means-one-step`'s Δ to +0.42 (replay: +0.08)
+and made `first-step-route-fits`'s negative, −0.33 (replay: +0.33); see
+[docs/replay-evals.md](../../docs/replay-evals.md). Sampled real
+transcripts: roughly 900 KB each, with account IDs, `cwd` and `gitBranch`
+to scrub on every regeneration; a generated transcript carries none of it.
 
-**Cost.** The prompt describes the prior exchange instead of being it, so
-a case can drift from what a real resumed session would contain, and it
-can restate something false that no one but the model under test notices.
-A hand-check against a genuine four-turn conversation, with the skill
-loading itself and a wrong answer at step 2, behaved as
-`wrong-answer-reteaches` does on all four of its checks: it said the answer
-was wrong, stayed on step 2, re-taught with a new worked example and asked
-a fresh check. That is one conversation, not a measurement.
+**Cost.** Earlier turns are fixed, edited text, where a real learner sees
+whatever the model wrote at turn 1. The explainer lists the other
+differences from real use.
 
-**Pinned by.** evals/first-step/, evals/first-step-route-fits/,
-evals/closing/, evals/wrong-answer-reteaches/, evals/next-means-one-step/,
-evals/shaky-reasoning-rechecks/.
+**Pinned by.** replays/first-step/, replays/first-step-route-fits/,
+replays/next-means-one-step/, replays/shaky-reasoning-rechecks/,
+replays/wrong-answer-reteaches/, replays/closing/.
 
 ## B3 — Hybrid case packaging
 
@@ -359,43 +357,36 @@ score.
 **Pinned by.** The lint rule that refuses an unpinned case;
 `aggregate-result.json` records `model` on every pinned case.
 
-## B8 — Load the skill by slash command in mid-lesson cases
+## B8 — The skill loads in the history, not by slash command
 
-**Decision.** The four mid-lesson cases — `next-means-one-step`,
-`shaky-reasoning-rechecks`, `wrong-answer-reteaches`, `closing` — open
-their prompt with `/what-the-heck:what-the-heck` instead of relying on a
-natural-language trigger.
+**Decision.** In a later-turn case the skill load is part of the replayed
+history: a Skill tool call at turn 1 and the skill text it injects, as a
+natural load leaves them in a real session. Nothing loads the skill during
+the live turn.
 
-**Rejected.** Triggering these cases the same way as `opening` and
-`first-step`. On claude-opus-5-5 no prompt wording fired the skill
-reliably mid-lesson; the best reached about 1 in 3. In real use the skill
-loads once, at turn 1, and stays loaded; a single-turn case can only
-reproduce "already loaded" by loading it deterministically.
+**Rejected.** Opening the prompt with `/what-the-heck:what-the-heck`. The
+whole prompt becomes the skill's `ARGUMENTS`, which on
+`first-step-route-fits` dropped `keeps-the-route` from 19/20 to 11/20, and
+the no-skill arm receives the command as text and says it isn't installed.
+A natural-language trigger in the live turn: on claude-opus-5-5 no wording
+fired the skill reliably mid-lesson; the best reached about 1 in 3.
 
-**Cost.** `skill-fired` (`tool_used: Skill`) cannot see a slash-loaded
-skill, so those four cases don't carry it. The suite splits into cases
-that test triggering (`opening`, `first-step`, `first-step-route-fits`,
-the three `no-trigger-*` cases) and cases that test behaviour once loaded.
-The without arm receives the command as plain text and says it isn't
-installed; `advances-without-commentary` is told to ignore that line.
-Slash loading is not the same as the skill loading itself: the whole
-prompt becomes the skill's `ARGUMENTS`, and on `first-step-route-fits`
-that dropped `keeps-the-route` from 19/20 to 11/20. These four cases
-measure a close relative of real use, not real use itself; issue #2
-tracks a faithful replacement.
+**Cost.** A replay never calls Skill, so `skill-fired` (`tool_used: Skill`)
+cannot apply to it, and the generator refuses that grader. Triggering is
+tested only by the turn-1 cases: `opening` and the three `no-trigger-*`
+cases.
 
-**Pinned by.** A canary check, reproducible and not committed: a throwaway
-copy of the plugin whose `SKILL.md` body tells the model to end every
-reply with a nonsense token, graded by regex. With the slash command the
-token appears in every with-arm reply and no without-arm reply.
+**Pinned by.** evals/opening/ (skill-fired); replays/first-step/,
+replays/first-step-route-fits/, replays/next-means-one-step/,
+replays/shaky-reasoning-rechecks/, replays/wrong-answer-reteaches/,
+replays/closing/.
 
 ## B9 — Replay later-turn cases with a paired baseline
 
-**Decision.** Later-turn behaviour is also measured by replay cases: a
-transcript of the earlier turns, generated from the current `SKILL.md` on
-every run and resumed with `context.history_file`. Each replay case has a
-baseline twin with the same turns, no skill load and only an empty stub
-plugin. `scripts/eval.py` pairs them for Δ. Sources live in `replays/`;
+**Decision.** Each replay case (B2) has a baseline twin with the same
+turns, no skill load and only an empty stub plugin. `scripts/eval.py`
+regenerates both transcripts from the current `SKILL.md`, runs the suite
+once and pairs each case with its twin for Δ. Sources live in `replays/`;
 [docs/replay-evals.md](../../docs/replay-evals.md) explains the mechanism.
 
 **Rejected.** The CLI's with-without on a replay case: its without arm resumes
@@ -418,7 +409,7 @@ replays/wrong-answer-reteaches/, replays/closing/.
 | Item                                                          | Open because                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Resolved by                                                                                                                      |
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
-| Graders that pass in both arms | 13 of the 31 scored graders pass in both arms because bare Opus 5.5 already does the behaviour, so they add nothing to any delta: `opening/answer-before-route`; `next-means-one-step/exactly-one-step`, `step-three-not-a-dump`; `closing/causal-chain`, `no-further-check`; `wrong-answer-reteaches/does-not-advance`, `does-not-affirm-the-wrong-answer`, `reteaches-from-a-new-angle`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `first-step-route-fits/keeps-the-route`, `route-not-repeated` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| Graders that pass in both arms | 16 of the 31 scored graders pass in both arms, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to any delta: `opening/answer-before-route`; `first-step/step-one-is-new-to-them`; `first-step-route-fits/route-not-repeated`; `next-means-one-step/escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`, `rechecks-before-moving-on`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/causal-chain`, `no-further-check`, `recap-is-easy-to-scan`, `recap-is-one-item-per-step` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
 | `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
 
 

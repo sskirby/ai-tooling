@@ -26,8 +26,9 @@ natural trigger. That's what replay cases run.
 
 ## What replay cases measure that the old cases did not
 
-A side-by-side run of the six old later-turn cases and their replay
-pairs, 3 runs per arm, `claude-opus-5-5` as model and judge, CLI 2.1.283:
+A side-by-side run of the six restated-prompt cases the replay cases
+replace and their replay pairs, 3 runs per arm, `claude-opus-5-5` as
+model and judge, CLI 2.1.283:
 
 | Case | Old: with / without / Δ | Replay: with / baseline / Δ |
 | --- | --- | --- |
@@ -216,7 +217,7 @@ The wrapper refuses:
 | A source grader of type `tool_used` on tool `Skill` with `min` of 1 or more | A replay never calls Skill: the load is already in the history. The grader could never pass |
 | A source with no `skill` message, or more than one | The pair would not differ, or would not match a real session |
 | Messages that do not alternate, start with user, or end with assistant | `--resume` needs a coherent chain, and `execution.prompt` is the next user turn |
-| A generated name that collides with an existing case | The old cases stay during migration |
+| A generated name that collides with an existing case | Two cases with one name make results ambiguous |
 | Results where a replay case has arms other than `with`, or a baseline loaded a skill | The one-arm assumption broke; the Δ would be wrong |
 
 Where each runs in CI:
@@ -274,9 +275,9 @@ pass; other with-only graders still carry information about the with arm.
 each run.** A real reply anchors the transcript; editing it fixes drift
 without re-running the sandbox on every eval.
 
-**Old cases kept until a side-by-side comparison.** Retiring them, and
-the README edits to B2 and B8, is a separate change after that
-comparison.
+**Replay cases replace the restated-prompt cases.** The side-by-side
+comparison above is the evidence. A turn-1 case (`opening`, the
+`no-trigger-*` cases) needs no history and stays a normal case.
 
 ## Known differences from real use
 
