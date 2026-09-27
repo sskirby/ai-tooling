@@ -1,0 +1,22 @@
+test/lint/test_lint.py
+  s_6313c637875be2::t_b460afabf98841 137-143
+scripts/lint.py
+  s_6313c637875be2::t_b20fa598c69d6d 19-31
+  s_6313c637875be2::t_4c0c8fa075ff4b 120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2e0651b43127791416894ef6304307792c0ae0db",
+  "prompts": {},
+  "sessions": {
+    "s_6313c637875be2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ffece0f2-2c60-4e48-9659-0174c4d9929f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
