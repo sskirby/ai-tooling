@@ -20,7 +20,7 @@ BASELINE_SUFFIX = "-baseline"
 STUB_NAME = "replay-baseline-stub"
 _TOP_KEYS = {"schema_version", "name", "description", "tags", "context", "execution", "runs", "graders"}
 _META_KEYS = ("schema_version", "description", "tags")
-# Which key a grader file's body fills, per type; scripts/lint.rb reads bodies the same way.
+# Which key a grader file's body fills, per type; scripts/lint.py reads bodies the same way.
 _BODY_KEYS = {"llm": "criteria", "baseline": "criteria", "regex": "pattern"}
 
 # `fail` never returns, so calling it lets mypy narrow types in the branch that follows it.

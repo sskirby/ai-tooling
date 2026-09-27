@@ -287,8 +287,8 @@ files is ceremony for a case that small.
 
 **Cost.** Two shapes to read, and to keep the linter honest about.
 
-**Pinned by.** The lint job (`scripts/lint.rb`) validates both shapes on
-every push; `ruby test/lint_test.rb` exercises the validator itself.
+**Pinned by.** The lint job (`scripts/lint.py`) validates both shapes on
+every push; `test/lint/test_lint.py` exercises the validator itself.
 
 ## B4 — No eval gate on PRs, just lint
 
