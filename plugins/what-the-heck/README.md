@@ -275,7 +275,9 @@ evals/shaky-reasoning-rechecks/.
 ## B3 — Hybrid case packaging
 
 **Decision.** Cases with long rubrics use `prompt.md` + `graders/*.md`;
-the two-grader negative-trigger cases use a single `case.yaml`.
+the two-grader negative-trigger cases use a single `case.yaml`. Replay
+sources in `replays/` use a third shape: `case.yaml` plus
+`context.messages`, with `graders/*.md` beside it.
 
 **Rejected.** One format everywhere. Monolithic YAML buries 700-word
 rubrics inline; splitting every two-grader case into its own directory of
@@ -386,6 +388,27 @@ tracks a faithful replacement.
 copy of the plugin whose `SKILL.md` body tells the model to end every
 reply with a nonsense token, graded by regex. With the slash command the
 token appears in every with-arm reply and no without-arm reply.
+
+## B9 — Replay later-turn cases with a paired baseline
+
+**Decision.** Later-turn behaviour is also measured by replay cases: a
+transcript of the earlier turns, generated from the current `SKILL.md` on
+every run and resumed with `context.history_file`. Each replay case has a
+baseline twin with the same turns, no skill load and only an empty stub
+plugin. `scripts/eval.py` pairs them for Δ. Sources live in `replays/`;
+[docs/replay-evals.md](../../docs/replay-evals.md) explains the mechanism.
+
+**Rejected.** The CLI's with-without on a replay case: its without arm resumes
+the same transcript, skill text included. Committing transcripts and linting
+them against `SKILL.md`: regenerating on every run makes staleness impossible.
+
+**Cost.** Earlier assistant turns carry no thinking blocks, and the baseline
+sees earlier replies written in the skill's format, which inflates it and
+shrinks Δ. The suite must be run through the wrapper.
+
+**Pinned by.** replays/first-step/, replays/first-step-route-fits/,
+replays/next-means-one-step/, replays/shaky-reasoning-rechecks/,
+replays/wrong-answer-reteaches/, replays/closing/.
 
 ---
 
