@@ -134,12 +134,12 @@ class LintTest(unittest.TestCase):
         }))
         self.assertIn("sandbox cwd", "\n".join(errors))
 
-    def test_yaml_alias_in_frontmatter_is_caught(self):
+    def test_yaml_aliases_are_allowed(self):
         errors = lint(self.build({
             "plugins/what-the-heck/skills/what-the-heck/SKILL.md":
                 "---\nname: &n what-the-heck\ndescription: *n\n---\n\nbody\n",
         }))
-        self.assertIn("invalid YAML frontmatter", "\n".join(errors))
+        self.assertEqual(errors, [])
 
     def test_missing_evals_directory_is_caught(self):
         root = self.build()
