@@ -19,7 +19,8 @@ module Lint
     growthbook_overrides append_system_prompt env
   ].freeze
   TEMPLATE_MARKERS = ["TODO: describe what", "TODO: replace"].freeze
-  SKIP_DIRS = %w[results mocks].freeze
+  # replay/ holds cases generated at run time; their sources live in replays/.
+  SKIP_DIRS = %w[results mocks replay].freeze
 
   class Checker
     attr_reader :errors
