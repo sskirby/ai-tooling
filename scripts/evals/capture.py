@@ -25,7 +25,7 @@ import yaml
 
 from transcript import MODEL, Message, SkillLoad, build_records, write_jsonl
 
-CAPTURE_DIR = ".capture"
+CAPTURE_DIR = "replay-capture"
 CASE_NAME = "capture-turn"
 ATTEMPTS = 3
 
@@ -107,10 +107,18 @@ def _run_turn(plugin: Path, capture: dict) -> list[str]:
     subprocess.run([os.environ.get("CLAUDE_BIN", "claude"), "plugin", "eval", str(plugin),
                     "--eval-dir", CAPTURE_DIR, "--ablation", "none", "--runs", "1", "--trust-plugin",
                     "--no-publish", "--keep-temp", "--max-cost-usd", "1", "--json", str(result_path)], check=False)
+    run = read_run(result_path)
+    return Path(run["tracePath"]).read_text(encoding="utf-8").splitlines()
+
+
+def read_run(result_path: Path) -> dict:
+    """The one run a capture child produced, or RuntimeError when it did not produce a usable one."""
+    if not result_path.is_file():
+        raise RuntimeError(f"capture run wrote no result at {result_path}; see the eval output above")
     run = json.loads(result_path.read_text())["cases"][0]["arms"]["with"][0]
     if run.get("error") or not run.get("tracePath"):
         raise RuntimeError(f"capture run failed: error={run.get('error')!r} tracePath={run.get('tracePath')!r}")
-    return Path(run["tracePath"]).read_text(encoding="utf-8").splitlines()
+    return run
 
 
 def main(argv: list[str] | None = None) -> int:

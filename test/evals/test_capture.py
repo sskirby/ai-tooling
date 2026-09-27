@@ -1,5 +1,7 @@
 import json
+import re
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -7,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"
 
 import yaml  # noqa: E402
 
-from capture import dump_yaml, reply_from_trace, skill_args_from_trace  # noqa: E402
+from capture import CAPTURE_DIR, dump_yaml, read_run, reply_from_trace, skill_args_from_trace  # noqa: E402
 
 
 def event(*blocks):
@@ -43,6 +45,17 @@ class Dump(unittest.TestCase):
         text = dump_yaml(data)
         self.assertIn("content: |", text)
         self.assertEqual(yaml.safe_load(text), data)
+
+
+class Sandbox(unittest.TestCase):
+    def test_capture_dir_is_a_name_the_cli_accepts(self):
+        # CLI 2.1.283 refuses an --eval-dir that does not start with a letter or digit.
+        self.assertRegex(CAPTURE_DIR, r"\A[A-Za-z0-9][A-Za-z0-9._\-@+]*\Z")
+
+    def test_missing_result_is_a_clear_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(RuntimeError, "no result"):
+                read_run(Path(tmp) / "result.json")
 
 
 if __name__ == "__main__":
