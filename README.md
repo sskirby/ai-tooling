@@ -41,11 +41,18 @@ only; the suite itself is a command a human runs before merging, because a full
 run costs real money on a live credential:
 
 ```
-claude plugin eval ./plugins/what-the-heck --ablation with-without \
+uv run scripts/eval.py ./plugins/what-the-heck \
   --judge-model claude-opus-5-5 --max-cost-usd 25
 ```
 
-The headline number is Δ — the with-plugin score minus the without-plugin score.
+Run the suite through `scripts/eval.py`, not `claude plugin eval` directly. It
+rebuilds the replay cases from the current `SKILL.md`, runs the suite once, and
+prints one table (also written to `evals/replay/delta.md`). The headline number
+is Δ: the with-plugin score minus the no-plugin score. For a replay case the
+wrapper pairs it with its baseline to get Δ; see
+[docs/replay-evals.md](docs/replay-evals.md). Don't pass `--ablation`, and give
+the plugin as a path: either one makes replay cases run a second arm that is
+taught by the skill anyway, so the wrapper refuses both.
 
 Pass the judge as a full model ID, not an alias. Leave the flag off and the
 LLM graders run on Haiku; pass `opus` or `sonnet` and the model behind the
