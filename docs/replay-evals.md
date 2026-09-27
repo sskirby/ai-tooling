@@ -24,6 +24,32 @@ A replayed transcript — a real `--resume` history with the skill already
 loaded, generated fresh from the current `SKILL.md` — scores like a
 natural trigger. That's what replay cases run.
 
+### What `claude plugin eval` can't do on its own
+
+The CLI can resume a case from earlier turns, but three gaps stop that
+from giving a trustworthy Δ:
+
+- **Nothing builds the transcript.** A case carries earlier turns only
+  through `context.history_file`, a saved session transcript. A real
+  saved session runs to roughly 900 KB, carries account IDs, `cwd` and
+  `gitBranch` that need scrubbing, and holds the skill text as it was
+  when the session ran, so it goes stale the moment `SKILL.md` changes.
+- **The baseline can't strip the skill from a transcript.** `--ablation`
+  accepts only `none` or `with-without`, and the with-without baseline
+  arm drops the plugin but resumes the same transcript, skill text
+  included. Both arms are taught by the skill, so the Δ means nothing.
+  There is no without-only mode, and by default the CLI runs a history
+  case single-arm, with no Δ at all.
+- **Nothing pairs two cases.** The CLI computes Δ only between the two
+  arms of one case. It has no way to say that one case is the baseline
+  of another.
+
+Replay cases fill those gaps: `generate.py` writes each transcript from
+the current `SKILL.md` on every run, a baseline twin gets the same turns
+without the skill load and with an empty stub plugin, and `scripts/eval.py`
+pairs the two for Δ. Everything else (the sandbox, judging, the cost
+ceiling, the report) is still the CLI's.
+
 ## What replay cases measure that the old cases did not
 
 A side-by-side run of the six restated-prompt cases the replay cases
@@ -139,7 +165,7 @@ context:
 execution:
   model: claude-opus-5-5
   prompt: |
-    I'm about to start using CTEs in our reports, ... Go ahead.
+    I'm about to start using CTEs in our reports, and a colleague warned me ...
   max_turns: 6
   timeout_seconds: 300
   allowed_tools: [Skill]
