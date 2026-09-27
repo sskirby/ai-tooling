@@ -1,0 +1,23 @@
+test/evals/fixtures/natural-skill-load.json
+  s_6313c637875be2::t_8be27b533bd265 1-7
+scripts/evals/transcript.py
+  s_6313c637875be2::t_4539a41b8dac4f 1-185
+test/evals/test_transcript.py
+  s_6313c637875be2::t_b6b34ce4a52a21 1-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "42313721e2e097e8b536fb8306cd275bbce4e211",
+  "prompts": {},
+  "sessions": {
+    "s_6313c637875be2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ffece0f2-2c60-4e48-9659-0174c4d9929f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
