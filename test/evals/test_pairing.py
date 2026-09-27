@@ -65,7 +65,7 @@ class PairResults(unittest.TestCase):
         self.assertEqual((row.kind, row.score, row.baseline, row.delta), ("replay", 1.0, 0.5, 0.5))
         self.assertEqual(row.indicators, {"step-heading": "0/2"})
         self.assertEqual(row.runs, 2)
-        self.assertAlmostEqual(row.cost_usd, 4 * 0.15)
+        self.assertAlmostEqual(row.cost_usd, 4 * 0.1)
 
     def test_native_case_uses_cli_delta(self):
         agg = {"score": 1.0, "scoreWithout": 0.25, "delta": 0.75}

@@ -37,8 +37,8 @@ def _runs(case: dict | None) -> list[dict]:
 
 
 def _cost(case: dict | None) -> float:
-    return sum(r.get("costUsd", 0) + r.get("judgeCostUsd", 0)
-               for runs in (case or {}).get("arms", {}).values() for r in runs)
+    # A run's costUsd already includes its judge calls; judgeCostUsd is a breakdown, not an extra.
+    return sum(r.get("costUsd", 0) for runs in (case or {}).get("arms", {}).values() for r in runs)
 
 
 def _mean_score(runs: list[dict], exclude: frozenset[str] = frozenset()) -> float | None:
