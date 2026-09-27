@@ -1,0 +1,21 @@
+scripts/evals/pairing.py
+  s_6313c637875be2::t_e2ce58efac769f 40-41
+test/evals/test_pairing.py
+  s_6313c637875be2::t_ace4be9a92c5e4 68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "102eb7fcc4dc732070389b7066313416428fcd1a",
+  "prompts": {},
+  "sessions": {
+    "s_6313c637875be2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ffece0f2-2c60-4e48-9659-0174c4d9929f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
