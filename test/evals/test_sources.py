@@ -61,8 +61,17 @@ class LoadSource(unittest.TestCase):
         text = LESSON + "  - name: no-skill\n    type: tool_used\n    tool: Skill\n    min: 0\n    max: 0\n"
         self.assertIn("no-skill", [g["name"] for g in self.load(text).graders])
 
-    def test_refuses_body_on_non_llm_grader_file(self):
-        self.assertRefused(LESSON, "only llm graders", {"x.md": "---\ntype: regex\npattern: a\n---\n\nbody\n"})
+    def test_regex_grader_file_body_is_the_pattern(self):
+        source = self.load(LESSON, {"hatch.md": '---\ntype: regex\ntarget: last_message\nmatch: contains\n---\n\nsay "next" to skip ahead\n'})
+        hatch = next(g for g in source.graders if g["name"] == "hatch")
+        self.assertEqual(hatch, {"name": "hatch", "type": "regex", "target": "last_message", "match": "contains",
+                                 "pattern": 'say "next" to skip ahead'})
+
+    def test_refuses_body_on_grader_type_without_one(self):
+        self.assertRefused(LESSON, "takes no body", {"x.md": "---\ntype: tool_used\ntool: Read\n---\n\nbody\n"})
+
+    def test_refuses_pattern_given_twice(self):
+        self.assertRefused(LESSON, "given twice", {"x.md": "---\ntype: regex\npattern: a\n---\n\nb\n"})
 
     def test_refuses_all_with_only(self):
         text = LESSON.replace("    criteria: Pass if the reply teaches exactly one step.\n",

@@ -18,6 +18,8 @@ BASELINE_SUFFIX = "-baseline"
 STUB_NAME = "replay-baseline-stub"
 _TOP_KEYS = {"schema_version", "name", "description", "tags", "context", "execution", "runs", "graders"}
 _META_KEYS = ("schema_version", "description", "tags")
+# Which key a grader file's body fills, per type; scripts/lint.rb reads bodies the same way.
+_BODY_KEYS = {"llm": "criteria", "baseline": "criteria", "regex": "pattern"}
 
 
 class SourceError(Exception):
@@ -155,9 +157,12 @@ def _grader_file(path: Path, fail) -> dict:
     front, body = parsed
     grader = {"name": path.stem, **front}
     if body.strip():
-        if grader.get("type") != "llm":
-            fail(f"graders/{path.name}: only llm graders take a body (it becomes criteria)")
-        grader["criteria"] = body.strip() + "\n"
+        key = _BODY_KEYS.get(grader.get("type"))
+        if key is None:
+            fail(f"graders/{path.name}: a {grader.get('type')} grader takes no body")
+        if key in grader:
+            fail(f"graders/{path.name}: {key} is given twice, as a key and as the body")
+        grader[key] = body.strip() + "\n" if key == "criteria" else body.strip()
     return grader
 
 
