@@ -33,7 +33,6 @@ jobs:
           MAX_COST_USD: ${{ inputs.max_cost_usd }}
         run: |
           # Full model ID, not an alias: an alias moves when the CLI updates.
-          # No --ablation: the wrapper refuses it so replay cases run one arm each.
           args=(./plugins/what-the-heck --trust-plugin --no-publish --report eval-report.html)
           args+=(--judge-model claude-opus-5-5 --max-cost-usd "$MAX_COST_USD" --json eval-result.json)
           if [ -n "$CASE_GLOB" ]; then args+=(--case "$CASE_GLOB"); fi
