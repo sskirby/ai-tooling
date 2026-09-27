@@ -30,8 +30,6 @@ context:
   - role: user
     content: |-
       I'm about to start using CTEs in our reports, and a colleague warned me they can make queries slow. I haven't written one yet.
-
-      Go ahead.
   - role: assistant
     content: |-
       Your colleague's warning is the main thing to understand, and it's mostly out of date. Steps 2–5 cover exactly when it's still true. The route stays the same. One assumption: I'm treating this as **Postgres**, because the slowness story is different in each database. Tell me if your reports run on something else.
@@ -216,8 +214,6 @@ execution:
     The aggregate runs once and both branches share it, but neither branch's filter can
     reach inside, so if each branch only needs a small slice I'd try NOT MATERIALIZED
     and compare the plans.
-
-    That was the last step. Walk me through how the five steps fit together.
   max_turns: 6
   timeout_seconds: 300
   allowed_tools:

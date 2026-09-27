@@ -30,8 +30,6 @@ context:
   - role: user
     content: |-
       I'm about to start using CTEs in our reports, and a colleague warned me they can make queries slow. I haven't written one yet.
-
-      Go ahead.
   - role: assistant
     content: |-
       Your colleague's warning is the main thing to understand, and it's mostly out of date. Steps 2–5 cover exactly when it's still true. The route stays the same. One assumption: I'm treating this as **Postgres**, because the slowness story is different in each database. Tell me if your reports run on something else.

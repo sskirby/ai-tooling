@@ -33,8 +33,6 @@ execution:
     I'm chasing a slow report query at work. It has three chained CTEs and the plan
     looks nothing like I expected. I write SQL with CTEs most days, but I've never
     thought about what the planner does with a CTE.
-
-    Go ahead.
   max_turns: 6
   timeout_seconds: 300
   allowed_tools:

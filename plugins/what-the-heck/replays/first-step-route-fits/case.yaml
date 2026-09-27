@@ -32,8 +32,6 @@ execution:
   prompt: |
     I'm about to start using CTEs in our reports, and a colleague warned me they
     can make queries slow. I haven't written one yet.
-
-    Go ahead.
   max_turns: 6
   timeout_seconds: 300
   allowed_tools:
