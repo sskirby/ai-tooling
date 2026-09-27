@@ -15,9 +15,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - name: Linter unit tests
-        run: ruby test/lint_test.rb
+        run: uv run --with pyyaml python -m unittest discover -s test/lint -v
       - name: Lint manifests and eval cases
-        run: ruby scripts/lint.rb
+        run: uv run scripts/lint.py
       - name: Eval tooling unit tests
         run: uv run python -m unittest discover -s test/evals -v
       - name: Eval tooling types
