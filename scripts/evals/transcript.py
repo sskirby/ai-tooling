@@ -182,7 +182,7 @@ def build_records(seed: str, messages: Sequence[Message], *, cwd: str, skill_md:
             builder.assistant_text(message.content, skill_name=message.skill.name)
         else:
             builder.assistant_text(message.content)
-    builder.last_prompt(messages[0].content)
+    builder.last_prompt(next(m.content for m in reversed(messages) if m.role == "user"))
     return builder.records
 
 

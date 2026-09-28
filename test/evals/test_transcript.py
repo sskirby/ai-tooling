@@ -76,7 +76,7 @@ class WithSkill(unittest.TestCase):
             self.assertEqual(cur["parentUuid"], prev["uuid"])
         last = self.records[-1]
         self.assertEqual(last["leafUuid"], spine[-1]["uuid"])
-        self.assertEqual(last["lastPrompt"], "what is X?")
+        self.assertEqual(last["lastPrompt"], "I use it daily.")
         self.assertEqual({r["sessionId"] for r in self.records}, {last["sessionId"]})
 
     def test_no_thinking_blocks(self):
