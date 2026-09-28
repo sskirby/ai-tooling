@@ -3,10 +3,22 @@ type: llm
 focus: last_message
 ---
 
-The prompt quotes the teacher's original step 2 in full: its prose, and a
-two-column PG 11 vs PG 12+ sketch whose content is abstract ("run the CTE →
-stash rows" against "one query tree"). Judge the reply against that text,
-which you can see.
+The learner was taught this step 2 and answered its check wrongly:
+
+> Before 12, a CTE was an optimization fence. The planner ran it on its own,
+> stashed the rows, and only then let the rest of the statement touch them.
+> Since 12 a plain CTE — not `MATERIALIZED`, not recursive, not
+> side-effecting, referenced once — is inlined instead: the planner folds the
+> CTE's body into the outer query and plans the whole statement as one unit.
+>
+> ```
+>   PG 11                        PG 12+
+>   ─────                        ──────
+>   run the CTE → stash rows     one query tree
+>   then run the outer query     one plan, decided together
+> ```
+
+Judge the reply against that quoted explanation.
 
 The reply teaches the same idea again — that an inlined CTE lets the outer
 filter be pushed down — and gives the learner something new to look at: a
