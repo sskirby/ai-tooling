@@ -42,7 +42,9 @@ Bump `version` in the plugin's `.claude-plugin/plugin.json` in every change
 that should reach users. Claude Code detects an update only when that string
 changes; a new commit with the same version leaves users on their cached copy.
 The marketplace entry carries no `version`, so `plugin.json` is the one place to
-change it.
+change it. The lint workflow fails a pull request that changes a plugin without
+bumping it; changes under `evals/`, `replays/` or the plugin's `README.md` are
+exempt. Run the same check locally with `uv run plugin-version-check`.
 
 ## Evals
 
