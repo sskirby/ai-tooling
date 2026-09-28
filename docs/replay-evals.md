@@ -11,8 +11,8 @@ the model never actually held that context, it's just reading a
 transcript pasted into its input. Loading the skill by slash command
 before the live prompt gets closer, but it's still not the same event as
 a natural trigger: the whole prompt becomes the skill's `ARGUMENTS`, and
-that changes what the model sees. On `first-step-route-fits`, `20`
-with-arm runs each, `claude-opus-5-5`, CLI 2.1.283:
+that changes what the model sees. On `first-step-route-fits` at its
+earlier wording, `20` with-arm runs each, `claude-opus-5-5`, CLI 2.1.283:
 
 | Loading | keeps-the-route |
 | --- | --- |
@@ -54,23 +54,24 @@ ceiling, the report) is still the CLI's.
 
 A side-by-side run of the six restated-prompt cases the replay cases
 replace and their replay pairs, 3 runs per arm, `claude-opus-5-5` as
-model and judge, CLI 2.1.283:
+model and judge, CLI 2.1.283, gave the old columns below. The replay
+cases were then reworded. Learner lines that do the skill's job went:
+"Go ahead." after a calibration answer, the request for a recap after
+the last step, and the "Is that right?" tails on two check answers.
+`first-step-route-fits`'s calibration answer became only "Go ahead.",
+and `does-not-advance` now also fails a jump past step 3. The replay
+columns come from replay-only runs of the reworded cases with the same
+settings.
 
 | Case | Old: with / without / Δ | Replay: with / baseline / Δ |
 | --- | --- | --- |
-| first-step | 0.96 / 0.21 / +0.75 | 0.92 / 0.21 / +0.71 |
-| first-step-route-fits | 0.67 / 1.00 / −0.33 | 1.00 / 0.67 / +0.33 |
-| next-means-one-step | 1.00 / 0.58 / +0.42 | 1.00 / 0.92 / +0.08 |
-| shaky-reasoning-rechecks | 1.00 / 1.00 / 0.00 | 1.00 / 0.75 / +0.25 |
-| wrong-answer-reteaches | 1.00 / 0.83 / +0.17 | 1.00 / 0.92 / +0.08 |
-| closing | 1.00 / 0.93 / +0.07 | 1.00 / 0.87 / +0.13 |
+| first-step | 0.96 / 0.21 / +0.75 | 0.92 / 0.25 / +0.67 |
+| first-step-route-fits | 0.67 / 1.00 / −0.33 | 1.00 / 1.00 / 0.00 |
+| next-means-one-step | 1.00 / 0.58 / +0.42 | 1.00 / 1.00 / 0.00 |
+| shaky-reasoning-rechecks | 1.00 / 1.00 / 0.00 | 0.92 / 0.67 / +0.25 |
+| wrong-answer-reteaches | 1.00 / 0.83 / +0.17 | 1.00 / 0.75 / +0.25 |
+| closing | 1.00 / 0.93 / +0.07 | 1.00 / 0.60 / +0.40 |
 
-- **The with-skill side stops failing for loading reasons.** The old
-  `first-step-route-fits` loads the skill by slash command, and in one
-  run in three it added a sixth route step and printed the route again.
-  The replay case kept the route in every run. Replay with-skill scores
-  are 1.00 everywhere except one `first-step` run, whose check question
-  could be answered by repeating the step.
 - **The baseline is a real conversation, so Δ means something.** The old
   no-skill arms got the restated prompt, and some had no conversation at
   all. In `next-means-one-step` that arm replied that it could not see
@@ -80,17 +81,35 @@ model and judge, CLI 2.1.283:
   replay baseline resumes the same turns as the replay case, minus the
   skill load.
 - **Replay cases show skill effects the old cases could not.** In
-  `shaky-reasoning-rechecks`, every baseline run named the gap in the
-  learner's reasoning and then went straight on to step 3. With the
-  skill, the reply re-checks and stays on step 2. The old case scored
-  0.00 Δ because its no-skill arm had no lesson to move on through.
-- **Where the old case was sound, the replay agrees.** `first-step`,
-  `wrong-answer-reteaches` and `closing` land within a run or two of the
-  old numbers.
+  `wrong-answer-reteaches`, every baseline run corrected the learner and
+  went on to step 3; with the skill, every run re-taught step 2 and asked
+  a new check. In `shaky-reasoning-rechecks`, every baseline run named
+  the gap in the learner's reasoning and then moved on, to step 3 or
+  step 4; with the skill, every run re-checked and stayed on step 2. The
+  old case scored 0.00 Δ because its no-skill arm had no lesson to move
+  on through.
+- **The closing recap is the skill's.** Nothing in the closing prompt
+  asks for a recap. With the skill, every run gave the lesson back as a
+  numbered chain of the five steps. The baseline closed with a summary
+  table or advice to pass on to the colleague, and failed `causal-chain`
+  in all three runs. When the prompt asked for the recap, the baseline
+  gave one too, and Δ was +0.13.
+- **`first-step-route-fits` guards a rule rather than measuring it.**
+  When the learner says only "Go ahead.", both arms keep the route and
+  start at item 1, so Δ is 0.00. When the calibration answer carried any
+  detail, such as a colleague's warning that CTEs are slow or being new
+  to writing them, the skill revised the route in every run, reading the
+  detail as a change in what is worth teaching.
+- **With the skill, the misses are single runs.** `first-step` misses
+  two graders in one run: its check can be answered by quoting the
+  step's "free to reorder" sentence, and its prose failed
+  `no-extraneous-prose`. `shaky-reasoning-rechecks` misses one: its check
+  asks how to find out whether a CTE was inlined, not something that
+  tests the corrected reasoning.
 
 Two limits apply when reading these numbers. The baseline copies the
 skill's format from the earlier turns in its history (see Known
-differences), which is why `next-means-one-step` shows only +0.08. And
+differences), which is why `next-means-one-step` shows 0.00. And
 with 3 runs per arm, one grader changing its verdict in one run moves a
 case's score by 0.04 to 0.17, depending on how many graders it has.
 
@@ -165,7 +184,7 @@ context:
 execution:
   model: claude-opus-5-5
   prompt: |
-    I'm about to start using CTEs in our reports, and a colleague warned me ...
+    Go ahead.
   max_turns: 6
   timeout_seconds: 300
   allowed_tools: [Skill]
@@ -212,7 +231,30 @@ evals/replay/
 
 The generated `case.yaml` carries the source's `execution`, `runs` and
 graders (inlined; the baseline gets every grader except `arm: with-only`
-ones), drops `messages`, and adds `context.history_file`.
+ones), drops `messages`, and adds `context.history_file`. The stub's
+`plugin.json` is:
+
+```json
+{"name": "replay-baseline-stub", "version": "0.0.0", "description": "No skills. Stands in for the plugin under test in a replay baseline."}
+```
+
+The with-skill `history.jsonl` holds these records, in order:
+
+1. `user`: the first user message, as string content.
+2. `assistant`: one `tool_use` block calling `Skill`, with input
+   `{skill, args}` from the source's `skill` entry.
+3. `user`: the `tool_result` "Launching skill: &lt;name&gt;", with
+   `toolUseResult` and `sourceToolAssistantUUID`.
+4. `user`, `isMeta: true`, with `sourceToolUseID` and `turnCompanion`:
+   `Base directory for this skill: <skill dir>`, the trimmed `SKILL.md`
+   body and `ARGUMENTS: <args>`, byte-for-byte as the CLI builds it.
+5. `assistant`: the text of the message marked `skill`, with
+   `attributionSkill` and `attributionPlugin`.
+6. The remaining messages, as plain `user` and `assistant` text records.
+7. `last-prompt`, with `leafUuid` set to the last record's uuid.
+
+The baseline transcript is the same with records 2–4 removed and no
+attribution fields on record 5.
 
 Every record in a transcript carries `uuid`, `parentUuid` (one chain),
 `sessionId`, `cwd`, `version`, `gitBranch`, `userType`, `entrypoint`,
@@ -240,7 +282,7 @@ The wrapper refuses:
 | `--ablation` passed to the wrapper | `with-without` gives `<name>` a second arm that resumes a transcript carrying the skill text: a meaningless Δ, at double cost |
 | A target that is not an existing directory | An installed plugin name also switches history cases to two arms |
 | A `--case` glob that matches one side of a pair but not the other | A replay case without its baseline has no Δ |
-| A source grader of type `tool_used` on tool `Skill` with `min` of 1 or more | A replay never calls Skill: the load is already in the history. The grader could never pass |
+| A source grader of type `tool_used` on tool `Skill` with `min` of 1 or more, such as `skill-fired` | A replay never calls Skill: the load is already in the history, so the grader could never pass. The generator stops with an error naming the grader; neither case is written |
 | A source with no `skill` message, or more than one | The pair would not differ, or would not match a real session |
 | Messages that do not alternate, start with user, or end with assistant | `--resume` needs a coherent chain, and `execution.prompt` is the next user turn |
 | A generated name that collides with an existing case | Two cases with one name make results ambiguous |
@@ -391,8 +433,10 @@ comparison above is the evidence. A turn-1 case (`opening`, the
 ## Known differences from real use
 
 - **No earlier thinking.** Real saved assistant turns carry a thinking
-  block with empty text and an encrypted signature. Generated turns carry
-  none; valid signatures can't be made. New replies still think.
+  block with empty text and an encrypted signature (900–3,600
+  characters). Generated turns carry none; valid signatures can't be
+  made. Whether a real session sends earlier signatures back to the API
+  is unresolved. New replies still think.
 - **The baseline sees skill-shaped history.** Its earlier assistant turns
   were written with the skill loaded, so it can copy their format without
   the rules. This inflates the baseline and shrinks Δ. Accepted.
