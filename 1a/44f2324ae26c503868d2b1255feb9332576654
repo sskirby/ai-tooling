@@ -1,0 +1,27 @@
+test/lint/test_lint.py
+  s_6313c637875be2::t_7d5b0678fff6ca 1-145
+plugins/what-the-heck/README.md
+  s_6313c637875be2::t_8ef5f3f92a2dc8 290-291
+scripts/evals/sources.py
+  s_6313c637875be2::t_e4e899cf789901 23
+scripts/lint.py
+  s_6313c637875be2::t_bbd824077cc48a 37-51
+  s_6313c637875be2::t_44417034c12232 65,77,128,130,150,207,245,252,259,262,267,272,277,281,283,286,289,291,295,298,307,316
+  s_6313c637875be2::t_cc81273e009ef0 1-36,52-64,66-76,78-127,129,131-149,151-206,208-244,246-251,253-258,260-261,263-266,268-271,273-276,278-280,282,284-285,287-288,290,292-294,296-297,299-306,308-315,317-333
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1a44f2324ae26c503868d2b1255feb9332576654",
+  "prompts": {},
+  "sessions": {
+    "s_6313c637875be2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ffece0f2-2c60-4e48-9659-0174c4d9929f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
