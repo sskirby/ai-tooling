@@ -1,0 +1,21 @@
+pyproject.toml
+  s_9ed1eb0d10e782::t_6d7e241fc59ded 23-33
+.github/workflows/lint.yml
+  s_9ed1eb0d10e782::t_6d7e241fc59ded 23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "853162be329bbc371c4ecec22bda0a90c8dec921",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
