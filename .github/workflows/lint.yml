@@ -14,13 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - name: Linter unit tests
-        run: ruby test/lint_test.rb
       - name: Lint manifests and eval cases
-        run: ruby scripts/lint.rb
-      - name: Eval tooling unit tests
+        run: uv run plugin-lint
+      - name: Unit tests
         run: uv run python -m unittest discover -s test/evals -v
-      - name: Eval tooling types
+      - name: Types
         run: uv run mypy
       - name: Replay sources
         run: uv run replay-generate --check
