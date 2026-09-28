@@ -1,0 +1,22 @@
+docs/replay-evals.md
+  s_9ed1eb0d10e782::t_5a968da10dcbfe 234-257,285,436-439
+  s_9ed1eb0d10e782::t_6cdc443ffe6613 14-15
+  s_9ed1eb0d10e782::t_025bd0444c4a5c 57-64,68-74,84-103,107-108,112,187
+  s_9ed1eb0d10e782::t_666c0d306cec25 104-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fe23f7627aff121b22e201ad1d5f8d2a7f0082f8",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
