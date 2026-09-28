@@ -12,5 +12,4 @@ plugins/*/replay-capture/
 # Python bytecode from running scripts/evals and its tests
 __pycache__/
 
-# uv-managed virtualenv
 .venv/
