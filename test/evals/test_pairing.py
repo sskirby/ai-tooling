@@ -77,6 +77,14 @@ class PairResults(unittest.TestCase):
         self.assertIsNone(row.delta)
         self.assertEqual(row.note, "baseline missing")
 
+    def test_missing_replay_case_still_gets_a_row(self):
+        row = self.rows([case("lesson-replay-baseline", [BASE_RUN])])["lesson-replay"]
+        self.assertEqual((row.kind, row.score, row.baseline, row.delta), ("replay", None, 0.5, None))
+        self.assertEqual(row.note, "replay missing")
+
+    def test_pair_filtered_out_gives_no_row(self):
+        self.assertEqual(self.rows([]), {})
+
     def test_no_runs_says_so(self):
         row = self.rows([case("lesson-replay", []), case("lesson-replay-baseline", [])])["lesson-replay"]
         self.assertIsNone(row.score)

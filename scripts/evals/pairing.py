@@ -64,17 +64,22 @@ def _passes(runs: list[dict], grader_name: str) -> int:
 
 def pair_results(result: dict, with_only: dict[str, frozenset[str]]) -> list[Row]:
     cases = {c["name"]: c for c in result["cases"]}
+    # A baseline stands in for its replay case, so a pair missing its replay side still gets a row.
+    names = dict.fromkeys(
+        n[: -len(BASELINE_SUFFIX)] if n.endswith(BASELINE_SUFFIX) and n[: -len(BASELINE_SUFFIX)] in with_only else n
+        for n in cases)
     rows = []
-    for name, case in cases.items():
-        if name.endswith(BASELINE_SUFFIX) and name[: -len(BASELINE_SUFFIX)] in with_only:
-            continue
+    for name in names:
+        case = cases.get(name)
         runs = _runs(case)
         if name in with_only:
             base = cases.get(name + BASELINE_SUFFIX)
             base_runs = _runs(base)
             score = _mean_score(runs, with_only[name])
             baseline = _mean_score(base_runs)
-            if base is None:
+            if case is None:
+                side_notes = ["replay missing"]
+            elif base is None:
                 side_notes = ["baseline missing"]
             elif runs and not base_runs:
                 side_notes = ["baseline: no runs"]
