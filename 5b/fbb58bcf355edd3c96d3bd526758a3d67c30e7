@@ -1,0 +1,35 @@
+test/evals/test_lint.py
+  s_9ed1eb0d10e782::t_e89c0dde64edc4 7
+plugins/what-the-heck/README.md
+  s_9ed1eb0d10e782::t_6b9855169ad43a 290
+  s_9ed1eb0d10e782::t_60b3477eb6847f 291
+pyproject.toml
+  s_9ed1eb0d10e782::t_6b9855169ad43a 12,31
+scripts/evals/sources.py
+  s_9ed1eb0d10e782::t_6b9855169ad43a 23,94
+scripts/evals/lint.py
+  s_9ed1eb0d10e782::t_a9f31f9510645c 11,33,49,51,53,81,88,91,101,108,116,135,150,166,169-171,239,246,253,297,306
+  s_9ed1eb0d10e782::t_b04413306cf0f6 232-233
+  s_9ed1eb0d10e782::t_bfb3b027030d4d 230-231
+  s_9ed1eb0d10e782::t_6b9855169ad43a 229,316-317,331
+.github/workflows/lint.yml
+  s_9ed1eb0d10e782::t_60b3477eb6847f 21
+  s_9ed1eb0d10e782::t_e89c0dde64edc4 19
+  s_9ed1eb0d10e782::t_6b9855169ad43a 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "5bfbb58bcf355edd3c96d3bd526758a3d67c30e7",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
