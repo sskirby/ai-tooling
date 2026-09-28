@@ -1,0 +1,76 @@
+scripts/evals/generate.py
+  s_9ed1eb0d10e782::t_dd87a3e63479e4 15
+  s_9ed1eb0d10e782::t_061dc594ecadb6 3,19-20
+  s_9ed1eb0d10e782::t_ae837aeb194e86 46
+.gitignore
+  s_9ed1eb0d10e782::t_da9927cd2fae83 8,14-16
+scripts/evals/capture.py
+  s_9ed1eb0d10e782::t_7680d4f3172e86 17,19
+  s_9ed1eb0d10e782::t_274e122f89b6e3 111,115
+  s_9ed1eb0d10e782::t_cc3fbdd5ccd725 139
+  s_9ed1eb0d10e782::t_72096916476a0a 41,45
+  s_9ed1eb0d10e782::t_a9320aee11f715 3,23
+  s_9ed1eb0d10e782::t_6340aad6f3c86b 68,72
+  s_9ed1eb0d10e782::t_5dfd72dd15384b 81,87
+test/evals/test_generate.py
+  s_9ed1eb0d10e782::t_4a177874be22c6 8,10-12
+scripts/evals/transcript.py
+  s_9ed1eb0d10e782::t_556ab9c61d13fe 18-22
+  s_9ed1eb0d10e782::t_1f0e1969a740e5 63,72,91,172,189
+README.md
+  s_9ed1eb0d10e782::t_1bcae45a81e987 44,48
+docs/replay-evals.md
+  s_9ed1eb0d10e782::t_31563b64ff5fc3 260
+  s_9ed1eb0d10e782::t_49fa30e58b7001 325
+  s_9ed1eb0d10e782::t_9f3e009bfa6a95 53,55
+  s_9ed1eb0d10e782::t_b96fa94d18f4a3 381
+scripts/evals/wrapper.py
+  s_9ed1eb0d10e782::t_45b1622594e697 3,15-17
+pyproject.toml
+  s_9ed1eb0d10e782::t_8e53345b27c131 1-22
+test/evals/test_wrapper.py
+  s_9ed1eb0d10e782::t_bb8e83cbd135f2 9-10
+test/evals/test_transcript.py
+  s_9ed1eb0d10e782::t_e79456e80e624b 6
+test/evals/test_sources.py
+  s_9ed1eb0d10e782::t_a4ff8aa9a5ae37 5-7
+.github/workflows/lint.yml
+  s_9ed1eb0d10e782::t_792d448f78566b 22,24
+.github/workflows/eval.yml
+  s_9ed1eb0d10e782::t_e5136a2fe215ed 39
+scripts/evals/sources.py
+  s_9ed1eb0d10e782::t_8396adf7956063 158,165-166
+  s_9ed1eb0d10e782::t_24d90c4a492fee 175
+  s_9ed1eb0d10e782::t_78e59cffcd7dd2 132
+  s_9ed1eb0d10e782::t_4364110ec9e225 72
+  s_9ed1eb0d10e782::t_39c62b8fe38311 39,41-42
+  s_9ed1eb0d10e782::t_82932e30319f32 10,13,26-27
+  s_9ed1eb0d10e782::t_40436263850963 99
+  s_9ed1eb0d10e782::t_7a470c59d204b4 17
+  s_9ed1eb0d10e782::t_af6e4af0255125 57
+  s_9ed1eb0d10e782::t_55ddc28a4b8362 28
+plugins/what-the-heck/README.md
+  s_9ed1eb0d10e782::t_cb8a562bda6d7e 391
+test/evals/test_capture.py
+  s_9ed1eb0d10e782::t_9a690a4bc4db60 7,9
+scripts/evals/__init__.py
+  s_9ed1eb0d10e782::t_49055494db9c65 1
+uv.lock
+  s_9ed1eb0d10e782::t_0453748ebdb4ac 1-331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a85fe41aec4f018fdb51fe60ca1c1b6a0a69cca5",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
