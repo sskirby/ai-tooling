@@ -50,9 +50,9 @@ from giving a trustworthy Δ:
   arms of one case. It has no way to say that one case is the baseline
   of another.
 
-Replay cases fill those gaps: `generate.py` writes each transcript from
+Replay cases fill those gaps: `replay-generate` writes each transcript from
 the current `SKILL.md` on every run, a baseline twin gets the same turns
-without the skill load and with an empty stub plugin, and `scripts/eval.py`
+without the skill load and with an empty stub plugin, and `replay-eval`
 pairs the two for Δ. Everything else (the sandbox, judging, the cost
 ceiling, the report) is still the CLI's.
 
@@ -257,7 +257,7 @@ impossible instead.
 
 ## Running it
 
-`uv run scripts/eval.py <plugin dir> [claude plugin eval options]` is the
+`uv run replay-eval <plugin dir> [claude plugin eval options]` is the
 wrapper. It regenerates every case pair, runs `claude plugin eval`, pairs
 each `<name>` with `<name>-baseline`, and prints one Δ table (also
 written as `delta.md` beside the `--json` output).
@@ -322,7 +322,7 @@ messages:
 **2. Run the capture.**
 
 ```
-uv run scripts/evals/capture.py plugins/what-the-heck plugins/what-the-heck/replays/_lesson.yaml
+uv run replay-capture plugins/what-the-heck plugins/what-the-heck/replays/_lesson.yaml
 ```
 
 It builds a one-case eval in `plugins/what-the-heck/replay-capture/`
@@ -378,7 +378,7 @@ next learner turn. For the six what-the-heck sources:
 | `closing` | all 12 (through step 5) | the learner's answer to step 5's check |
 
 Put the graders in `replays/<case>/graders/`, then run
-`uv run scripts/evals/generate.py --check`.
+`uv run replay-generate --check`.
 
 The copies are not linked. An edit in `_lesson.yaml` changes no replay case,
 and an edit in a source does not flow back. To change a turn, edit it in

@@ -388,7 +388,7 @@ replays/closing/.
 ## B9 — Replay later-turn cases with a paired baseline
 
 **Decision.** Each replay case (B2) has a baseline twin with the same
-turns, no skill load and only an empty stub plugin. `scripts/eval.py`
+turns, no skill load and only an empty stub plugin. `replay-eval`
 regenerates both transcripts from the current `SKILL.md`, runs the suite
 once and pairs each case with its twin for Δ. Sources live in `replays/`;
 [docs/replay-evals.md](../../docs/replay-evals.md) explains the mechanism.

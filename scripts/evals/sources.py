@@ -7,12 +7,14 @@ skill loaded.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, NoReturn
 
 import yaml
 
-from transcript import Message, SkillLoad
+from evals.transcript import Message, SkillLoad
 
 BASELINE_SUFFIX = "-baseline"
 STUB_NAME = "replay-baseline-stub"
@@ -20,6 +22,9 @@ _TOP_KEYS = {"schema_version", "name", "description", "tags", "context", "execut
 _META_KEYS = ("schema_version", "description", "tags")
 # Which key a grader file's body fills, per type; scripts/lint.rb reads bodies the same way.
 _BODY_KEYS = {"llm": "criteria", "baseline": "criteria", "regex": "pattern"}
+
+# `fail` never returns, so calling it lets mypy narrow types in the branch that follows it.
+Fail = Callable[[str], NoReturn]
 
 
 class SourceError(Exception):
@@ -31,10 +36,10 @@ class Source:
     path: Path
     name: str
     messages: tuple[Message, ...]
-    execution: dict
+    execution: dict[str, Any]
     runs: int | None
-    graders: tuple[dict, ...]
-    meta: dict
+    graders: tuple[dict[str, Any], ...]
+    meta: dict[str, Any]
 
     @property
     def baseline_name(self) -> str:
@@ -49,7 +54,7 @@ class Source:
         return frozenset(g["name"] for g in self.graders if g.get("arm") == "with-only")
 
 
-def split_frontmatter(text: str) -> tuple[dict, str] | None:
+def split_frontmatter(text: str) -> tuple[dict[str, Any], str] | None:
     """(frontmatter, body) for a `---`-fenced file, or None when there is no fence."""
     if not text.startswith("---\n"):
         return None
@@ -64,7 +69,7 @@ def load_sources(plugin_dir: Path) -> list[Source]:
 
 
 def load_source(path: Path) -> Source:
-    def fail(message: str):
+    def fail(message: str) -> NoReturn:
         raise SourceError(f"{path}: {message}")
 
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -91,7 +96,7 @@ def load_source(path: Path) -> Source:
     return Source(path, name, messages, dict(execution), data.get("runs"), graders, meta)
 
 
-def _messages(raw, fail) -> tuple[Message, ...]:
+def _messages(raw: Any, fail: Fail) -> tuple[Message, ...]:
     if not isinstance(raw, list) or not raw:
         fail("context.messages must be a non-empty list")
     messages = []
@@ -124,7 +129,7 @@ def _messages(raw, fail) -> tuple[Message, ...]:
     return tuple(messages)
 
 
-def _graders(inline, graders_dir: Path, fail) -> tuple[dict, ...]:
+def _graders(inline: Any, graders_dir: Path, fail: Fail) -> tuple[dict[str, Any], ...]:
     if not isinstance(inline, list):
         fail("graders must be a list")
     graders = [dict(g) for g in inline if isinstance(g, dict)]
@@ -150,14 +155,15 @@ def _graders(inline, graders_dir: Path, fail) -> tuple[dict, ...]:
     return tuple(graders)
 
 
-def _grader_file(path: Path, fail) -> dict:
+def _grader_file(path: Path, fail: Fail) -> dict[str, Any]:
     parsed = split_frontmatter(path.read_text(encoding="utf-8"))
     if parsed is None:
         fail(f"graders/{path.name} must start with --- frontmatter")
     front, body = parsed
     grader = {"name": path.stem, **front}
     if body.strip():
-        key = _BODY_KEYS.get(grader.get("type"))
+        grader_type = grader.get("type")
+        key = _BODY_KEYS.get(grader_type) if isinstance(grader_type, str) else None
         if key is None:
             fail(f"graders/{path.name}: a {grader.get('type')} grader takes no body")
         if key in grader:
@@ -166,7 +172,7 @@ def _grader_file(path: Path, fail) -> dict:
     return grader
 
 
-def _checks_for_skill_call(grader: dict) -> bool:
+def _checks_for_skill_call(grader: dict[str, Any]) -> bool:
     if grader.get("type") != "tool_used":
         return False
     tool = grader.get("tool")

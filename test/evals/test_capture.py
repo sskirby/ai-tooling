@@ -1,15 +1,12 @@
 import json
 import re
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"))
+import yaml
 
-import yaml  # noqa: E402
-
-from capture import CAPTURE_DIR, dump_yaml, read_run, reply_from_trace, skill_args_from_trace  # noqa: E402
+from evals.capture import CAPTURE_DIR, dump_yaml, read_run, reply_from_trace, skill_args_from_trace
 
 
 def event(*blocks):

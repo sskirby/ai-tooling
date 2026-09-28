@@ -1,14 +1,10 @@
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from helpers import LESSON, make_plugin  # noqa: E402
-from sources import SourceError, load_source, load_sources  # noqa: E402
-from transcript import SkillLoad  # noqa: E402
+from evals.sources import SourceError, load_source, load_sources
+from evals.transcript import SkillLoad
+from helpers import LESSON, make_plugin
 
 
 class LoadSource(unittest.TestCase):

@@ -15,6 +15,11 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
+
+# A transcript record's shape varies by record type (user/assistant/tool-result/last-prompt);
+# TypedDicts per shape would just re-describe the CLI's own session format field for field.
+Record = dict[str, Any]
 
 CLI_VERSION = "2.1.283"
 MODEL = "claude-opus-5-5"
@@ -55,7 +60,7 @@ class _Builder:
         self._cwd = cwd
         self.session_id = self._uuid("session")
         self._prompt_id = self._uuid("prompt")
-        self.records: list[dict] = []
+        self.records: list[Record] = []
         self._parent: str | None = None
 
     def _uuid(self, label: str) -> str:
@@ -64,7 +69,7 @@ class _Builder:
     def _hex(self, label: str, length: int) -> str:
         return uuid.uuid5(_NAMESPACE, f"{self._seed}:{label}").hex[:length]
 
-    def _append(self, fields: dict) -> str:
+    def _append(self, fields: Record) -> str:
         n = len(self.records)
         record_uuid = self._uuid(f"record-{n}")
         self.records.append({
@@ -83,7 +88,7 @@ class _Builder:
         self._parent = record_uuid
         return record_uuid
 
-    def _assistant(self, content: list[dict], stop_reason: str) -> dict:
+    def _assistant(self, content: list[Record], stop_reason: str) -> Record:
         n = len(self.records)
         return {
             "message": {
@@ -164,7 +169,7 @@ class _Builder:
 
 
 def build_records(seed: str, messages: Sequence[Message], *, cwd: str, skill_md: str,
-                  skill_dir: str, with_skill: bool) -> list[dict]:
+                  skill_dir: str, with_skill: bool) -> list[Record]:
     """Transcript records for `messages`. `seed` fixes every generated id."""
     builder = _Builder(seed, cwd)
     for message in messages:
@@ -181,5 +186,5 @@ def build_records(seed: str, messages: Sequence[Message], *, cwd: str, skill_md:
     return builder.records
 
 
-def write_jsonl(path: Path, records: list[dict]) -> None:
+def write_jsonl(path: Path, records: list[Record]) -> None:
     path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in records), encoding="utf-8")

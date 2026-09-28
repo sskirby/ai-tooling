@@ -1,19 +1,15 @@
 import io
 import json
-import sys
 import tempfile
 import unittest
 from contextlib import redirect_stderr
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+import yaml
 
-import yaml  # noqa: E402
-
-from generate import existing_case_names, generate, main  # noqa: E402
-from helpers import LESSON, make_plugin  # noqa: E402
-from sources import SourceError  # noqa: E402
+from evals.generate import existing_case_names, generate, main
+from evals.sources import SourceError
+from helpers import LESSON, make_plugin
 
 
 def history(case_dir):

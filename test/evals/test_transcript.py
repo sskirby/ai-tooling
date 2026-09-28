@@ -1,12 +1,9 @@
 import json
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"))
-
-from transcript import Message, SkillLoad, build_records, skill_message_text, write_jsonl  # noqa: E402
+from evals.transcript import Message, SkillLoad, build_records, skill_message_text, write_jsonl
 
 FIXTURE = json.loads((Path(__file__).parent / "fixtures" / "natural-skill-load.json").read_text())
 SKILL = SkillLoad("demo:teach", "X")

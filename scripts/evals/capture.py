@@ -1,11 +1,6 @@
-#!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["pyyaml>=6"]
-# ///
 """Capture the model's reply to the last user turn of a capture file, through the eval sandbox.
 
-Usage: uv run scripts/evals/capture.py <plugin dir> <capture.yaml>
+Usage: uv run replay-capture <plugin dir> <capture.yaml>
 
 The first turn runs with no history, so the skill loads naturally; later turns
 resume a with-skill transcript of the turns so far. The sandbox keeps the
@@ -19,11 +14,13 @@ import os
 import shutil
 import subprocess
 import sys
+from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-from transcript import MODEL, Message, SkillLoad, build_records, write_jsonl
+from evals.transcript import MODEL, Message, SkillLoad, build_records, write_jsonl
 
 CAPTURE_DIR = "replay-capture"
 CASE_NAME = "capture-turn"
@@ -41,11 +38,11 @@ def _str(dumper: yaml.SafeDumper, value: str) -> yaml.ScalarNode:
 _BlockDumper.add_representer(str, _str)
 
 
-def dump_yaml(data: dict) -> str:
+def dump_yaml(data: dict[str, Any]) -> str:
     return yaml.dump(data, Dumper=_BlockDumper, sort_keys=False, allow_unicode=True, width=100)
 
 
-def _assistant_events(lines: list[str]):
+def _assistant_events(lines: list[str]) -> Iterator[list[dict[str, Any]]]:
     for line in lines:
         try:
             event = json.loads(line)
@@ -68,11 +65,11 @@ def skill_args_from_trace(lines: list[str], skill: str) -> str | None:
     for blocks in _assistant_events(lines):
         for b in blocks:
             if b.get("type") == "tool_use" and b.get("name") == "Skill" and b["input"].get("skill") == skill:
-                return b["input"].get("args", "")
+                return str(b["input"].get("args", ""))
     return None
 
 
-def _messages(raw: list[dict]) -> list[Message]:
+def _messages(raw: list[dict[str, Any]]) -> list[Message]:
     messages = []
     for item in raw:
         skill = item.get("skill")
@@ -81,13 +78,13 @@ def _messages(raw: list[dict]) -> list[Message]:
     return messages
 
 
-def _run_turn(plugin: Path, capture: dict) -> list[str]:
+def _run_turn(plugin: Path, capture: dict[str, Any]) -> list[str]:
     """Run one child for the capture file's last user turn; return its trace lines."""
     case_dir = plugin / CAPTURE_DIR / CASE_NAME
     shutil.rmtree(plugin / CAPTURE_DIR, ignore_errors=True)
     case_dir.mkdir(parents=True)
     prior, prompt = capture["messages"][:-1], capture["messages"][-1]["content"]
-    case = {
+    case: dict[str, Any] = {
         "schema_version": "1.1",
         "name": CASE_NAME,
         "execution": {"model": capture.get("model", MODEL), "prompt": prompt, "max_turns": 6,
@@ -111,11 +108,11 @@ def _run_turn(plugin: Path, capture: dict) -> list[str]:
     return Path(run["tracePath"]).read_text(encoding="utf-8").splitlines()
 
 
-def read_run(result_path: Path) -> dict:
+def read_run(result_path: Path) -> dict[str, Any]:
     """The one run a capture child produced, or RuntimeError when it did not produce a usable one."""
     if not result_path.is_file():
         raise RuntimeError(f"capture run wrote no result at {result_path}; see the eval output above")
-    run = json.loads(result_path.read_text())["cases"][0]["arms"]["with"][0]
+    run: dict[str, Any] = json.loads(result_path.read_text())["cases"][0]["arms"]["with"][0]
     if run.get("error") or not run.get("tracePath"):
         raise RuntimeError(f"capture run failed: error={run.get('error')!r} tracePath={run.get('tracePath')!r}")
     return run
@@ -139,7 +136,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(f"error: the skill did not load in {ATTEMPTS} attempts", file=sys.stderr)
         return 1
-    reply = {"role": "assistant"}
+    reply: dict[str, Any] = {"role": "assistant"}
     if first_turn:
         reply["skill"] = {"name": capture["skill"], "args": args}
     reply["content"] = reply_from_trace(lines)

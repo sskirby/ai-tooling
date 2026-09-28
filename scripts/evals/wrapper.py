@@ -1,6 +1,6 @@
 """Regenerate replay cases, run `claude plugin eval` once, and print one Δ table.
 
-Usage: uv run scripts/eval.py <plugin dir> [claude plugin eval options, except --ablation]
+Usage: uv run replay-eval <plugin dir> [claude plugin eval options, except --ablation]
 """
 
 from __future__ import annotations
@@ -12,9 +12,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from generate import REPLAY_DIR, generate
-from pairing import pair_results, render_markdown, results_problems
-from sources import BASELINE_SUFFIX, SourceError, load_sources
+from evals.generate import REPLAY_DIR, generate
+from evals.pairing import pair_results, render_markdown, results_problems
+from evals.sources import BASELINE_SUFFIX, SourceError, load_sources
 
 EXIT_RESULTS = 3
 EXIT_REFUSED = 4

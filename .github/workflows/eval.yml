@@ -36,7 +36,7 @@ jobs:
           args=(./plugins/what-the-heck --trust-plugin --no-publish --report eval-report.html)
           args+=(--judge-model claude-opus-5-5 --max-cost-usd "$MAX_COST_USD" --json eval-result.json)
           if [ -n "$CASE_GLOB" ]; then args+=(--case "$CASE_GLOB"); fi
-          uv run scripts/eval.py "${args[@]}"
+          uv run replay-eval "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

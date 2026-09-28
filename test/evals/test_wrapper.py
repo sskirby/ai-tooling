@@ -1,17 +1,13 @@
 import io
 import json
 import os
-import sys
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from helpers import make_plugin  # noqa: E402
-from wrapper import EXIT_REFUSED, EXIT_RESULTS, main  # noqa: E402
+from evals.wrapper import EXIT_REFUSED, EXIT_RESULTS, main
+from helpers import make_plugin
 
 # Stands in for `claude`: records its argv, writes the canned result to --json, exits with $FAKE_EXIT.
 FAKE_CLAUDE = """#!/usr/bin/env python3

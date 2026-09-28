@@ -41,11 +41,11 @@ only; the suite itself is a command a human runs before merging, because a full
 run costs real money on a live credential:
 
 ```
-uv run scripts/eval.py ./plugins/what-the-heck \
+uv run replay-eval ./plugins/what-the-heck \
   --judge-model claude-opus-5-5 --max-cost-usd 25
 ```
 
-Run the suite through `scripts/eval.py`, not `claude plugin eval` directly. It
+Run the suite through `replay-eval`, not `claude plugin eval` directly. It
 rebuilds the replay cases from the current `SKILL.md`, runs the suite once, and
 prints one table (also written to `evals/replay/delta.md`). The headline number
 is Δ: the with-plugin score minus the no-plugin score. For a replay case the

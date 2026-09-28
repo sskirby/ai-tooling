@@ -1,11 +1,6 @@
-#!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["pyyaml>=6"]
-# ///
 """Write every replay source's case pair under <plugin>/evals/replay/.
 
-scripts/eval.py runs this before every eval run. --check validates every
+replay-eval runs this before every eval run. --check validates every
 source into a temp dir and leaves the plugin untouched (the PR gate).
 """
 
@@ -17,11 +12,12 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-from sources import STUB_NAME, Source, SourceError, load_sources, split_frontmatter
-from transcript import build_records, write_jsonl
+from evals.sources import STUB_NAME, Source, SourceError, load_sources, split_frontmatter
+from evals.transcript import build_records, write_jsonl
 
 REPO = Path(__file__).resolve().parents[2]
 REPLAY_DIR = "replay"
@@ -47,7 +43,7 @@ def existing_case_names(evals_dir: Path) -> set[str]:
     return names
 
 
-def case_dict(source: Source, *, baseline: bool) -> dict:
+def case_dict(source: Source, *, baseline: bool) -> dict[str, Any]:
     case = {
         **source.meta,
         "name": source.baseline_name if baseline else source.name,
