@@ -193,8 +193,9 @@ Rules:
   load before that turn; the baseline drops it.
 - Graders are inline, or in `graders/*.md` beside the source (both are
   Claude Code shapes). `arm: with-only` graders go into the `-replay`
-  case only and are reported as indicators, not scored, the same way the
-  CLI treats them under `with-without`. A `tool_used` grader on `Skill`
+  case only. The wrapper's Δ table leaves them out of the score and lists
+  them as indicators, as the CLI does under `with-without`. The CLI's own
+  report runs the case single-arm and scores them like any other grader. A `tool_used` grader on `Skill`
   is refused (see Guards).
 - `content` is a string. Block lists (tool calls, images) are out of
   scope.
@@ -405,7 +406,7 @@ already handles the sandbox, judge, cost ceiling and report.
 reuses Claude Code's own case schema plus two keys, instead of inventing
 a parallel format.
 
-**With-only graders kept, scored as indicators; only a Skill-call check
+**With-only graders kept, reported as indicators; only a Skill-call check
 is refused.** A replay never calls Skill, so that one grader could never
 pass; other with-only graders still carry information about the with arm.
 
