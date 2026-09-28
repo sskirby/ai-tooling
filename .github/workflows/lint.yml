@@ -20,5 +20,7 @@ jobs:
         run: ruby scripts/lint.rb
       - name: Eval tooling unit tests
         run: uv run python -m unittest discover -s test/evals -v
+      - name: Eval tooling types
+        run: uv run mypy
       - name: Replay sources
         run: uv run replay-generate --check

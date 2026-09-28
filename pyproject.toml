@@ -20,3 +20,14 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 # scripts/evals stays where it is; hatchling maps the directory to the top-level package "evals".
 packages = ["scripts/evals"]
+
+[tool.mypy]
+strict = true
+files = ["scripts/evals", "test/evals"]
+exclude = "^test/evals/fixtures/"
+
+[[tool.mypy.overrides]]
+module = ["test_capture", "test_generate", "test_pairing", "test_sources", "test_transcript", "test_wrapper", "helpers"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
