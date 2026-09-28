@@ -1,0 +1,28 @@
+.github/workflows/lint.yml
+  s_99d861fc1ec805::t_03fcf0b07d3df3 16-18,22-26
+test/evals/test_version_bump.py
+  s_99d861fc1ec805::t_7fdc0cdb88fb32 1-116
+README.md
+  s_99d861fc1ec805::t_e74c97ec88a38b 47
+  s_99d861fc1ec805::t_ad531517583073 45-46
+scripts/evals/version_bump.py
+  s_99d861fc1ec805::t_6de9164d71521f 1-68
+pyproject.toml
+  s_99d861fc1ec805::t_4689a223181fd0 13,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a3a61708c27b96b2fead23f0adc1e13e3dfa10ed",
+  "prompts": {},
+  "sessions": {
+    "s_99d861fc1ec805": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b909bf1b-7be0-4ec1-9aea-397ee7648243",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
