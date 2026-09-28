@@ -105,6 +105,9 @@ class LoadSource(unittest.TestCase):
     def test_refuses_missing_prompt(self):
         self.assertRefused(LESSON.replace("  prompt: |\n    next\n", ""), "execution.prompt")
 
+    def test_refuses_missing_model(self):
+        self.assertRefused(LESSON.replace("  model: claude-opus-5-5\n", ""), "execution.model")
+
     def test_load_sources_finds_every_source(self):
         plugin = make_plugin(self.root)
         self.assertEqual([s.name for s in load_sources(plugin)], ["lesson-replay"])
