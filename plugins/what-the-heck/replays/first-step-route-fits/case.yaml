@@ -30,8 +30,7 @@ context:
 execution:
   model: claude-opus-5-5
   prompt: |
-    I'm about to start using CTEs in our reports, and a colleague warned me they
-    can make queries slow. I haven't written one yet.
+    I'm about to start using CTEs in our reports. I haven't written one yet.
   max_turns: 6
   timeout_seconds: 300
   allowed_tools:
