@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["pyyaml>=6"]
-# ///
 """Free pre-merge gate: both manifests parse, every case matches the eval schema,
 every grader names a real type. Runs on a fork PR with no secrets.
 """
@@ -13,6 +8,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -34,7 +30,7 @@ _ABS_PATH_RE = re.compile(r"(?:\A|[\s(])(?:~/|/(?:Users|home|private|tmp|var)/)"
 _COUNT_RE = re.compile(r"\Acount:\d+\Z")
 
 
-def _inspect(value):
+def _inspect(value: object) -> str:
     """Ruby's String#inspect / Object#inspect, close enough for error text parity."""
     if isinstance(value, str):
         return json.dumps(value)
@@ -50,11 +46,11 @@ def _inspect(value):
 
 
 class Checker:
-    def __init__(self, root):
+    def __init__(self, root: str | Path) -> None:
         self.root = Path(root).expanduser().resolve()
-        self.errors = []
+        self.errors: list[str] = []
 
-    def run(self):
+    def run(self) -> list[str]:
         marketplace = self.root / ".claude-plugin" / "marketplace.json"
         data = self._read_json(marketplace)
         if data is None:
@@ -82,17 +78,17 @@ class Checker:
 
     # -- helpers ---------------------------------------------------------
 
-    def _rel(self, path):
+    def _rel(self, path: str | Path) -> str:
         p = Path(path).resolve()
         try:
             return str(p.relative_to(self.root))
         except ValueError:
             return str(p)
 
-    def _err(self, path, message):
+    def _err(self, path: str | Path, message: str) -> None:
         self.errors.append(f"{self._rel(path)}: {message}")
 
-    def _read_json(self, path):
+    def _read_json(self, path: Path) -> Any:
         if not Path(path).is_file():
             self._err(path, "not found")
             return None
@@ -102,14 +98,14 @@ class Checker:
             self._err(path, f"invalid JSON: {str(e).splitlines()[0].strip()}")
             return None
 
-    def _load_yaml(self, text, path, what):
+    def _load_yaml(self, text: str, path: Path, what: str) -> Any:
         try:
             return yaml.safe_load(text)
         except yaml.YAMLError as e:
             self._err(path, f"invalid {what}: {str(e).splitlines()[0].strip()}")
             return None
 
-    def _split_frontmatter(self, text, path):
+    def _split_frontmatter(self, text: str, path: Path) -> tuple[dict[str, Any] | None, str]:
         """Returns (frontmatter_or_none, body). None frontmatter means none was present."""
         m = _FRONTMATTER_RE.match(text)
         if not m:
@@ -117,7 +113,7 @@ class Checker:
         fm = self._load_yaml(m.group(1), path, "YAML frontmatter")
         return (fm if isinstance(fm, dict) else {}), m.group(2)
 
-    def _check_plugin(self, plugin_dir, entry_name):
+    def _check_plugin(self, plugin_dir: Path, entry_name: str) -> None:
         manifest = plugin_dir / ".claude-plugin" / "plugin.json"
         data = self._read_json(manifest)
         if data is None:
@@ -136,7 +132,7 @@ class Checker:
             self._check_skill(skill_file)
         self._check_evals(plugin_dir / "evals")
 
-    def _check_skill(self, path):
+    def _check_skill(self, path: Path) -> None:
         fm, body = self._split_frontmatter(path.read_text(), path)
         if fm is None:
             self._err(path, "no YAML frontmatter")
@@ -151,7 +147,7 @@ class Checker:
         if not body.strip():
             self._err(path, "body is empty")
 
-    def _check_evals(self, evals_dir):
+    def _check_evals(self, evals_dir: Path) -> None:
         if not evals_dir.is_dir():
             self._err(evals_dir, "holds no eval cases")
             return
@@ -167,12 +163,12 @@ class Checker:
         for d in case_dirs:
             self._check_case(d)
 
-    def _check_case(self, directory):
+    def _check_case(self, directory: Path) -> None:
         yaml_path = directory / "case.yaml"
         prompt_path = directory / "prompt.md"
-        prompt_body = None
-        model = None
-        graders = []
+        prompt_body: Any = None
+        model: Any = None
+        graders: list[tuple[str, dict[str, Any], Path]] = []
 
         if yaml_path.is_file():
             spec = self._load_yaml(yaml_path.read_text(), yaml_path, "YAML")
@@ -230,30 +226,31 @@ class Checker:
                 g = dict(fm)
                 if not g.get("name"):
                     g["name"] = file.stem
-                # Which key a grader file's body fills, per type; scripts/lint.py reads bodies the same way.
-                key = {"llm": "criteria", "baseline": "criteria", "regex": "pattern"}.get(g.get("type"))
-                if key and g.get(key) is None and body.strip():
-                    g[key] = body.strip()
+                # Which key a grader file's body fills, per type; evals/sources.py reads bodies the same way.
+                gtype = g.get("type")
+                body_key = {"llm": "criteria", "baseline": "criteria", "regex": "pattern"}.get(gtype) if isinstance(gtype, str) else None
+                if body_key and g.get(body_key) is None and body.strip():
+                    g[body_key] = body.strip()
                 graders.append((g["name"], g, file))
 
         if not graders:
             self._err(directory, "no graders")
 
-        seen = set()
+        seen: set[str] = set()
         for name, g, path in graders:
             if name in seen:
                 self._err(path, f"duplicate grader name {_inspect(name)}")
             seen.add(name)
             self._check_grader(name, g, path)
 
-    def _check_prose(self, path, text):
+    def _check_prose(self, path: Path, text: str) -> None:
         for marker in TEMPLATE_MARKERS:
             if marker in text:
                 self._err(path, f"still holds the `init` template text {_inspect(marker)}")
         if _ABS_PATH_RE.search(text):
             self._err(path, "absolute path or ~/ in the prompt — cases run in a sandbox cwd")
 
-    def _check_grader(self, name, g, path):
+    def _check_grader(self, name: str, g: dict[str, Any], path: Path) -> None:
         gtype = g.get("type")
         if gtype not in GRADER_TYPES:
             self._err(path, f"grader {_inspect(name)}: type {_inspect(gtype)} is not one of {' | '.join(GRADER_TYPES)}")
@@ -297,7 +294,7 @@ class Checker:
             if not isinstance(g.get("path"), str):
                 self._err(path, f"grader {_inspect(name)}: file_exists needs a string \"path\"")
 
-    def _check_focus(self, name, value, path):
+    def _check_focus(self, name: str, value: Any, path: Path) -> None:
         if value is None:
             return
         if isinstance(value, str) and value in FOCI:
@@ -306,7 +303,7 @@ class Checker:
             return
         self._err(path, f"grader {_inspect(name)}: target/focus {_inspect(value)} is not {' | '.join(FOCI)} or {{source: file, path: …}}")
 
-    def _check_match(self, name, value, path):
+    def _check_match(self, name: str, value: Any, path: Path) -> None:
         if value is None:
             return
         if value in MATCHES:
@@ -316,7 +313,8 @@ class Checker:
         self._err(path, f"grader {_inspect(name)}: match {_inspect(value)} is not contains | not_contains | count:N")
 
 
-def main(argv):
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
     root = argv[0] if argv else "."
     errors = Checker(root).run()
     if not errors:
@@ -330,4 +328,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main())

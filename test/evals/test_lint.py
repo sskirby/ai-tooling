@@ -1,13 +1,10 @@
 import json
 import shutil
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-
-from lint import Checker  # noqa: E402
+from evals.lint import Checker
 
 
 def write(root, path, body):
