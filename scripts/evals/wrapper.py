@@ -12,6 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from evals.eval_types import EvalResult
 from evals.generate import REPLAY_DIR, generate
 from evals.pairing import pair_results, render_markdown, results_problems
 from evals.sources import BASELINE_SUFFIX, SourceError, load_sources
@@ -88,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: no results at {json_path}", file=sys.stderr)
         return code or 1
 
-    result = json.loads(json_path.read_text())
+    result: EvalResult = json.loads(json_path.read_text())
     table = render_markdown(pair_results(result, {s.name: s.with_only for s in sources}))
     (json_path.parent / "delta.md").write_text(table)
     print(table, end="")

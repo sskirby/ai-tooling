@@ -1,12 +1,10 @@
 import json
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "evals"))
-
-from pairing import loaded_plugins, pair_results, render_markdown, results_problems, run_score  # noqa: E402
+from evals.eval_types import EvalResult
+from evals.pairing import loaded_plugins, pair_results, render_markdown, results_problems, run_score
 
 
 def grader(name, passed, scored=True, with_only=False, weight=1):
@@ -119,14 +117,14 @@ class ResultsProblems(unittest.TestCase):
                 {"name": "agents-md", "source": "agents-md@builtin"}]}
             trace.write_text("not json\n" + json.dumps(init) + "\n")
             self.assertEqual(loaded_plugins(trace), ["replay-baseline-stub", "what-the-heck"])
-            result = {"cases": [case("lesson-replay-baseline", [run(BASE_RUN["graders"], trace=str(trace))])]}
+            result: EvalResult = {"cases": [case("lesson-replay-baseline", [run(BASE_RUN["graders"], trace=str(trace))])]}
             problems = results_problems(result, {"lesson-replay"})
         self.assertEqual(len(problems), 1)
         self.assertIn("what-the-heck", problems[0])
 
     def test_clean_results(self):
-        result = {"cases": [case("lesson-replay", [REPLAY_RUN]), case("lesson-replay-baseline", [BASE_RUN]),
-                            case("opening", [BASE_RUN], [BASE_RUN])]}
+        result: EvalResult = {"cases": [case("lesson-replay", [REPLAY_RUN]), case("lesson-replay-baseline", [BASE_RUN]),
+                                        case("opening", [BASE_RUN], [BASE_RUN])]}
         self.assertEqual(results_problems(result, {"lesson-replay"}), [])
 
 

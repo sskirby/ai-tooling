@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from statistics import mean
 
-from sources import BASELINE_SUFFIX, STUB_NAME
+from evals.eval_types import CaseResult, EvalResult, RunResult
+from evals.sources import BASELINE_SUFFIX, STUB_NAME
 
 
 @dataclass
@@ -23,7 +24,7 @@ class Row:
     note: str = ""
 
 
-def run_score(run: dict, exclude: frozenset[str] = frozenset()) -> float:
+def run_score(run: RunResult, exclude: frozenset[str] = frozenset()) -> float:
     """The CLI's run score (weighted share of scored graders that passed), leaving out `exclude`."""
     graders = [g for g in run.get("graders", []) if g.get("scored", True) and g["name"] not in exclude]
     total = sum(g["weight"] for g in graders)
@@ -32,20 +33,22 @@ def run_score(run: dict, exclude: frozenset[str] = frozenset()) -> float:
     return sum(g["weight"] for g in graders if g["passed"]) / total
 
 
-def _runs(case: dict | None) -> list[dict]:
-    return (case or {}).get("arms", {}).get("with", [])
+def _runs(case: CaseResult | None) -> list[RunResult]:
+    return case.get("arms", {}).get("with", []) if case else []
 
 
-def _cost(case: dict | None) -> float:
+def _cost(case: CaseResult | None) -> float:
     # A run's costUsd already includes its judge calls; judgeCostUsd is a breakdown, not an extra.
-    return sum(r.get("costUsd", 0) for runs in (case or {}).get("arms", {}).values() for r in runs)
+    if case is None:
+        return 0
+    return sum(r.get("costUsd", 0) for runs in case.get("arms", {}).values() for r in runs)
 
 
-def _mean_score(runs: list[dict], exclude: frozenset[str] = frozenset()) -> float | None:
+def _mean_score(runs: list[RunResult], exclude: frozenset[str] = frozenset()) -> float | None:
     return mean(run_score(r, exclude) for r in runs) if runs else None
 
 
-def _notes(*cases: dict | None) -> list[str]:
+def _notes(*cases: CaseResult | None) -> list[str]:
     runs = [r for c in cases for r in _runs(c)]
     notes = []
     if not runs:
@@ -58,11 +61,11 @@ def _notes(*cases: dict | None) -> list[str]:
     return notes
 
 
-def _passes(runs: list[dict], grader_name: str) -> int:
+def _passes(runs: list[RunResult], grader_name: str) -> int:
     return sum(1 for r in runs if any(g["name"] == grader_name and g["passed"] for g in r.get("graders", [])))
 
 
-def pair_results(result: dict, with_only: dict[str, frozenset[str]]) -> list[Row]:
+def pair_results(result: EvalResult, with_only: dict[str, frozenset[str]]) -> list[Row]:
     cases = {c["name"]: c for c in result["cases"]}
     # A baseline stands in for its replay case, so a pair missing its replay side still gets a row.
     names = dict.fromkeys(
@@ -95,6 +98,7 @@ def pair_results(result: dict, with_only: dict[str, frozenset[str]]) -> list[Row
                 {g: f"{_passes(runs, g)}/{len(runs)}" for g in sorted(with_only[name])},
                 "; ".join(notes)))
         else:
+            assert case is not None  # `name` came from `cases`, so only the with_only branch sees a missing case
             aggregates = case.get("aggregates", {})
             delta = aggregates.get("delta")
             rows.append(Row(
@@ -117,7 +121,7 @@ def loaded_plugins(trace: Path) -> list[str]:
     return []
 
 
-def results_problems(result: dict, replay_names: set[str]) -> list[str]:
+def results_problems(result: EvalResult, replay_names: set[str]) -> list[str]:
     """Ways a finished run broke the one-arm, stub-only assumptions the paired Δ rests on."""
     problems = []
     for case in result["cases"]:
