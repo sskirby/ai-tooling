@@ -1,0 +1,106 @@
+schema_version: '1.1'
+name: next-means-one-step-replay
+context:
+  messages:
+  - role: user
+    content: what the heck is a CTE?
+  - role: assistant
+    skill:
+      name: what-the-heck:what-the-heck
+      args: CTE
+    content: |-
+      A CTE is a named subquery you write at the top of a statement with `WITH`,
+      so the rest of the query can refer to it by name. It exists only for that
+      one statement.
+
+      Here's the route:
+
+      1. A CTE is a named subquery the rest of the statement can refer to by name
+      2. Since Postgres 12 a plain CTE is normally inlined into the outer query
+         rather than evaluated on its own first
+      3. Because it is inlined, a filter written outside the CTE can be pushed
+         down into it and run earlier
+      4. MATERIALIZED, recursive and side-effecting CTEs are kept separate, and a
+         filter cannot be pushed into those
+      5. A CTE referenced more than once is materialised by default: its body runs
+         once and the result is shared, but no outer filter can be pushed into it
+
+      What prompted the question — did you run into a `WITH` in someone else's
+      query, or are you trying to write one?
+  - role: user
+    content: |-
+      I'm about to start using CTEs in our reports, and a colleague warned me they can make queries slow. I haven't written one yet.
+  - role: assistant
+    content: |-
+      Your colleague's warning is the main thing to understand, and it's mostly out of date. Steps 2–5 cover exactly when it's still true. The route stays the same. One assumption: I'm treating this as **Postgres**, because the slowness story is different in each database. Tell me if your reports run on something else.
+
+      ## Step 1 of 5 — A CTE is a named subquery the rest of the statement can refer to by name
+
+      You write a query, give it a name with `WITH name AS (...)`, and then use that name in the main query as if it were a table. It works just like putting the same query inline in `FROM (...)`. The only difference is that it's pulled out to the top and given a readable name.
+
+      The name exists only inside that one statement. It isn't a table, and it isn't saved anywhere. Once the statement's semicolon runs, the name no longer exists.
+
+      ```sql
+      WITH big_orders AS (                  -- 1. name a query
+        SELECT customer_id, total
+        FROM orders
+        WHERE total > 1000
+      )
+      SELECT c.name, b.total                -- 2. use it like a table
+      FROM big_orders b
+      JOIN customers c ON c.id = b.customer_id;
+      ```
+
+      ```
+        same thing, written inline:
+
+        SELECT c.name, b.total
+        FROM ( SELECT customer_id, total          <── big_orders
+               FROM orders WHERE total > 1000 ) b
+        JOIN customers c ON c.id = b.customer_id;
+      ```
+
+      **Check:** Say your report script runs the query above, and then runs this as a separate statement right after it:
+
+      ```sql
+      SELECT count(*) FROM big_orders;
+      ```
+
+      What happens, and why?
+
+      (answer it, ask me anything, or say "next" to skip ahead)
+  - role: user
+    content: It fails with relation "big_orders" does not exist. The name only lives inside the statement
+      that defines it, so the next statement has no table or CTE by that name.
+  - role: assistant
+    content: |-
+      Right. The name exists only inside the statement that defines it, so the next statement can't see it.
+
+      ## Step 2 of 5 — Postgres 12 stopped running the CTE first
+
+      Before 12, a CTE was an optimization fence. The planner ran it on its own,
+      stashed the rows, and only then let the rest of the statement touch them.
+      Since 12 a plain CTE — not `MATERIALIZED`, not recursive, not
+      side-effecting, referenced once — is inlined instead: the planner folds the
+      CTE's body into the outer query and plans the whole statement as one unit.
+
+      ```
+        PG 11                        PG 12+
+        ─────                        ──────
+        run the CTE → stash rows     one query tree
+        then run the outer query     one plan, decided together
+      ```
+
+      **Check:** Given that, what happens to a filter written outside the CTE, on
+      a column the CTE selects?
+
+      (answer it, ask me anything, or say "next" to skip ahead)
+execution:
+  model: claude-opus-5-5
+  prompt: |
+    next
+  max_turns: 6
+  timeout_seconds: 300
+  allowed_tools:
+  - Skill
+runs: 3
