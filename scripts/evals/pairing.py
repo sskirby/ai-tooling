@@ -24,12 +24,17 @@ class Row:
     note: str = ""
 
 
-def run_score(run: RunResult, exclude: frozenset[str] = frozenset()) -> float:
-    """The CLI's run score (weighted share of scored graders that passed), leaving out `exclude`."""
+def run_score(run: RunResult, exclude: frozenset[str] = frozenset()) -> float | None:
+    """The CLI's run score (weighted share of scored graders that passed), leaving out `exclude`.
+
+    None when no grader is left to score: the CLI's own score would then come from the excluded graders.
+    """
+    if run.get("error"):
+        return run["score"]
     graders = [g for g in run.get("graders", []) if g.get("scored", True) and g["name"] not in exclude]
     total = sum(g["weight"] for g in graders)
-    if run.get("error") or total == 0:
-        return run["score"]
+    if total == 0:
+        return None
     return sum(g["weight"] for g in graders if g["passed"]) / total
 
 
@@ -45,7 +50,12 @@ def _cost(case: CaseResult | None) -> float:
 
 
 def _mean_score(runs: list[RunResult], exclude: frozenset[str] = frozenset()) -> float | None:
-    return mean(run_score(r, exclude) for r in runs) if runs else None
+    scores = [s for s in (run_score(r, exclude) for r in runs) if s is not None]
+    return mean(scores) if scores else None
+
+
+def _unscorable(runs: list[RunResult], exclude: frozenset[str] = frozenset()) -> int:
+    return sum(1 for r in runs if run_score(r, exclude) is None)
 
 
 def _notes(*cases: CaseResult | None) -> list[str]:
@@ -90,6 +100,9 @@ def pair_results(result: EvalResult, with_only: dict[str, frozenset[str]]) -> li
                 side_notes = ["replay: no runs"]
             else:
                 side_notes = []
+            unscorable = _unscorable(runs, with_only[name]) + _unscorable(base_runs)
+            if unscorable:
+                side_notes.append(f"{unscorable} run{'s' if unscorable > 1 else ''} with no comparable graders")
             notes = side_notes + _notes(case, base)
             rows.append(Row(
                 name, "replay", score, baseline,

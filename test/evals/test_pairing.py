@@ -30,11 +30,15 @@ def case(name, with_runs, without_runs=None, aggregates=None):
 REPLAY_RUN = run([grader("keeps-route", True), grader("not-repeated", True), grader("step-heading", False)])
 BASE_RUN = run([grader("keeps-route", False), grader("not-repeated", True)])
 WITH_ONLY = {"lesson-replay": frozenset({"step-heading"})}
+ONLY_WITH_ONLY_SCORED = run([grader("keeps-route", False, scored=False), grader("not-repeated", False, scored=False),
+                             grader("step-heading", True)], score=1.0, skipped=True)
 
 
 class RunScore(unittest.TestCase):
     def test_matches_cli_when_nothing_excluded(self):
-        self.assertAlmostEqual(run_score(REPLAY_RUN), 2 / 3)
+        score = run_score(REPLAY_RUN)
+        assert score is not None
+        self.assertAlmostEqual(score, 2 / 3)
 
     def test_excluding_with_only_matches_the_cli_under_two_arms(self):
         # Under with-without the CLI itself leaves the with-only grader out of the score.
@@ -49,6 +53,10 @@ class RunScore(unittest.TestCase):
 
     def test_errored_run_keeps_cli_score(self):
         self.assertEqual(run_score(run([], score=0, error="timeout")), 0)
+
+    def test_no_comparable_grader_gives_no_score(self):
+        # The cost ceiling skipped the paid graders, so the CLI's score is the with-only grader alone.
+        self.assertIsNone(run_score(ONLY_WITH_ONLY_SCORED, frozenset({"step-heading"})))
 
 
 class PairResults(unittest.TestCase):
@@ -94,6 +102,13 @@ class PairResults(unittest.TestCase):
                           case("lesson-replay-baseline", [run(BASE_RUN["graders"], skipped=True)])])
         self.assertIn("1 run errored", rows["lesson-replay"].note)
         self.assertIn("paid graders skipped", rows["lesson-replay"].note)
+
+    def test_run_with_no_comparable_grader_is_left_out_and_noted(self):
+        rows = self.rows([case("lesson-replay", [REPLAY_RUN, ONLY_WITH_ONLY_SCORED]),
+                          case("lesson-replay-baseline", [BASE_RUN])])
+        row = rows["lesson-replay"]
+        self.assertEqual(row.score, 1.0)
+        self.assertIn("1 run with no comparable graders", row.note)
 
     def test_baseline_empty_side_is_noted(self):
         row = self.rows([case("lesson-replay", [REPLAY_RUN]),
