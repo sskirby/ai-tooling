@@ -1,0 +1,32 @@
+scripts/evals/eval_types.py
+  s_9ed1eb0d10e782::t_06bcbd5c16dac8 1-37
+scripts/evals/wrapper.py
+  s_9ed1eb0d10e782::t_5a1a1af1dcb61a 15,92
+test/evals/test_pairing.py
+  s_9ed1eb0d10e782::t_1f1ec29d6440d5 7
+  s_9ed1eb0d10e782::t_f2b9cc76bffb63 126-127
+  s_9ed1eb0d10e782::t_ebe6718ce8d620 6
+  s_9ed1eb0d10e782::t_69e473866a01fb 120
+scripts/evals/pairing.py
+  s_9ed1eb0d10e782::t_55225c1b0df443 124
+  s_9ed1eb0d10e782::t_3463a47489168a 101
+  s_9ed1eb0d10e782::t_d3267fee143ed1 10
+  s_9ed1eb0d10e782::t_0291ef2bd1c58f 11
+  s_9ed1eb0d10e782::t_5e1f45e51e4f86 27,36-37,40,42-44,47,51,64,68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b3ef4fd23a0fdedc3648ceda113bbf180523f5b3",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
