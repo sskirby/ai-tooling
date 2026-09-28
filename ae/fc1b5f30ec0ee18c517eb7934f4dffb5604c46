@@ -1,0 +1,21 @@
+test/evals/test_transcript.py
+  s_9ed1eb0d10e782::t_28c4cfdbeb4149 79
+scripts/evals/transcript.py
+  s_9ed1eb0d10e782::t_af0007a209356f 185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "aefc1b5f30ec0ee18c517eb7934f4dffb5604c46",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
