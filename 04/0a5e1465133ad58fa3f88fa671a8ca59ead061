@@ -1,0 +1,21 @@
+plugins/what-the-heck/replays/first-step-route-fits/graders/keeps-the-route.md
+  s_9ed1eb0d10e782::t_14449c8c1673ba 18-19
+plugins/what-the-heck/replays/first-step-route-fits/case.yaml
+  s_9ed1eb0d10e782::t_14449c8c1673ba 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "040a5e1465133ad58fa3f88fa671a8ca59ead061",
+  "prompts": {},
+  "sessions": {
+    "s_9ed1eb0d10e782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4afaee68-c714-472b-827e-71923fcc2274",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
