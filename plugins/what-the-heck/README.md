@@ -18,7 +18,7 @@ Measured on Opus 5.5.
 Where each case stands, with score / without score / delta. For a replay
 case, `without` is its baseline twin (B9). The turn-1 rows,
 `first-step-route-fits-replay` and the other replay rows come from three
-separate runs; none of the cases changed between them:
+separate runs of the current cases:
 
 
 | case                            | with | without | Δ     |
@@ -121,8 +121,8 @@ phrasing, no beating around the bush, no throat-clearing before the
 point. A concept is never explained incompletely just to hit a count —
 the author's ruling is that a step's length should be earned, not capped.
 
-**Rejected.** A hard numeric word cap. Per the author, the cap's intent
-was always tightness, not an arithmetic ceiling, and a long-but-earned
+**Rejected.** A hard numeric word cap. Per the author, the point is
+tightness, not an arithmetic ceiling, and a long-but-earned
 step should not have to break itself in two just to stay under a number.
 
 **Cost.** Cutting narration without cutting content takes a real editing

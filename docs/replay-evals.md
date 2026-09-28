@@ -8,11 +8,17 @@ actually gets used. Two ways of faking that don't reproduce it.
 
 Restating the earlier turns inside one prompt isn't a real conversation:
 the model never actually held that context, it's just reading a
-transcript pasted into its input. Loading the skill by slash command
-before the live prompt gets closer, but it's still not the same event as
-a natural trigger: the whole prompt becomes the skill's `ARGUMENTS`, and
-that changes what the model sees. On `first-step-route-fits` at its
-earlier wording, `20` with-arm runs each, `claude-opus-5-5`, CLI 2.1.283:
+transcript pasted into its input, and a no-skill arm given that prompt
+has no lesson to act in. It replies that it cannot see the earlier
+conversation, or follows a route restated in its own prompt, so Δ
+measures the restatement rather than the skill. Loading the skill by
+slash command before the live prompt gets closer, but it's still not
+the same event as a natural trigger: the whole prompt becomes the
+skill's `ARGUMENTS`, and that changes what the model sees. On a
+calibration answer that fits the route ("I'm about to start using CTEs
+in our reports, and a colleague warned me they can make queries slow.
+I haven't written one yet. Go ahead."), `20` with-arm runs each,
+`claude-opus-5-5`, CLI 2.1.283:
 
 | Loading | keeps-the-route |
 | --- | --- |
@@ -50,59 +56,40 @@ without the skill load and with an empty stub plugin, and `scripts/eval.py`
 pairs the two for Δ. Everything else (the sandbox, judging, the cost
 ceiling, the report) is still the CLI's.
 
-## What replay cases measure that the old cases did not
+## What replay cases measure
 
-A side-by-side run of the six restated-prompt cases the replay cases
-replace and their replay pairs, 3 runs per arm, `claude-opus-5-5` as
-model and judge, CLI 2.1.283, gave the old columns below. The replay
-cases were then reworded. Learner lines that do the skill's job went:
-"Go ahead." after a calibration answer, the request for a recap after
-the last step, and the "Is that right?" tails on two check answers.
-`first-step-route-fits`'s calibration answer became only "Go ahead.",
-and `does-not-advance` now also fails a jump past step 3. The replay
-columns come from replay-only runs of the reworded cases with the same
-settings.
+3 runs per arm, `claude-opus-5-5` as model and judge, CLI 2.1.283:
 
-| Case | Old: with / without / Δ | Replay: with / baseline / Δ |
-| --- | --- | --- |
-| first-step | 0.96 / 0.21 / +0.75 | 0.92 / 0.25 / +0.67 |
-| first-step-route-fits | 0.67 / 1.00 / −0.33 | 1.00 / 1.00 / 0.00 |
-| next-means-one-step | 1.00 / 0.58 / +0.42 | 1.00 / 1.00 / 0.00 |
-| shaky-reasoning-rechecks | 1.00 / 1.00 / 0.00 | 0.92 / 0.67 / +0.25 |
-| wrong-answer-reteaches | 1.00 / 0.83 / +0.17 | 1.00 / 0.75 / +0.25 |
-| closing | 1.00 / 0.93 / +0.07 | 1.00 / 0.60 / +0.40 |
+| Case | With | Baseline | Δ |
+| --- | --- | --- | --- |
+| first-step | 0.92 | 0.25 | +0.67 |
+| closing | 1.00 | 0.60 | +0.40 |
+| shaky-reasoning-rechecks | 0.92 | 0.67 | +0.25 |
+| wrong-answer-reteaches | 1.00 | 0.75 | +0.25 |
+| next-means-one-step | 1.00 | 1.00 | 0.00 |
+| first-step-route-fits | 1.00 | 1.00 | 0.00 |
 
-- **The baseline is a real conversation, so Δ means something.** The old
-  no-skill arms got the restated prompt, and some had no conversation at
-  all. In `next-means-one-step` that arm replied that it could not see
-  the earlier conversation and that the slash command was not installed,
-  which inflated Δ to +0.42. In `first-step-route-fits` it read the route
-  restated in its own prompt and followed it, which made Δ negative. The
-  replay baseline resumes the same turns as the replay case, minus the
-  skill load.
-- **Replay cases show skill effects the old cases could not.** In
-  `wrong-answer-reteaches`, every baseline run corrected the learner and
-  went on to step 3; with the skill, every run re-taught step 2 and asked
-  a new check. In `shaky-reasoning-rechecks`, every baseline run named
-  the gap in the learner's reasoning and then moved on, to step 3 or
-  step 4; with the skill, every run re-checked and stayed on step 2. The
-  old case scored 0.00 Δ because its no-skill arm had no lesson to move
-  on through.
+- **The skill holds a lesson on a wrong or shaky answer; the baseline
+  moves on.** In `wrong-answer-reteaches`, every baseline run corrects
+  the learner and goes on to step 3, while every with-skill run
+  re-teaches step 2 and asks a new check. In `shaky-reasoning-rechecks`,
+  every baseline run names the gap in the learner's reasoning and then
+  moves on, to step 3 or step 4, while every with-skill run re-checks
+  and stays on step 2.
 - **The closing recap is the skill's.** Nothing in the closing prompt
-  asks for a recap. With the skill, every run gave the lesson back as a
-  numbered chain of the five steps. The baseline closed with a summary
-  table or advice to pass on to the colleague, and failed `causal-chain`
-  in all three runs. When the prompt asked for the recap, the baseline
-  gave one too, and Δ was +0.13.
+  asks for a recap. With the skill, every run gives the lesson back as a
+  numbered chain of the five steps. The baseline closes with a summary
+  table or advice to pass on to the colleague, and fails `causal-chain`
+  in all three runs.
 - **`first-step-route-fits` guards a rule rather than measuring it.**
-  When the learner says only "Go ahead.", both arms keep the route and
-  start at item 1, so Δ is 0.00. When the calibration answer carried any
+  The learner answers only "Go ahead.", both arms keep the route and
+  start at item 1, and Δ is 0.00. A calibration answer that carries any
   detail, such as a colleague's warning that CTEs are slow or being new
-  to writing them, the skill revised the route in every run, reading the
-  detail as a change in what is worth teaching.
+  to writing them, makes the skill revise the route, because it reads
+  the detail as a change in what is worth teaching.
 - **With the skill, the misses are single runs.** `first-step` misses
   two graders in one run: its check can be answered by quoting the
-  step's "free to reorder" sentence, and its prose failed
+  step's "free to reorder" sentence, and its prose fails
   `no-extraneous-prose`. `shaky-reasoning-rechecks` misses one: its check
   asks how to find out whether a CTE was inlined, not something that
   tests the corrected reasoning.
@@ -319,7 +306,7 @@ capture is corrected before it becomes source.
 
 The what-the-heck lesson lives in `plugins/what-the-heck/replays/_lesson.yaml`.
 It is not a source (the generator reads only `replays/*/case.yaml`); it is
-the working file the six sources were cut from.
+the working file the six sources are cut from.
 
 **1. Start the file with the first user turn.** You write every user turn;
 `capture.py` only ever adds assistant turns.
@@ -426,9 +413,10 @@ pass; other with-only graders still carry information about the with arm.
 each run.** A real reply anchors the transcript; editing it fixes drift
 without re-running the sandbox on every eval.
 
-**Replay cases replace the restated-prompt cases.** The side-by-side
-comparison above is the evidence. A turn-1 case (`opening`, the
-`no-trigger-*` cases) needs no history and stays a normal case.
+**Later turns are tested only by replay cases, not restated prompts.** A
+restated prompt gives the baseline no conversation to act in (see The
+problem). A turn-1 case (`opening`, the `no-trigger-*` cases) needs no
+history and is a normal case.
 
 ## Known differences from real use
 
