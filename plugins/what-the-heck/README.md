@@ -15,38 +15,40 @@ format. Part 2 covers how this repo is built and verified.
 
 Measured on Opus 5.5.
 
-Where each case stands, this run's `with` score / `without` score / delta.
-For a replay case, `without` is its baseline twin (B9):
+Where each case stands, with score / without score / delta. For a replay
+case, `without` is its baseline twin (B9). The replay rows and the
+turn-1 rows come from separate runs; the turn-1 cases did not change
+between them:
 
 
 | case                            | with | without | Δ     |
 | ------------------------------- | ---- | ------- | ----- |
 | opening                         | 1.00 | 0.25    | +0.75 |
-| first-step-replay               | 0.92 | 0.21    | +0.71 |
-| first-step-route-fits-replay    | 1.00 | 0.67    | +0.33 |
-| shaky-reasoning-rechecks-replay | 1.00 | 0.75    | +0.25 |
-| closing-replay                  | 1.00 | 0.87    | +0.13 |
-| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
-| wrong-answer-reteaches-replay   | 1.00 | 0.92    | +0.08 |
+| first-step-replay               | 0.92 | 0.25    | +0.67 |
+| closing-replay                  | 1.00 | 0.47    | +0.53 |
+| wrong-answer-reteaches-replay   | 1.00 | 0.75    | +0.25 |
+| shaky-reasoning-rechecks-replay | 1.00 | 0.92    | +0.08 |
+| next-means-one-step-replay      | 1.00 | 1.00    | 0.00  |
+| first-step-route-fits-replay    | 0.00 | 0.50    | −0.50 |
 | no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
 
 
-The mean delta is **+0.33 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
+The mean delta is **+0.25 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
 design — the skill must not fire on those prompts and it does not — so
 averaging them in drags the figure down for a reason that is a pass, not a
 failure.
 
-Of the 31 scored graders across the seven teaching cases, 8 discriminate
-cleanly, 5 discriminate only weakly (the baseline lands them 1 or 2 of 3),
-16 are inert (pass in both arms because bare Opus 5.5 already does the
-behaviour), and 2 miss in the with arm, both in first-step: one run's check
-question could be answered by repeating the step, and another run failed
-`no-extraneous-prose`. Inert graders cluster mid-lesson: shaky 3/4,
-wrong-answer 3/4, next-means 3/4, closing 4/5. The replay baseline copies
-the skill's format from the earlier turns in its history, which is part of
-why. See Open ("Graders that pass in both arms").
+Of the 31 scored graders across the seven teaching cases, 11 discriminate
+cleanly, 2 discriminate only weakly (the baseline lands them 1 or 2 of 3),
+14 are inert (pass in both arms because bare Opus 5.5 already does the
+behaviour, or the replay baseline copies it from its history), and 4 miss
+in the with arm. Two are in first-step, where `check-requires-using-the-idea`
+and `no-extraneous-prose` each fail one run of three. The other two are all of first-step-route-fits: in
+every run the skill revised or reprinted a route that already fits the
+learner (D11); see Open. Inert graders cluster mid-lesson: next-means 4/4,
+shaky 3/4, wrong-answer 3/4. See Open ("Graders that pass in both arms").
 
 Run-to-run noise on a 3-run case is about ±0.20, so a delta smaller than
 that on any single case is not signal.
@@ -409,7 +411,8 @@ replays/wrong-answer-reteaches/, replays/closing/.
 | Item                                                          | Open because                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Resolved by                                                                                                                      |
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
-| Graders that pass in both arms | 16 of the 31 scored graders pass in both arms, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to any delta: `opening/answer-before-route`; `first-step/step-one-is-new-to-them`; `first-step-route-fits/route-not-repeated`; `next-means-one-step/escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`, `rechecks-before-moving-on`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/causal-chain`, `no-further-check`, `recap-is-easy-to-scan`, `recap-is-one-item-per-step` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| Graders that pass in both arms | 14 of the 31 scored graders pass in both arms, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to any delta: `opening/answer-before-route`; `first-step/step-one-is-new-to-them`; `next-means-one-step/advances-without-commentary`, `escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-advance`, `does-not-simply-congratulate`, `names-the-specific-gap`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/no-further-check`, `recap-is-easy-to-scan` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| The skill rewrites a route that already fits (D11) | In `first-step-route-fits-replay` the learner's calibration answer (new to CTEs, a colleague warned they can be slow) fits the five-item route, yet in 3 of 3 runs the skill revised it: it reworded an item, added an `EXPLAIN` step, or rebuilt the list, and printed the new route each time. With "Go ahead." appended to the learner's answer, the same case passes 3 of 3 | A decision on SKILL.md's rule for when to revise the route, or on what this case expects |
 | `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
 
 
