@@ -15,9 +15,8 @@ The learner has been shown this route:
 5. A CTE referenced more than once is materialised by default: its body runs
    once and the result is shared, but no outer filter can be pushed into it
 
-They then said they are about to start using CTEs in reports and have not
-written one yet.
-Every item fits that learner, so the route should stand as shown.
+They then replied only "Go ahead.", which gives no reason to change it, so
+the route should stand as shown.
 
 Pass if the first step taught is route item 1 and the route is unchanged.
 
