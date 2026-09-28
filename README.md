@@ -9,30 +9,42 @@ A Claude Code plugin marketplace. One plugin so far.
 /plugin install what-the-heck
 ```
 
-### Updating, and why it needs three commands
-
-`claude plugin install` **copies** the plugin into
-`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`. That copy is a
-snapshot, not a link: a marketplace pointing at a local path does not track
-your working tree, and `claude plugin marketplace update` refreshes the
-marketplace without touching an already-installed plugin. So:
+### Updating
 
 ```
 claude plugin marketplace update ai-tooling
-claude plugin uninstall what-the-heck@ai-tooling
-claude plugin install what-the-heck@ai-tooling
+claude plugin update what-the-heck@ai-tooling
 ```
 
-This matters most when developing the plugin. Edit `SKILL.md`, reinstall, or
-you are testing the old copy — including when a frontmatter `description`
-change is what you meant to test, since that is the only part loaded before
-the skill fires.
+Then restart Claude Code. `plugin update` does not refresh the marketplace
+itself, so without the first command it reports the installed version as the
+latest. Auto-update is off by default for third-party marketplaces; turn it on
+under `/plugin` → Marketplaces to have Claude Code do both at startup.
 
 ## Plugins
 
 | Plugin | What it does |
 |---|---|
 | [`what-the-heck`](plugins/what-the-heck) | Teaches one idea at a time and refuses to advance past a check you got wrong. |
+
+## Developing a plugin
+
+Load the plugin from your working tree:
+
+```
+claude --plugin-dir ./plugins/what-the-heck
+```
+
+This overrides an installed copy of the same plugin for that session. After
+editing, run `/reload-plugins` to pick up the change without restarting.
+
+Bump `version` in the plugin's `.claude-plugin/plugin.json` in every change
+that should reach users. Claude Code detects an update only when that string
+changes; a new commit with the same version leaves users on their cached copy.
+The marketplace entry carries no `version`, so `plugin.json` is the one place to
+change it. The lint workflow fails a pull request that changes a plugin without
+bumping it; changes under `evals/`, `replays/` or the plugin's `README.md` are
+exempt. Run the same check locally with `uv run plugin-version-check`.
 
 ## Evals
 

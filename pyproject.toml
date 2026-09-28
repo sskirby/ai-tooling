@@ -10,6 +10,7 @@ replay-eval = "evals.wrapper:main"
 replay-generate = "evals.generate:main"
 replay-capture = "evals.capture:main"
 plugin-lint = "evals.lint:main"
+plugin-version-check = "evals.version_bump:main"
 
 [dependency-groups]
 dev = ["mypy", "types-PyYAML"]
@@ -28,7 +29,7 @@ files = ["scripts/evals", "test/evals"]
 exclude = "^test/evals/fixtures/"
 
 [[tool.mypy.overrides]]
-module = ["test_capture", "test_generate", "test_pairing", "test_sources", "test_transcript", "test_wrapper", "helpers", "test_lint"]
+module = ["test_capture", "test_generate", "test_pairing", "test_sources", "test_transcript", "test_wrapper", "helpers", "test_lint", "test_version_bump"]
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
 disallow_untyped_calls = false

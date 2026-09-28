@@ -13,9 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The version check diffs against the merge base with the PR's base branch.
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
       - name: Lint manifests and eval cases
         run: uv run plugin-lint
+      - name: Plugin version bumped
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: uv run plugin-version-check "origin/$BASE_REF"
       - name: Unit tests
         run: uv run python -m unittest discover -s test/evals -v
       - name: Types
