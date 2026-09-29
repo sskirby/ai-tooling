@@ -13,47 +13,98 @@ format. Part 2 covers how this repo is built and verified.
 
 ## Evidence note
 
-Measured on Opus 5.5.
+Measured on version 0.1.1 of the skill with CLI 2.1.283: one full suite
+per model, 6 runs per case and arm, judged by claude-opus-5-5. `--model`
+sets the model under test and overrides each case's pin (B7). Effort is
+each model's CLI default, since `claude plugin eval` has no effort
+setting: medium on Opus 5.5, high on Sonnet 5, and none recorded on
+Haiku 4.5.
 
-Where each case stands, with score / without score / delta. For a replay
-case, `without` is its baseline twin (B9). The turn-1 rows,
-`first-step-route-fits-replay` and the other replay rows come from three
-separate runs of the current cases:
+Each table gives with score / without score / delta. For a replay case,
+`without` is its baseline twin (B9). The three `no-trigger-*` cases score a
+correct 0.00 by design — the skill must not fire on those prompts — so
+each mean delta covers only the seven teaching cases.
 
+Run-to-run noise on a 6-run case is usually 0.12 or less, but two runs of
+near-identical skill text once differed by 0.33 on one case, so a small
+delta on any single case is not signal.
+
+### Opus 5.5
 
 | case                            | with | without | Δ     |
 | ------------------------------- | ---- | ------- | ----- |
 | opening                         | 1.00 | 0.25    | +0.75 |
-| first-step-replay               | 0.92 | 0.25    | +0.67 |
-| closing-replay                  | 1.00 | 0.60    | +0.40 |
+| first-step-replay               | 1.00 | 0.25    | +0.75 |
+| closing-replay                  | 1.00 | 0.40    | +0.60 |
+| shaky-reasoning-rechecks-replay | 1.00 | 0.71    | +0.29 |
 | wrong-answer-reteaches-replay   | 1.00 | 0.75    | +0.25 |
-| shaky-reasoning-rechecks-replay | 0.92 | 0.67    | +0.25 |
-| next-means-one-step-replay      | 1.00 | 1.00    | 0.00  |
+| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
 | first-step-route-fits-replay    | 1.00 | 1.00    | 0.00  |
 | no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
 
+The mean delta is **+0.39 across the seven teaching cases**.
 
-The mean delta is **+0.33 across the seven teaching cases**. The three `no-trigger-*` cases score a correct 0.00 by
-design — the skill must not fire on those prompts and it does not — so
-averaging them in drags the figure down for a reason that is a pass, not a
-failure.
-
-Of the 31 scored graders across the seven teaching cases, 11 discriminate
-cleanly, 2 discriminate only weakly (the baseline lands them 1 or 2 of 3),
-15 are inert (pass in both arms because bare Opus 5.5 already does the
-behaviour, or the replay baseline copies it from its history), and 3 miss
-in the with arm. Two are in first-step, where `check-requires-using-the-idea`
-and `no-extraneous-prose` fail the same run of three. The third is
-shaky-reasoning-rechecks' `rechecks-before-moving-on`, which fails one run
-of three whose check asks how to find out whether a CTE was inlined rather
-than testing the corrected reasoning. Inert graders cluster mid-lesson and
-in first-step-route-fits: next-means 4/4, wrong-answer 3/4, shaky 2/4,
+Of the 31 scored graders across the seven teaching cases, 13 discriminate
+cleanly, 4 discriminate only weakly (the baseline lands them in some of
+its 6 runs), 14 are inert (pass in both arms because bare Opus 5.5 already
+does the behaviour, or the replay baseline copies it from its history),
+and none miss in the with arm. Inert graders cluster mid-lesson and in
+first-step-route-fits: next-means 3/4, wrong-answer 3/4, shaky 2/4,
 route-fits 2/2. See Open ("Graders that pass in both arms").
 
-Run-to-run noise on a 3-run case is about ±0.20, so a delta smaller than
-that on any single case is not signal.
+### Sonnet 5
+
+| case                            | with | without | Δ     |
+| ------------------------------- | ---- | ------- | ----- |
+| first-step-replay               | 0.90 | 0.15    | +0.75 |
+| opening                         | 1.00 | 0.38    | +0.62 |
+| shaky-reasoning-rechecks-replay | 1.00 | 0.42    | +0.58 |
+| first-step-route-fits-replay    | 1.00 | 0.58    | +0.42 |
+| closing-replay                  | 1.00 | 0.60    | +0.40 |
+| wrong-answer-reteaches-replay   | 0.96 | 0.75    | +0.21 |
+| next-means-one-step-replay      | 1.00 | 1.00    | 0.00  |
+| no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
+| no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
+| no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
+
+The mean delta is **+0.43 across the seven teaching cases**.
+
+Of the 31 scored graders, 8 discriminate cleanly, 10 only weakly, 9 are
+inert, and 4 miss in the with arm: first-step's
+`check-requires-using-the-idea` and `no-extraneous-prose` (4/6 each) and
+`step-one-is-new-to-them` (5/6), and wrong-answer-reteaches'
+`reteaches-from-a-new-angle` (5/6).
+
+### Haiku 4.5
+
+| case                            | with | without | Δ     |
+| ------------------------------- | ---- | ------- | ----- |
+| first-step-replay               | 0.81 | 0.12    | +0.69 |
+| opening                         | 1.00 | 0.38    | +0.62 |
+| closing-replay                  | 1.00 | 0.43    | +0.57 |
+| next-means-one-step-replay      | 1.00 | 0.46    | +0.54 |
+| first-step-route-fits-replay    | 1.00 | 0.58    | +0.42 |
+| wrong-answer-reteaches-replay   | 0.96 | 0.67    | +0.29 |
+| shaky-reasoning-rechecks-replay | 0.21 | 0.12    | +0.08 |
+| no-trigger-explain-and-do       | 0.92 | 1.00    | −0.08 |
+| no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
+| no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
+
+The mean delta is **+0.46 across the seven teaching cases**.
+`no-trigger-explain-and-do` is below 1.00 because the skill fired in 1 of
+its 6 runs.
+
+Of the 31 scored graders, 9 discriminate cleanly, 7 only weakly, 6 are
+inert, and 9 miss in the with arm. Four are shaky-reasoning-rechecks':
+Haiku 4.5 takes "text substitution" for the real mechanism, says the
+answer is right and starts the next step, so `does-not-advance`,
+`does-not-simply-congratulate` and `names-the-specific-gap` pass 0 of 6
+and `rechecks-before-moving-on` 5 of 6. Four are first-step's:
+`check-requires-using-the-idea` and `no-extraneous-prose` (3/6 each),
+`step-heading-present` (4/6) and `step-one-is-new-to-them` (5/6). The last
+is wrong-answer-reteaches' `reteaches-from-a-new-angle` (5/6).
 
 ---
 
@@ -77,7 +128,8 @@ failed before it started.
 
 **Decision.** The route is a numbered list of 3–6 step titles, and each
 title is a claim, not a topic: "The policy is AND-ed onto every scan," not
-"Policy injection."
+"Policy injection." A topic label with a dash and a gloss after it ("Policy
+injection — where it's applied") is still a topic.
 
 **Rejected.** Topic labels — faster to write, and they tell the reader
 nothing about what they're about to learn.
@@ -103,7 +155,11 @@ no-step-yet).
 ## D4 — Every step ends with a question you ask them
 
 **Decision.** A step is not complete until the learner
-answers a question that requires using the idea.
+answers a question that requires using the idea. The check
+gives a case the step didn't show and asks what happens and
+why. A question about the learner, about whether the step
+landed, or an either/or the step already answers is not a
+check.
 
 **Rejected.** Closing with "any questions?" — it asks the
 learner to already know what they don't know, which is the
@@ -120,6 +176,8 @@ find it slow; `next` is the escape hatch (see D7).
 phrasing, no beating around the bush, no throat-clearing before the
 point. A concept is never explained incompletely just to hit a count —
 the author's ruling is that a step's length should be earned, not capped.
+Within a step the claim is said once: a sentence after the picture that
+restates what it showed is padding.
 
 **Rejected.** A hard numeric word cap. Per the author, the point is
 tightness, not an arithmetic ceiling, and a long-but-earned
@@ -128,7 +186,7 @@ step should not have to break itself in two just to stay under a number.
 **Cost.** Cutting narration without cutting content takes a real editing
 pass — spotting a deletable sentence is harder than counting words.
 
-**⚠ Skill and check differ, deliberately.** `SKILL.md:60` keeps "≤150
+**⚠ Skill and check differ, deliberately.** `SKILL.md:77` keeps "≤150
 words of prose. Hard budget." Replies run past it, but replacing it with a
 tightness rule made first-step's prose and route decisions worse, so the
 number stays as a steer. The check grades tightness, not the count.
@@ -168,8 +226,11 @@ advances-without-commentary, step-three-not-a-dump).
 ## D8 — Never advance past a wrong answer
 
 **Decision.** Never advance past a check the learner got wrong; re-teach
-from a new angle. A right conclusion reached with shaky reasoning gets the
-gap named and a re-check, not a pass.
+from a new angle. A right conclusion reached with shaky reasoning is
+credited, the gap is named, and a fresh check follows on the same step —
+one the learner's original reasoning would get wrong. Any correction, even
+a "small nuance" in parentheses, means the reasoning was shaky. Only a
+right answer with its reasoning, or "next", gets a new step heading.
 
 **Rejected.** Repeating the step louder; accepting a right answer for the
 wrong reason.
@@ -185,8 +246,8 @@ rechecks-before-moving-on).
 
 ## D9 — The close is the chain, then the one thing that bites
 
-**Decision.** The close gives the whole chain back in about five lines,
-one per step, then names the one thing most likely to bite them in
+**Decision.** The close gives the whole chain back as a numbered list,
+one line per step, then names the one thing most likely to bite them in
 practice.
 
 **Rejected.** A summary of topics covered — a table of contents after the
@@ -218,7 +279,11 @@ check real names and line numbers against — see Open.
 **Decision.** After the calibration answer, if it shows the learner
 already knows a step, or changes what's worth teaching, the route is
 revised before step 1 and the revised route is shown. A route that
-already fits stands as shown.
+already fits stands as shown, and so does the route when the learner skips
+the question ("go ahead"). Steps they already know are dropped, not
+recapped. The reply's first line is `Revised route:` or the step 1
+heading, never an acknowledgement of their answer, and it teaches step 1
+with no second question first.
 
 **Rejected.** Following the route already shown as if the answer changed
 nothing — teaching a learner who writes SQL daily that a CTE is a named
@@ -230,7 +295,7 @@ calibration round trip.
 
 **Pinned by.** replays/first-step/ (step-one-is-new-to-them,
 revised-route-is-shown); replays/first-step-route-fits/ (keeps-the-route,
-route-not-repeated).
+route-not-repeated, no-extraneous-prose).
 
 ---
 
@@ -311,11 +376,18 @@ README.
 
 **Decision.** The skill's trigger is narrow: a request to perform a task
 does not fire the skill, even when it carries an "I don't get this,
-explain as you go" rider.
+explain as you go" rider, and neither does a quick question about code
+being written together. The description fires "only when understanding is
+the whole request", then states the exception, naming the rider in the
+words people write. The body opens with the same check, so a skill that
+fires on a task anyway drops the lesson format.
 
 **Rejected.** Leaving the description broad and letting the skill fire on
 "how do I add an index to this table?" — when it fired on a task request,
-the lesson took over instead of the task getting done.
+the lesson took over instead of the task getting done. Listing the
+exceptions before the trigger phrases: Haiku 4.5 and Sonnet 5 then fired
+on every explain-and-do run. Leaving the rider's own words out of the
+exception: Sonnet 5 fired on "…and explain as you go?" 5 runs in 8.
 
 **Cost.** A genuine "explain this to me" phrased as a task request may now
 go unanswered by the skill.
@@ -344,7 +416,9 @@ for one rule.
 **Decision.** The model under test is pinned to claude-opus-5-5 in every
 case, and lint refuses a case with no pinned model. The judge is
 claude-opus-5-5 too, passed as a full model ID in the root README's eval
-command and in `eval.yml`.
+command and in `eval.yml`. Another model is measured by passing `--model`,
+which overrides every case's pin; the Evidence note covers Sonnet 5 and
+Haiku 4.5 this way. Effort is not pinned (see Open).
 
 **Rejected.** Leaving cases unpinned. An unpinned case runs on the CLI's
 built-in default model — the eval sandbox never reads the user's
@@ -413,7 +487,8 @@ replays/wrong-answer-reteaches/, replays/closing/.
 | Item                                                          | Open because                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Resolved by                                                                                                                      |
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
-| Graders that pass in both arms | 15 of the 31 scored graders pass in both arms, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to any delta: `opening/answer-before-route`; `first-step/step-one-is-new-to-them`; `first-step-route-fits/keeps-the-route`, `route-not-repeated`; `next-means-one-step/advances-without-commentary`, `escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/no-further-check`, `recap-is-easy-to-scan` | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| Graders that pass in both arms | 14 of the 31 scored graders pass in both arms on Opus 5.5, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to its deltas: `opening/answer-before-route`; `first-step/no-extraneous-prose`, `step-one-is-new-to-them`; `first-step-route-fits/keeps-the-route`, `route-not-repeated`; `next-means-one-step/escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/recap-is-easy-to-scan`. Fewer are inert on Sonnet 5 (9) and Haiku 4.5 (6), whose bare models do less of the behaviour | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
 | `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
+| Effort is unpinned (B7) | `claude plugin eval` has no effort setting, so each model runs at the CLI's default for it — medium on Opus 5.5, high on Sonnet 5 — and a CLI update can move that default between two runs, as it once moved the default model. The judge's effort is not recorded | An effort setting in `claude plugin eval`, then pinning it per case |
 
 
