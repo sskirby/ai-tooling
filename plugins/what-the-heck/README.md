@@ -15,7 +15,8 @@ under test (B7). Effort is each model's CLI default, since
 `claude plugin eval` has no effort setting: medium on Opus 5.5 and
 Sonnet 5.5, and none recorded on Haiku 4.5.
 
-Each table gives with score / without score / delta. For a replay case,
+Each table gives with score / without score / delta, one row per case in
+lesson order, with the three `no-trigger-*` cases last. For a replay case,
 `without` is its baseline twin (B9). The three `no-trigger-*` cases score a
 correct 0.00 by design — the skill must not fire on those prompts — so
 each mean delta covers only the seven teaching cases.
@@ -30,11 +31,11 @@ delta on any single case is not signal.
 | ------------------------------- | ---- | ------- | ----- |
 | opening                         | 1.00 | 0.25    | +0.75 |
 | first-step-replay               | 1.00 | 0.25    | +0.75 |
-| closing-replay                  | 1.00 | 0.40    | +0.60 |
+| first-step-route-fits-replay    | 1.00 | 1.00    | 0.00  |
+| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
 | shaky-reasoning-rechecks-replay | 1.00 | 0.71    | +0.29 |
 | wrong-answer-reteaches-replay   | 1.00 | 0.75    | +0.25 |
-| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
-| first-step-route-fits-replay    | 1.00 | 1.00    | 0.00  |
+| closing-replay                  | 1.00 | 0.40    | +0.60 |
 | no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
@@ -53,12 +54,12 @@ route-fits 2/2. See Open ("Graders that pass in both arms").
 
 | case                            | with | without | Δ     |
 | ------------------------------- | ---- | ------- | ----- |
-| first-step-replay               | 0.98 | 0.19    | +0.79 |
 | opening                         | 1.00 | 0.25    | +0.75 |
+| first-step-replay               | 0.98 | 0.19    | +0.79 |
 | first-step-route-fits-replay    | 1.00 | 0.50    | +0.50 |
+| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
 | shaky-reasoning-rechecks-replay | 1.00 | 0.75    | +0.25 |
 | wrong-answer-reteaches-replay   | 1.00 | 0.79    | +0.21 |
-| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
 | closing-replay                  | 0.90 | 0.90    | 0.00  |
 | no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
@@ -78,13 +79,13 @@ same run), and first-step's `no-extraneous-prose` (5/6).
 
 | case                            | with | without | Δ     |
 | ------------------------------- | ---- | ------- | ----- |
-| first-step-replay               | 0.81 | 0.12    | +0.69 |
 | opening                         | 1.00 | 0.38    | +0.62 |
-| closing-replay                  | 1.00 | 0.43    | +0.57 |
-| next-means-one-step-replay      | 1.00 | 0.46    | +0.54 |
+| first-step-replay               | 0.81 | 0.12    | +0.69 |
 | first-step-route-fits-replay    | 1.00 | 0.58    | +0.42 |
-| wrong-answer-reteaches-replay   | 0.96 | 0.67    | +0.29 |
+| next-means-one-step-replay      | 1.00 | 0.46    | +0.54 |
 | shaky-reasoning-rechecks-replay | 0.21 | 0.12    | +0.08 |
+| wrong-answer-reteaches-replay   | 0.96 | 0.67    | +0.29 |
+| closing-replay                  | 1.00 | 0.43    | +0.57 |
 | no-trigger-explain-and-do       | 0.92 | 1.00    | −0.08 |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
