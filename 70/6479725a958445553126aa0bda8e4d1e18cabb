@@ -1,0 +1,35 @@
+test/evals/test_lint.py
+  s_6bcdeaafea8fd7::t_fccb87dafb7034 29,106
+docs/replay-evals.md
+  s_6bcdeaafea8fd7::t_727e18d185df85 260-264,284
+  s_6bcdeaafea8fd7::t_f616c3af59b0db 271
+test/evals/test_wrapper.py
+  s_6bcdeaafea8fd7::t_118bc3f2c4ea62 9,64,66,68,86-100
+  s_6bcdeaafea8fd7::t_fb4b5ac350c14d 101
+scripts/evals/wrapper.py
+  s_6bcdeaafea8fd7::t_118bc3f2c4ea62 3,22,52-62,86-87
+README.md
+  s_6bcdeaafea8fd7::t_7077e01508f0f8 30-48,61-62,75-88,91-96
+  s_6bcdeaafea8fd7::t_727e18d185df85 89-90
+  s_6bcdeaafea8fd7::t_6ed3888957f881 72
+.github/workflows/eval.yml
+  s_6bcdeaafea8fd7::t_217371f7c15dc9 9-11,35,39-40
+plugins/what-the-heck/README.md
+  s_6bcdeaafea8fd7::t_f616c3af59b0db 13,411,413-415,417-418,426-427,483
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "706479725a958445553126aa0bda8e4d1e18cabb",
+  "prompts": {},
+  "sessions": {
+    "s_6bcdeaafea8fd7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a8795cd-87ab-480c-a62c-2e6f966bb819",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
