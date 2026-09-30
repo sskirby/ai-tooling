@@ -1,0 +1,26 @@
+README.md
+  s_23853567d10490::t_34462f53a12b1c 51
+  s_23853567d10490::t_366d5f2d794e96 7
+  s_23853567d10490::t_e606b2894671ee 40
+plugins/what-the-heck/README.md
+  s_23853567d10490::t_49fffb610df8a4 11-16
+  s_23853567d10490::t_e766fbb812dd00 483
+  s_23853567d10490::t_d3d48bea4f52c7 52,56-62,67-70,72-75
+  s_23853567d10490::t_7c6588f3455c49 481
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d7c1c33e2134c79b8c22e906a1a5251bae3113a0",
+  "prompts": {},
+  "sessions": {
+    "s_23853567d10490": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d583b663-2bf2-453a-80e3-18176f618eb1",
+        "model": "unknown"
+      },
+      "human_author": "Sean Kirby <seank@nulogy.com>"
+    }
+  }
+}
