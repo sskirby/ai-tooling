@@ -91,9 +91,6 @@ def load_source(path: Path) -> Source:
     if not isinstance(execution, dict) or not isinstance(execution.get("prompt"), str) \
             or not execution["prompt"].strip():
         fail("execution.prompt must be the live next user turn")
-    # evals/lint.py enforces this for every other case, but it never sees the generated replay cases.
-    if not isinstance(execution.get("model"), str) or not execution["model"].strip():
-        fail("execution.model must pin a model; an unpinned case runs on whatever the CLI's default alias is")
     graders = _graders(data.get("graders") or [], path.parent / "graders", fail)
     meta = {k: data[k] for k in _META_KEYS if k in data}
     return Source(path, name, messages, dict(execution), data.get("runs"), graders, meta)

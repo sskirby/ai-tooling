@@ -6,7 +6,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from evals.wrapper import EXIT_REFUSED, EXIT_RESULTS, main
+from evals.wrapper import DEFAULT_JUDGE, EXIT_REFUSED, EXIT_RESULTS, main
 from helpers import make_plugin
 
 # Stands in for `claude`: records its argv, writes the canned result to --json, exits with $FAKE_EXIT.
@@ -61,10 +61,11 @@ class Wrapper(unittest.TestCase):
                 os.environ[key] = value
         self.tmp.cleanup()
 
-    def call(self, *args):
+    def call(self, *args, model=True):
         out, err = io.StringIO(), io.StringIO()
+        model_args = ["--model", "claude-sonnet-5"] if model else []
         with redirect_stdout(out), redirect_stderr(err):
-            code = main([str(self.plugin), *args])
+            code = main([str(self.plugin), *model_args, *args])
         return code, out.getvalue(), err.getvalue()
 
     def claude_argv(self):
@@ -81,6 +82,22 @@ class Wrapper(unittest.TestCase):
         delta_md = self.plugin / "evals" / "replay" / "delta.md"
         self.assertEqual(delta_md.read_text(), out)
         self.assertTrue((self.plugin / "evals" / "replay" / "lesson-replay" / "history.jsonl").is_file())
+
+    def test_judge_defaults_to_opus(self):
+        self.call()
+        argv = self.claude_argv()
+        self.assertEqual(argv[argv.index("--judge-model") + 1], DEFAULT_JUDGE)
+        self.call("--judge-model=claude-sonnet-5")
+        argv = self.claude_argv()
+        self.assertIn("--judge-model=claude-sonnet-5", argv)
+        self.assertNotIn(DEFAULT_JUDGE, argv)
+
+    def test_refuses_missing_model(self):
+        for args in ([], ["--model"], ["--model="]):
+            code, _, err = self.call(*args, model=False)
+            self.assertEqual(code, EXIT_REFUSED)
+            self.assertIn("--model", err)
+        self.assertFalse(self.argv_file.exists())
 
     def test_user_json_path_is_used(self):
         target = Path(self.tmp.name) / "out" / "r.json"

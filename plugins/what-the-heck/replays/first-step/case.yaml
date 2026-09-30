@@ -28,7 +28,6 @@ context:
       What prompted the question — did you run into a `WITH` in someone else's
       query, or are you trying to write one?
 execution:
-  model: claude-opus-5-5
   prompt: |
     I'm chasing a slow report query at work. It has three chained CTEs and the plan
     looks nothing like I expected. I write SQL with CTEs most days, but I've never

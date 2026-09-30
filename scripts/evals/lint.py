@@ -167,7 +167,6 @@ class Checker:
         yaml_path = directory / "case.yaml"
         prompt_path = directory / "prompt.md"
         prompt_body: Any = None
-        model: Any = None
         graders: list[tuple[str, dict[str, Any], Path]] = []
 
         if yaml_path.is_file():
@@ -184,7 +183,6 @@ class Checker:
                 self._err(yaml_path, 'missing "execution"')
             else:
                 prompt_body = execution.get("prompt")
-                model = execution.get("model")
             if isinstance(spec.get("graders"), list):
                 for i, g in enumerate(spec["graders"]):
                     if not isinstance(g, dict):
@@ -202,13 +200,6 @@ class Checker:
                 if str(key) not in PROMPT_KEYS:
                     self._err(prompt_path, f"unknown frontmatter key {_inspect(str(key))}")
             prompt_body = body
-            if model is None:
-                model = fm.get("model")
-
-        # Unpinned, the session model is whatever the user's default alias
-        # resolves to in the installed CLI, which can change between two runs.
-        if not (isinstance(model, str) and model.strip()):
-            self._err(directory, "pins no model — set model: in prompt.md or execution.model in case.yaml")
 
         prompt_report_path = prompt_path if prompt_path.is_file() else yaml_path
         if prompt_body is None or not str(prompt_body).strip():

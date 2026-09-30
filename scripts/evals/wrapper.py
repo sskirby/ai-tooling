@@ -1,6 +1,6 @@
 """Regenerate replay cases, run `claude plugin eval` once, and print one Δ table.
 
-Usage: uv run replay-eval <plugin dir> [claude plugin eval options, except --ablation]
+Usage: uv run replay-eval <plugin dir> --model <model id> [claude plugin eval options, except --ablation]
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from evals.sources import BASELINE_SUFFIX, SourceError, load_sources
 
 EXIT_RESULTS = 3
 EXIT_REFUSED = 4
+DEFAULT_JUDGE = "claude-opus-5-5"
 
 
 class UsageError(Exception):
@@ -48,6 +49,17 @@ def _refuse_ablation(argv: list[str]) -> None:
                          "(auto) gives; with-without adds an arm that resumes the skill-bearing transcript")
 
 
+def _require_model(argv: list[str]) -> None:
+    model, _ = _take_flag(argv, "--model")
+    if not model:
+        raise UsageError("--model is required: give the model under test as a full model ID")
+
+
+def _with_default_judge(argv: list[str]) -> list[str]:
+    judge, _ = _take_flag(argv, "--judge-model")
+    return argv if judge else [*argv, "--judge-model", DEFAULT_JUDGE]
+
+
 def _split_target(argv: list[str]) -> tuple[Path, list[str]]:
     if not argv or argv[0].startswith("-") or not Path(argv[0]).is_dir():
         raise UsageError("the first argument must be the plugin directory (a path, not a plugin name: "
@@ -71,6 +83,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         _refuse_ablation(argv)
         target, rest = _split_target(argv)
+        _require_model(rest)
+        rest = _with_default_judge(rest)
         json_arg, rest = _take_flag(rest, "--json")
         sources = load_sources(target)
         replay_names = {s.name for s in sources}

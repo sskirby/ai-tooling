@@ -96,7 +96,6 @@ context:
 
       (answer it, ask me anything, or say "next" to skip ahead)
 execution:
-  model: claude-opus-5-5
   prompt: |
     My answer: nothing, it can't reach inside. The CTE is a fence, so the filter
     has to wait until the CTE has produced all its rows, and then it runs over the

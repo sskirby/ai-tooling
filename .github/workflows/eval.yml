@@ -6,6 +6,9 @@ name: eval
 on:
   workflow_dispatch:
     inputs:
+      model:
+        description: "Model under test, as a full model ID (e.g. claude-opus-5-5)"
+        required: true
       case:
         description: "Case name glob (blank runs all)"
         required: false
@@ -29,12 +32,12 @@ jobs:
       - name: Run the eval suite
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODEL: ${{ inputs.model }}
           CASE_GLOB: ${{ inputs.case }}
           MAX_COST_USD: ${{ inputs.max_cost_usd }}
         run: |
-          # Full model ID, not an alias: an alias moves when the CLI updates.
-          args=(./plugins/what-the-heck --trust-plugin --no-publish --report eval-report.html)
-          args+=(--judge-model claude-opus-5-5 --max-cost-usd "$MAX_COST_USD" --json eval-result.json)
+          args=(./plugins/what-the-heck --model "$MODEL" --trust-plugin --no-publish --report eval-report.html)
+          args+=(--max-cost-usd "$MAX_COST_USD" --json eval-result.json)
           if [ -n "$CASE_GLOB" ]; then args+=(--case "$CASE_GLOB"); fi
           uv run replay-eval "${args[@]}"
       - uses: actions/upload-artifact@v4
