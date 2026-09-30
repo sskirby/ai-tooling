@@ -6,11 +6,6 @@ This file is the decision log: why each rule in the skill exists, what was
 rejected, what it costs, and which eval pins it. Part 1 covers the teaching
 format. Part 2 covers how this repo is built and verified.
 
-> **Part 1 needs the author's pass.** The rules are the author's. The
-> reconstruction of *why* is not. A decision log that confidently invents an
-> author's reasoning is worse than none, because it launders a guess into an
-> artifact others will cite. Correct anything below that is wrong.
-
 ## Evidence note
 
 Measured on version 0.1.1 of the skill with CLI 2.1.283: one full suite
@@ -128,8 +123,7 @@ failed before it started.
 
 **Decision.** The route is a numbered list of 3–6 step titles, and each
 title is a claim, not a topic: "The policy is AND-ed onto every scan," not
-"Policy injection." A topic label with a dash and a gloss after it ("Policy
-injection — where it's applied") is still a topic.
+"Policy injection."
 
 **Rejected.** Topic labels — faster to write, and they tell the reader
 nothing about what they're about to learn.
@@ -141,8 +135,9 @@ happens; a lazy route reverts to topic labels.
 
 ## D3 — Exactly one calibration question
 
-**Decision.** The opening asks exactly one calibration question, then
-stops and waits for the reply before step 1.
+**Decision.** The opening asks exactly one calibration question to make sure
+the planned route is what the learner wants, then stops and waits for the 
+reply before step 1.
 
 **Rejected.** A short quiz up front; and, at the other extreme, guessing
 the reader's level and skipping the question entirely.
@@ -327,9 +322,11 @@ arm has no conversation to act in: it replies that it cannot see the
 earlier turns, or follows a route restated in its own prompt. Measured side
 by side, that inflated `next-means-one-step`'s Δ to +0.42 and made
 `first-step-route-fits`'s negative, −0.33; see
-[docs/replay-evals.md](../../docs/replay-evals.md). Sampled real
-transcripts: roughly 900 KB each, with account IDs, `cwd` and `gitBranch`
-to scrub on every regeneration; a generated transcript carries none of it.
+[docs/replay-evals.md](../../docs/replay-evals.md). 
+
+**Rejected** Sampled real transcripts: roughly 900 KB each, with account IDs, 
+`cwd` and `gitBranch` to scrub on every regeneration; a generated transcript 
+carries none of it.
 
 **Cost.** Earlier turns are fixed, edited text, where a real learner sees
 whatever the model wrote at turn 1. The explainer lists the other
