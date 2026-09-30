@@ -26,7 +26,7 @@ def build(overrides=None):
     write(root, "plugins/what-the-heck/skills/what-the-heck/SKILL.md",
           "---\nname: what-the-heck\ndescription: Use when the user wants to understand something.\n---\n\n# What The Heck\n")
     write(root, "plugins/what-the-heck/evals/opening/prompt.md",
-          "---\nruns: 3\nmodel: claude-opus-5-5\nallowed_tools: [Skill]\n---\n\nwhat the heck is a CTE?\n")
+          "---\nruns: 3\nallowed_tools: [Skill]\n---\n\nwhat the heck is a CTE?\n")
     write(root, "plugins/what-the-heck/evals/opening/graders/no-make-sense.md",
           "---\ntype: regex\ntarget: last_message\nmatch: not_contains\nflags: i\n---\n\nmake sense\n")
     for path, body in (overrides or {}).items():
@@ -73,13 +73,6 @@ class LintTest(unittest.TestCase):
         }))
         self.assertIn('unknown frontmatter key "context"', "\n".join(errors))
 
-    def test_case_without_a_pinned_model_is_caught(self):
-        errors = lint(self.build({
-            "plugins/what-the-heck/evals/opening/prompt.md":
-                "---\nruns: 3\nallowed_tools: [Skill]\n---\n\nwhat the heck is a CTE?\n",
-        }))
-        self.assertIn("pins no model", "\n".join(errors))
-
     def test_bad_match_value_is_caught(self):
         errors = lint(self.build({
             "plugins/what-the-heck/evals/opening/graders/no-make-sense.md":
@@ -110,7 +103,7 @@ class LintTest(unittest.TestCase):
         errors = lint(self.build({
             "plugins/what-the-heck/evals/no-trigger-task-ask/case.yaml":
                 'schema_version: "1.1"\nname: no-trigger-task-ask\nexecution:\n'
-                "  model: claude-opus-5-5\n  prompt: |\n    how do I add an index?\n"
+                "  prompt: |\n    how do I add an index?\n"
                 "  allowed_tools: [Skill]\nruns: 3\ngraders:\n"
                 "  - name: skill-did-not-fire\n    type: tool_used\n    tool: Skill\n"
                 "    min: 0\n    max: 0\n    arm: both\n",

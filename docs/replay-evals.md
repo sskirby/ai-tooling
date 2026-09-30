@@ -169,7 +169,6 @@ context:
         ...
         What prompted the question: did you run into a `WITH` in someone else's query, or are you trying to write one?
 execution:
-  model: claude-opus-5-5
   prompt: |
     Go ahead.
   max_turns: 6
@@ -258,16 +257,18 @@ impossible instead.
 
 ## Running it
 
-`uv run replay-eval <plugin dir> [claude plugin eval options]` is the
-wrapper. It regenerates every case pair, runs `claude plugin eval`, pairs
-each `<name>` with `<name>-baseline`, and prints one Δ table (also
-written as `delta.md` beside the `--json` output).
+`uv run replay-eval <plugin dir> --model <model id> [claude plugin eval options]`
+is the wrapper. It regenerates every case pair, runs `claude plugin eval`,
+pairs each `<name>` with `<name>-baseline`, and prints one Δ table (also
+written as `delta.md` beside the `--json` output). The judge is
+`claude-opus-5-5` unless `--judge-model` is given.
 
 The wrapper refuses:
 
 | Refused | Why |
 | --- | --- |
 | `--ablation` passed to the wrapper | `with-without` gives `<name>` a second arm that resumes a transcript carrying the skill text: a meaningless Δ, at double cost |
+| No `--model` | No case names a model, so the run must |
 | A target that is not an existing directory | An installed plugin name also switches history cases to two arms |
 | A `--case` glob that matches one side of a pair but not the other | A replay case without its baseline has no Δ |
 | A source grader of type `tool_used` on tool `Skill` with `min` of 1 or more, such as `skill-fired` | A replay never calls Skill: the load is already in the history, so the grader could never pass. The generator stops with an error naming the grader; neither case is written |
@@ -280,7 +281,7 @@ Where each runs in CI:
 - **Source guards** (Skill `tool_used` grader, `skill` message count,
   message order, name collision) run on every PR through
   `generate.py --check` in `lint.yml`. Free, no secrets.
-- **Argument guards** (`--ablation`, target, unpaired `--case` glob)
+- **Argument guards** (`--ablation`, `--model`, target, unpaired `--case` glob)
   apply to a wrapper invocation, not to repo state. `lint.yml` runs unit
   tests that call the wrapper's argument check with each refused input;
   no eval starts. They also apply live in `eval.yml`, which calls the

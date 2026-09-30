@@ -10,7 +10,7 @@ format. Part 2 covers how this repo is built and verified.
 
 Measured on version 0.1.1 of the skill with CLI 2.1.283: one full suite
 per model, 6 runs per case and arm, judged by claude-opus-5-5. `--model`
-sets the model under test and overrides each case's pin (B7). Effort is
+sets the model under test (B7). Effort is
 each model's CLI default, since `claude plugin eval` has no effort
 setting: medium on Opus 5.5, high on Sonnet 5, and none recorded on
 Haiku 4.5.
@@ -408,20 +408,14 @@ for one rule.
 
 **Pinned by.** Unpinned, by decision. See Open.
 
-## B7 — Pin the model under test and the judge
+## B7 — The run names the model under test and the judge
 
-**Decision.** The model under test is pinned to claude-opus-5-5 in every
-case, and lint refuses a case with no pinned model. The judge is
-claude-opus-5-5 too, passed as a full model ID in the root README's eval
-command and in `eval.yml`. Another model is measured by passing `--model`,
-which overrides every case's pin; the Evidence note covers Sonnet 5 and
-Haiku 4.5 this way. Effort is not pinned (see Open).
+**Decision.** `replay-eval` requires `--model`, a full model ID; no case
+names a model. The judge is claude-opus-5-5 unless `--judge-model` is
+given. Effort is not set (see Open).
 
-**Rejected.** Leaving cases unpinned. An unpinned case runs on the CLI's
-built-in default model — the eval sandbox never reads the user's
-`settings.json` — which can change with a CLI update between two runs of
-the same case, and no run records which model it hit. Omitting
-`--judge-model` means Haiku.
+**Rejected.** A `model:` in each case. It names the model in a second
+place, and `--model` overrides it on every run.
 
 **Cost.** The Opus judge costs more per run than a smaller one; the author
 ruled the grader should be the more capable model. Judge and model under
@@ -429,8 +423,8 @@ test being the same model is a self-preference risk; both arms share it,
 so it mostly cancels out of the delta but not out of either arm's absolute
 score.
 
-**Pinned by.** The lint rule that refuses an unpinned case;
-`aggregate-result.json` records `model` on every pinned case.
+**Pinned by.** No eval case; `replay-eval` refuses a run with no
+`--model`.
 
 ## B8 — The skill loads in the history, not by slash command
 
@@ -486,6 +480,6 @@ replays/wrong-answer-reteaches/, replays/closing/.
 | A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
 | Graders that pass in both arms | 14 of the 31 scored graders pass in both arms on Opus 5.5, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to its deltas: `opening/answer-before-route`; `first-step/no-extraneous-prose`, `step-one-is-new-to-them`; `first-step-route-fits/keeps-the-route`, `route-not-repeated`; `next-means-one-step/escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/recap-is-easy-to-scan`. Fewer are inert on Sonnet 5 (9) and Haiku 4.5 (6), whose bare models do less of the behaviour | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
 | `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
-| Effort is unpinned (B7) | `claude plugin eval` has no effort setting, so each model runs at the CLI's default for it — medium on Opus 5.5, high on Sonnet 5 — and a CLI update can move that default between two runs, as it once moved the default model. The judge's effort is not recorded | An effort setting in `claude plugin eval`, then pinning it per case |
+| Effort is unpinned (B7) | `claude plugin eval` has no effort setting, so each model runs at the CLI's default for it — medium on Opus 5.5, high on Sonnet 5 — and a CLI update can move that default between two runs, as it once moved the default model. The judge's effort is not recorded | An effort setting in `claude plugin eval`, then a required `replay-eval` flag for it |
 
 

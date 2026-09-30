@@ -20,7 +20,6 @@ context:
     - role: assistant
       content: Step 1 of 2 — X does Y.
 execution:
-  model: claude-opus-5-5
   prompt: |
     next
   max_turns: 6
