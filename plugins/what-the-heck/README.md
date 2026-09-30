@@ -136,7 +136,7 @@ happens; a lazy route reverts to topic labels.
 ## D3 — Exactly one calibration question
 
 **Decision.** The opening asks exactly one calibration question to make sure
-the planned route is what the learner wants, then stops and waits for the 
+the planned route is what the learner wants, then stops and waits for the
 reply before step 1.
 
 **Rejected.** A short quiz up front; and, at the other extreme, guessing
@@ -169,14 +169,13 @@ find it slow; `next` is the escape hatch (see D7).
 
 **Decision.** Each step's prose stays tight and readable: no mannered
 phrasing, no beating around the bush, no throat-clearing before the
-point. A concept is never explained incompletely just to hit a count —
-the author's ruling is that a step's length should be earned, not capped.
-Within a step the claim is said once: a sentence after the picture that
-restates what it showed is padding.
+point. A concept is never explained incompletely just to hit a count — a
+step's length should be earned, not capped. Within a step the claim is said
+once: a sentence after the picture that restates what it showed is padding.
 
-**Rejected.** A hard numeric word cap. Per the author, the point is
-tightness, not an arithmetic ceiling, and a long-but-earned
-step should not have to break itself in two just to stay under a number.
+**Rejected.** A hard numeric word cap. The point is tightness, not an
+arithmetic ceiling, and a long-but-earned step should not have to break
+itself in two just to stay under a number.
 
 **Cost.** Cutting narration without cutting content takes a real editing
 pass — spotting a deletable sentence is harder than counting words.
@@ -322,10 +321,10 @@ arm has no conversation to act in: it replies that it cannot see the
 earlier turns, or follows a route restated in its own prompt. Measured side
 by side, that inflated `next-means-one-step`'s Δ to +0.42 and made
 `first-step-route-fits`'s negative, −0.33; see
-[docs/replay-evals.md](../../docs/replay-evals.md). 
+[docs/replay-evals.md](../../docs/replay-evals.md).
 
-**Rejected** Sampled real transcripts: roughly 900 KB each, with account IDs, 
-`cwd` and `gitBranch` to scrub on every regeneration; a generated transcript 
+**Rejected.** Sampled real transcripts: roughly 900 KB each, with account IDs,
+`cwd` and `gitBranch` to scrub on every regeneration; a generated transcript
 carries none of it.
 
 **Cost.** Earlier turns are fixed, edited text, where a real learner sees
@@ -417,9 +416,8 @@ given. Effort is not set (see Open).
 **Rejected.** A `model:` in each case. It names the model in a second
 place, and `--model` overrides it on every run.
 
-**Cost.** The Opus judge costs more per run than a smaller one; the author
-ruled the grader should be the more capable model. Judge and model under
-test being the same model is a self-preference risk; both arms share it,
+**Cost.** The Opus judge costs more per run than a smaller one, but the
+grader should be the more capable model. Judge and model under test being the same model is a self-preference risk; both arms share it,
 so it mostly cancels out of the delta but not out of either arm's absolute
 score.
 

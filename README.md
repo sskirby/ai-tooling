@@ -1,6 +1,14 @@
 # ai-tooling
 
-A Claude Code plugin marketplace. One plugin so far.
+Claude Code plugins, each measured against the same model without it.
+
+[`what-the-heck`](plugins/what-the-heck) teaches one idea at a time and won't
+move on until you've shown you understood it. It raises teaching scores by
++0.39 to +0.46 on average across Opus 5.5, Sonnet 5 and Haiku 4.5.
+
+The repo also carries `replay-eval`, a harness that measures a skill's effect
+on turns in the middle of a conversation, which `claude plugin eval` alone
+can't. See [Evals](#evals).
 
 ## Install
 
@@ -29,18 +37,23 @@ under `/plugin` → Marketplaces to have Claude Code do both at startup.
 
 ### Which model to use
 
-Don't use Haiku. Sonnet 5 on high effort gives very good results. Opus 5.5
-on medium effort gives the best.
+Don't use Haiku. Sonnet 5 gives very good results. Opus 5.5 gives the best.
+Each ran at its CLI default effort, which the table shows; other effort
+levels are untested.
 
 Full `what-the-heck` suite, version 0.1.1, 6 runs per case, judged by
 Opus 5.5 (details in the plugin's
 [evidence note](plugins/what-the-heck/README.md#evidence-note)):
 
-| Model (effort) | Teaching cases at 1.00 | Lowest case | Graders failing with the skill |
-|---|---|---|---|
-| Opus 5.5 (medium) | 7 of 7 | 1.00 | 0 of 31 |
-| Sonnet 5 (high) | 5 of 7 | 0.90 | 4 of 31 |
-| Haiku 4.5 | 4 of 7 | 0.21 | 9 of 31 |
+| Model (default effort) | Mean Δ | Teaching cases at 1.00 | Lowest case | Graders failing with the skill |
+|---|---|---|---|---|
+| Opus 5.5 (medium) | +0.39 | 7 of 7 | 1.00 | 0 of 31 |
+| Sonnet 5 (high) | +0.43 | 5 of 7 | 0.90 | 4 of 31 |
+| Haiku 4.5 (not recorded) | +0.46 | 4 of 7 | 0.21 | 9 of 31 |
+
+Mean Δ is the with-skill score minus the no-skill score, averaged over the
+seven teaching cases. Haiku 4.5 gains the most because its bare model does
+the least of the behaviour, but it still ends with the lowest scores.
 
 Haiku 4.5's 0.21 is on shaky reasoning: it accepts a right answer given for
 the wrong reason and moves on to the next step. It also fired the skill on
@@ -76,7 +89,8 @@ uv run replay-eval ./plugins/what-the-heck \
 is Opus 5.5 (`claude-opus-5-5`) unless you pass `--judge-model`. Other
 `claude plugin eval` options pass through, except `--ablation`.
 
-Output, abbreviated (also written to `evals/replay/delta.md`):
+Output, abbreviated; the numbers are illustrative, not the published results
+(also written to `evals/replay/delta.md`):
 
 ```
 | case              | kind     | with | baseline | Δ     | runs | cost  | with-only indicators | note |
