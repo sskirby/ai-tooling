@@ -4,7 +4,7 @@ Claude Code plugins, each measured against the same model without it.
 
 [`what-the-heck`](plugins/what-the-heck) teaches one idea at a time and won't
 move on until you've shown you understood it. It raises teaching scores by
-+0.39 to +0.46 on average across Opus 5.5, Sonnet 5 and Haiku 4.5.
++0.37 to +0.46 on average across Opus 5.5, Sonnet 5.5 and Haiku 4.5.
 
 The repo also carries `replay-eval`, a harness that measures a skill's effect
 on turns in the middle of a conversation, which `claude plugin eval` alone
@@ -37,7 +37,7 @@ under `/plugin` → Marketplaces to have Claude Code do both at startup.
 
 ### Which model to use
 
-Don't use Haiku. Sonnet 5 gives very good results. Opus 5.5 gives the best.
+Don't use Haiku. Sonnet 5.5 gives very good results. Opus 5.5 gives the best.
 Each ran at its CLI default effort, which the table shows; other effort
 levels are untested.
 
@@ -48,7 +48,7 @@ Opus 5.5 (details in the plugin's
 | Model (default effort) | Mean Δ | Teaching cases at 1.00 | Lowest case | Graders failing with the skill |
 |---|---|---|---|---|
 | Opus 5.5 (medium) | +0.39 | 7 of 7 | 1.00 | 0 of 31 |
-| Sonnet 5 (high) | +0.43 | 5 of 7 | 0.90 | 4 of 31 |
+| Sonnet 5.5 (medium) | +0.37 | 5 of 7 | 0.90 | 4 of 31 |
 | Haiku 4.5 (not recorded) | +0.46 | 4 of 7 | 0.21 | 9 of 31 |
 
 Mean Δ is the with-skill score minus the no-skill score, averaged over the

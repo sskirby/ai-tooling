@@ -8,14 +8,15 @@ format. Part 2 covers how this repo is built and verified.
 
 ## Evidence note
 
-Measured on version 0.1.1 of the skill with CLI 2.1.283: one full suite
-per model, 6 runs per case and arm, judged by claude-opus-5-5. `--model`
-sets the model under test (B7). Effort is
-each model's CLI default, since `claude plugin eval` has no effort
-setting: medium on Opus 5.5, high on Sonnet 5, and none recorded on
-Haiku 4.5.
+Measured on version 0.1.1 of the skill: one full suite per model, 6 runs
+per case and arm, judged by claude-opus-5-5, on CLI 2.1.283 for Opus 5.5
+and Haiku 4.5 and CLI 2.1.285 for Sonnet 5.5. `--model` sets the model
+under test (B7). Effort is each model's CLI default, since
+`claude plugin eval` has no effort setting: medium on Opus 5.5 and
+Sonnet 5.5, and none recorded on Haiku 4.5.
 
-Each table gives with score / without score / delta. For a replay case,
+Each table gives with score / without score / delta, one row per case in
+lesson order, with the three `no-trigger-*` cases last. For a replay case,
 `without` is its baseline twin (B9). The three `no-trigger-*` cases score a
 correct 0.00 by design — the skill must not fire on those prompts — so
 each mean delta covers only the seven teaching cases.
@@ -30,11 +31,11 @@ delta on any single case is not signal.
 | ------------------------------- | ---- | ------- | ----- |
 | opening                         | 1.00 | 0.25    | +0.75 |
 | first-step-replay               | 1.00 | 0.25    | +0.75 |
-| closing-replay                  | 1.00 | 0.40    | +0.60 |
+| first-step-route-fits-replay    | 1.00 | 1.00    | 0.00  |
+| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
 | shaky-reasoning-rechecks-replay | 1.00 | 0.71    | +0.29 |
 | wrong-answer-reteaches-replay   | 1.00 | 0.75    | +0.25 |
-| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
-| first-step-route-fits-replay    | 1.00 | 1.00    | 0.00  |
+| closing-replay                  | 1.00 | 0.40    | +0.60 |
 | no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
@@ -49,40 +50,42 @@ and none miss in the with arm. Inert graders cluster mid-lesson and in
 first-step-route-fits: next-means 3/4, wrong-answer 3/4, shaky 2/4,
 route-fits 2/2. See Open ("Graders that pass in both arms").
 
-### Sonnet 5
+### Sonnet 5.5
 
 | case                            | with | without | Δ     |
 | ------------------------------- | ---- | ------- | ----- |
-| first-step-replay               | 0.90 | 0.15    | +0.75 |
-| opening                         | 1.00 | 0.38    | +0.62 |
-| shaky-reasoning-rechecks-replay | 1.00 | 0.42    | +0.58 |
-| first-step-route-fits-replay    | 1.00 | 0.58    | +0.42 |
-| closing-replay                  | 1.00 | 0.60    | +0.40 |
-| wrong-answer-reteaches-replay   | 0.96 | 0.75    | +0.21 |
-| next-means-one-step-replay      | 1.00 | 1.00    | 0.00  |
+| opening                         | 1.00 | 0.25    | +0.75 |
+| first-step-replay               | 0.98 | 0.19    | +0.79 |
+| first-step-route-fits-replay    | 1.00 | 0.50    | +0.50 |
+| next-means-one-step-replay      | 1.00 | 0.92    | +0.08 |
+| shaky-reasoning-rechecks-replay | 1.00 | 0.75    | +0.25 |
+| wrong-answer-reteaches-replay   | 1.00 | 0.79    | +0.21 |
+| closing-replay                  | 0.90 | 0.90    | 0.00  |
 | no-trigger-explain-and-do       | 1.00 | 1.00    | 0.00  |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
 
-The mean delta is **+0.43 across the seven teaching cases**.
+The mean delta is **+0.37 across the seven teaching cases**.
+closing-replay shows no delta because the baseline already closes with a
+numbered causal chain in 5 of its 6 runs, and the with arm's 0.90 comes
+from one run that misses three graders.
 
-Of the 31 scored graders, 8 discriminate cleanly, 10 only weakly, 9 are
-inert, and 4 miss in the with arm: first-step's
-`check-requires-using-the-idea` and `no-extraneous-prose` (4/6 each) and
-`step-one-is-new-to-them` (5/6), and wrong-answer-reteaches'
-`reteaches-from-a-new-angle` (5/6).
+Of the 31 scored graders, 11 discriminate cleanly, 3 only weakly, 13 are
+inert, and 4 miss in the with arm: closing's `names-the-gotcha`,
+`no-further-check` and `recap-is-one-item-per-step` (5/6 each, all in the
+same run), and first-step's `no-extraneous-prose` (5/6).
 
 ### Haiku 4.5
 
 | case                            | with | without | Δ     |
 | ------------------------------- | ---- | ------- | ----- |
-| first-step-replay               | 0.81 | 0.12    | +0.69 |
 | opening                         | 1.00 | 0.38    | +0.62 |
-| closing-replay                  | 1.00 | 0.43    | +0.57 |
-| next-means-one-step-replay      | 1.00 | 0.46    | +0.54 |
+| first-step-replay               | 0.81 | 0.12    | +0.69 |
 | first-step-route-fits-replay    | 1.00 | 0.58    | +0.42 |
-| wrong-answer-reteaches-replay   | 0.96 | 0.67    | +0.29 |
+| next-means-one-step-replay      | 1.00 | 0.46    | +0.54 |
 | shaky-reasoning-rechecks-replay | 0.21 | 0.12    | +0.08 |
+| wrong-answer-reteaches-replay   | 0.96 | 0.67    | +0.29 |
+| closing-replay                  | 1.00 | 0.43    | +0.57 |
 | no-trigger-explain-and-do       | 0.92 | 1.00    | −0.08 |
 | no-trigger-mid-implementation   | 1.00 | 1.00    | 0.00  |
 | no-trigger-task-ask             | 1.00 | 1.00    | 0.00  |
@@ -476,8 +479,8 @@ replays/wrong-answer-reteaches/, replays/closing/.
 | Item                                                          | Open because                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Resolved by                                                                                                                      |
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | A case for "read the code before step 1" (B6)                 | Needs a committed fixture repo and `context.add_dirs`; deliberately deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | A later pass, if a run suggests the rule drifts                                                                                  |
-| Graders that pass in both arms | 14 of the 31 scored graders pass in both arms on Opus 5.5, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to its deltas: `opening/answer-before-route`; `first-step/no-extraneous-prose`, `step-one-is-new-to-them`; `first-step-route-fits/keeps-the-route`, `route-not-repeated`; `next-means-one-step/escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/recap-is-easy-to-scan`. Fewer are inert on Sonnet 5 (9) and Haiku 4.5 (6), whose bare models do less of the behaviour | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
+| Graders that pass in both arms | 14 of the 31 scored graders pass in both arms on Opus 5.5, because bare Opus 5.5 already does the behaviour or the replay baseline copies it from the earlier turns in its history, so they add nothing to its deltas: `opening/answer-before-route`; `first-step/no-extraneous-prose`, `step-one-is-new-to-them`; `first-step-route-fits/keeps-the-route`, `route-not-repeated`; `next-means-one-step/escape-hatch-present`, `exactly-one-step`, `step-three-not-a-dump`; `shaky-reasoning-rechecks/does-not-simply-congratulate`, `names-the-specific-gap`; `wrong-answer-reteaches/does-not-affirm-the-wrong-answer`, `issues-a-fresh-check`, `reteaches-from-a-new-angle`; `closing/recap-is-easy-to-scan`. Fewer are inert on Sonnet 5.5 (13) and Haiku 4.5 (6), whose bare models do less of the behaviour | A decision per grader. Marking them `arm: with-only` would lift the deltas by hiding that the baseline is good; they stay scored |
 | `illustration-without-clutter`'s baseline verdict is unstable | It gives opposite verdicts on first-step baseline replies with the same illustration density: the rubric judges a single step, and the baseline teaches all five at once. The with arm is unaffected                                                                                                                                                                                                                                                                                                                                                                                                       | A stated rule for a multi-section baseline reply, or a baseline variant of the check                                             |
-| Effort is unpinned (B7) | `claude plugin eval` has no effort setting, so each model runs at the CLI's default for it — medium on Opus 5.5, high on Sonnet 5 — and a CLI update can move that default between two runs, as it once moved the default model. The judge's effort is not recorded | An effort setting in `claude plugin eval`, then a required `replay-eval` flag for it |
+| Effort is unpinned (B7) | `claude plugin eval` has no effort setting, so each model runs at the CLI's default for it — medium on Opus 5.5 and Sonnet 5.5 — and a CLI update can move that default between two runs, as it once moved the default model. The judge's effort is not recorded | An effort setting in `claude plugin eval`, then a required `replay-eval` flag for it |
 
 
